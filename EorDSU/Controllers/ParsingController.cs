@@ -1,5 +1,6 @@
 ﻿using EorDSU.DBService;
 using EorDSU.Models;
+using EorDSU.Repository;
 using IronPdf;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Data.SqlClient;
@@ -11,16 +12,16 @@ namespace EorDSU.Controllers
     [Route("[controller]")]
     public class ParsingController : Controller
     {
-        private readonly BASEPERSONMDFContext _context;
-        public ParsingController(BASEPERSONMDFContext context)
+        private readonly ActiveDataRepository _activeDataRepository;
+        public ParsingController(ActiveDataRepository activeDataRepository)
         {
-            _context = context;
+            _activeDataRepository = activeDataRepository;
         }
 
         [HttpGet]
         public List<PersDivision> Index()
         {
-            return _context.PersDivisions.ToList();
+            return _activeDataRepository.GetPersDivisions();
         }
 
         //[HttpGet]
