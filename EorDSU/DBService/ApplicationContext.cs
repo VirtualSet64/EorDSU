@@ -4,9 +4,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EorDSU.DBService
 {
-    public class ApplicationContext : DbContext
+    public class ApplicationContext : IdentityDbContext<User>
     {
-
+        public DbSet<Profile> Profiles { get; set; }
+        public DbSet<RPD> RPDs { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)

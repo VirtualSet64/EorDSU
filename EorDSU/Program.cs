@@ -1,7 +1,7 @@
-using EorDSU;
 using EorDSU.DBService;
 using EorDSU.Interface;
 using EorDSU.Models;
+using EorDSU.Repository;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +19,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddSingleton<IActiveData, ActiveDataRepository>();
 
 builder.Services.AddDbContext<BASEPERSONMDFContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("BasePerson")));
 builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
