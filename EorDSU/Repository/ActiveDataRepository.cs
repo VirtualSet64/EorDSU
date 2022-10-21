@@ -1,7 +1,6 @@
 ﻿using EorDSU.DBService;
 using EorDSU.Interface;
 using EorDSU.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace EorDSU.Repository
 {
@@ -21,11 +20,6 @@ namespace EorDSU.Repository
         public List<PersDepartment> GetPersDepartments()
         {
             return _context.PersDepartments.Where(c => c.IsActive == 1 && c.IsKaf == 1).ToList();
-        }
-
-        public List<Person> GetPerson()
-        {
-            return _context.Persons.ToList();
         }
     }
 }
