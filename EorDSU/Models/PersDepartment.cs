@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 
 namespace EorDSU.Models
 {
-    /// <summary>
-    /// Кафедра
-    /// </summary>
-    public class PersDepartment
+    public partial class PersDepartment
     {
-        [Key]
         public int DepId { get; set; }
         public int? DivId { get; set; }
         public string? DepName { get; set; }
