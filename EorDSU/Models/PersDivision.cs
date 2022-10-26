@@ -1,12 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace EorDSU.Models
 {
-    public partial class PersDivision
+    /// <summary>
+    /// Факультет
+    /// </summary>
+    public class PersDivision
     {
         public int DivId { get; set; }
+        [Key]
         public int FilId { get; set; }
+        [Key]
         public string DivName { get; set; } = null!;
         public string? DivAbr { get; set; }
         public int? CreateYear { get; set; }

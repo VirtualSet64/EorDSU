@@ -1,32 +1,24 @@
 ﻿using EorDSU.DBService;
 using EorDSU.Interface;
 using EorDSU.Models;
-using EorDSU.Repository;
-using EorDSU.Service;
 using IronPdf;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
 using Sentry;
 
-namespace EorDSU.Controllers
+namespace EorDSU.Service
 {
-    [ApiController]
-    [Route("[controller]")]
-    public class ParsingController : Controller
+    public class ParsingService
     {
         private readonly ISearchEntity _searchEntity;
-        public ParsingController(ISearchEntity searchEntity)
+        public ParsingService(ISearchEntity searchEntity)
         {
             _searchEntity = searchEntity;
         }
 
-        [HttpGet]
-        public RPD ParsingRPD()
+        public RPD ParsingRPD(string path)
         {
             try
             {
-                using PdfDocument PDF = PdfDocument.FromFile("C://Users/programmsit/Downloads/ibv.pdf");
-                //Using ExtractAllText() method, extract every single text from an pdf
+                using PdfDocument PDF = PdfDocument.FromFile(path);
                 string AllText = PDF.ExtractAllText();
                 RPD rpd = new()
                 {

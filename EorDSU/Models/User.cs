@@ -1,8 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿//using Microsoft.AspNetCore.Identity;
 
-namespace EorDSU.Models
-{
-    public class User : IdentityUser
-    {
-    }
-}
+//namespace EorDSU.Models
+//{
+//    public class User : IdentityUser
+//    {
+//    }
+//}
