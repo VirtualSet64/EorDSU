@@ -19,11 +19,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddSingleton<IActiveData, ActiveDataRepository>();
 
-builder.Services.AddDbContext<BASEPERSONMDFContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("BasePerson")));
-builder.Services.AddDbContext<ApplicationContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddDbContext<BASEPERSONMDFContext>(options => 
+    options.UseSqlServer(builder.Configuration.GetConnectionString("BasePerson"), providerOptions => providerOptions.EnableRetryOnFailure()));
+builder.Services.AddDbContext<DSUContext>(options => 
+    options.UseSqlServer(builder.Configuration.GetConnectionString("BaseDekanat"), providerOptions => providerOptions.EnableRetryOnFailure()));
+builder.Services.AddDbContext<ApplicationContext>(options => 
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), providerOptions => providerOptions.EnableRetryOnFailure()));
+
+builder.Services.AddScoped<IActiveData, ActiveDataRepository>();
+builder.Services.AddScoped<ISearchEntity, SearchEntityRepository>();
 
 builder.WebHost.ConfigureServices(configure => SentrySdk.Init(o =>
 {
@@ -39,14 +45,14 @@ builder.WebHost.ConfigureServices(configure => SentrySdk.Init(o =>
 }));
 
 
-builder.Services.AddIdentity<EorDSU.Models.User, IdentityRole>(opts =>
-{
-    opts.Password.RequiredLength = 0;   // минимальная длина
-    opts.Password.RequireNonAlphanumeric = false;   // требуются ли не алфавитно-цифровые символы
-    opts.Password.RequireLowercase = false; // требуются ли символы в нижнем регистре
-    opts.Password.RequireUppercase = false; // требуются ли символы в верхнем регистре
-    opts.Password.RequireDigit = false; // требуются ли цифры
-}).AddEntityFrameworkStores<ApplicationContext>();
+//builder.Services.AddIdentity<EorDSU.Models.User, IdentityRole>(opts =>
+//{
+//    opts.Password.RequiredLength = 0;   // минимальная длина
+//    opts.Password.RequireNonAlphanumeric = false;   // требуются ли не алфавитно-цифровые символы
+//    opts.Password.RequireLowercase = false; // требуются ли символы в нижнем регистре
+//    opts.Password.RequireUppercase = false; // требуются ли символы в верхнем регистре
+//    opts.Password.RequireDigit = false; // требуются ли цифры
+//}).AddEntityFrameworkStores<ApplicationContext>();
 
 var app = builder.Build();
 
