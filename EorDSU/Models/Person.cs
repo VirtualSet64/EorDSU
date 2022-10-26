@@ -3,7 +3,10 @@ using System.Collections.Generic;
 
 namespace EorDSU.Models
 {
-    public partial class Person
+    /// <summary>
+    /// Преподаватель
+    /// </summary>
+    public class Person
     {
         public int PersonId { get; set; }
         public int? FolderId { get; set; }

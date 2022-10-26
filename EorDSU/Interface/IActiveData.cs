@@ -6,5 +6,6 @@ namespace EorDSU.Interface
     {
         public List<PersDivision> GetPersDivisions(); 
         public List<PersDepartment> GetPersDepartments(); 
+        public List<Person> GetPerson(); 
     }
 }

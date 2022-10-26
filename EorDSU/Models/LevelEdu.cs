@@ -12,9 +12,5 @@
         {
             Name = name;
         }
-
-        public LevelEdu()
-        {
-        }
     }
 }

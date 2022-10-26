@@ -21,5 +21,10 @@ namespace EorDSU.Repository
         {
             return _context.PersDepartments.Where(c => c.IsActive == 1 && c.IsKaf == 1).ToList();
         }
+
+        public List<Person> GetPerson()
+        {
+            return _context.Persons.ToList();
+        }
     }
 }
