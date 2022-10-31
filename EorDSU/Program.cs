@@ -2,34 +2,41 @@ using EorDSU.DBService;
 using EorDSU.Interface;
 using EorDSU.Models;
 using EorDSU.Repository;
+using EorDSU.Service;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using Sentry;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+using Microsoft.AspNetCore.Authorization;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using EorDSU.ConfigInfo;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-
-
-builder.Services.AddDbContext<BASEPERSONMDFContext>(options => 
+builder.Services.AddDbContext<BASEPERSONMDFContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BasePerson"), providerOptions => providerOptions.EnableRetryOnFailure()));
-builder.Services.AddDbContext<DSUContext>(options => 
+builder.Services.AddDbContext<DSUContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BaseDekanat"), providerOptions => providerOptions.EnableRetryOnFailure()));
-builder.Services.AddDbContext<ApplicationContext>(options => 
+builder.Services.AddDbContext<ApplicationContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), providerOptions => providerOptions.EnableRetryOnFailure()));
 
 builder.Services.AddScoped<IActiveData, ActiveDataRepository>();
 builder.Services.AddScoped<ISearchEntity, SearchEntityRepository>();
+builder.Services.AddScoped<ParsingService>();
+builder.Services.AddSingleton<AuthOptions>();
 
 builder.WebHost.ConfigureServices(configure => SentrySdk.Init(o =>
 {
@@ -44,15 +51,28 @@ builder.WebHost.ConfigureServices(configure => SentrySdk.Init(o =>
     o.IsGlobalModeEnabled = true;
 }));
 
-
-//builder.Services.AddIdentity<EorDSU.Models.User, IdentityRole>(opts =>
-//{
-//    opts.Password.RequiredLength = 0;   // минимальна€ длина
-//    opts.Password.RequireNonAlphanumeric = false;   // требуютс€ ли не алфавитно-цифровые символы
-//    opts.Password.RequireLowercase = false; // требуютс€ ли символы в нижнем регистре
-//    opts.Password.RequireUppercase = false; // требуютс€ ли символы в верхнем регистре
-//    opts.Password.RequireDigit = false; // требуютс€ ли цифры
-//}).AddEntityFrameworkStores<ApplicationContext>();
+builder.Services.AddAuthorization();
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            // указывает, будет ли валидироватьс€ издатель при валидации токена
+            ValidateIssuer = true,
+            // строка, представл€юща€ издател€
+            ValidIssuer = builder.Configuration.GetConnectionString("ISSUER"),
+            // будет ли валидироватьс€ потребитель токена
+            ValidateAudience = true,
+            // установка потребител€ токена
+            ValidAudience = builder.Configuration.GetConnectionString("AUDIENCE"),
+            // будет ли валидироватьс€ врем€ существовани€
+            ValidateLifetime = true,
+            // установка ключа безопасности
+            IssuerSigningKey = new AuthOptions(builder.Configuration).GetSymmetricSecurityKey(),
+            // валидаци€ ключа безопасности
+            ValidateIssuerSigningKey = true,
+        };
+    });
 
 var app = builder.Build();
 
@@ -65,6 +85,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

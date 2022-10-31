@@ -3,6 +3,7 @@
     public class RPD
     {
         public int Id { get; set; }
+        public FileModel? FileModel { get; set; }
         public int? PersDepartmentId { get; set; }
         public PersDepartment? PersDepartment { get; set; }
         public int? DisciplineId { get; set; }
