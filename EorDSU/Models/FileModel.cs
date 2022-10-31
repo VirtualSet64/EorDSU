@@ -1,5 +1,8 @@
 ﻿namespace EorDSU.Models
 {
+    /// <summary>
+    /// Файлы
+    /// </summary>
     public class FileModel
     {
         public int Id { get; set; }

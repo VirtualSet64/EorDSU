@@ -12,7 +12,7 @@ namespace EorDSU.DBService
         public DbSet<RPD> RPDs { get; set; } = null!;
         public DbSet<FileModel> FileModels { get; set; } = null!;
         public DbSet<LevelEdu> LevelEdues { get; set; } = null!;
-        //public DbSet<StatusDiscipline> StatusDisciplines { get; set; }
+        public DbSet<User> Users { get; set; }
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)
