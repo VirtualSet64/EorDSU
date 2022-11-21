@@ -1,6 +1,18 @@
-﻿namespace EorDSU.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace EorDSU.Models
 {
-    public class FileType
+    public enum FileType
     {
+        FGOS,
+        OPOP,
+        EduPlan,
+        KalendarEduPlan,
+        GIA,
+        MatrixCompetition,
+        AOPOP,
+        DistantEdu,
+        RPV,
+        MetodMaterialForObespecOP,
     }
 }

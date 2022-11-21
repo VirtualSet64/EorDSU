@@ -14,32 +14,19 @@ namespace EorDSU.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    [Authorize]
     public class AddFilesController : Controller
     {
         private readonly ApplicationContext _context;
         private readonly IWebHostEnvironment _appEnvironment;
-        private readonly ISearchEntity _searchEntity;
-        private readonly ParsingService _parsingService;
         private readonly IConfiguration Configuration;
+        private readonly ExcelParsingService _excelParsingService;
 
-        public AddFilesController(ApplicationContext context, IWebHostEnvironment appEnvironment, ISearchEntity searchEntity, ParsingService parsingService, IConfiguration configuration)
+        public AddFilesController(ApplicationContext context, IWebHostEnvironment appEnvironment, IConfiguration configuration, ExcelParsingService excelParsingService)
         {
             _context = context;
             _appEnvironment = appEnvironment;
-            _searchEntity = searchEntity;
-            _parsingService = parsingService;
             Configuration = configuration;
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
-        [HttpGet]
-        public List<FileModel> GetFiles()
-        {
-            return _context.FileModels.ToList();
+            _excelParsingService = excelParsingService;
         }
 
         /// <summary>
@@ -47,11 +34,10 @@ namespace EorDSU.Controllers
         /// </summary>
         /// <param name="uploadedFile">Обьект файла</param>
         /// <param name="fileType">Тип файла</param>
-        /// <param name="profile">Профиль</param>
         /// <param name="year">Год обучения</param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<object> AddFile(IFormFile uploadedFile, int fileType, string profile, int year = 0)
+        public async Task<IActionResult> AddFile(IFormFile uploadedFile, int fileTypeId, int profileId = -1, int year = 0)
         {
             if (uploadedFile != null)
             {
@@ -59,21 +45,28 @@ namespace EorDSU.Controllers
                 {
                     year = DateTime.Now.Year;
                 }
+
                 // путь к папке Files
-                string path = Configuration["FileFolder"] + uploadedFile.FileName;
+                string path = Configuration["FileFolder"] + "/" + uploadedFile.FileName;
                 // сохраняем файл в папку Files в каталоге wwwroot
                 using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
                 {
                     await uploadedFile.CopyToAsync(fileStream);
                 }
-                FileModel file = new() { Name = uploadedFile.FileName, Year = year, FileType = fileType, Profile = _searchEntity.SearchProfile(profile) };
-                _context.FileModels.Add(file);
-                _context.SaveChanges();
-                if (fileType == 5)//если рпд под пятым номером
+                if (Path.GetExtension(path) == ".xls" || Path.GetExtension(path) == ".xlsx")
                 {
-                    return _parsingService.ParsingRPD(path);
+                    if (fileTypeId == (int)FileType.EduPlan)
+                    {
+                        _excelParsingService.ParsingService(path);
+                    }
+                    else
+                    {
+                        FileModel file = new() { Name = uploadedFile.FileName, Profile = _context.Profiles.FirstOrDefault(x => x.Id == profileId), Year = year, Type = (FileType)fileTypeId };
+                        _context.FileModels.Add(file);
+                        _context.SaveChanges();
+                        return Ok(file);
+                    }
                 }
-                return file;
             }
             return Ok();
         }
@@ -83,16 +76,15 @@ namespace EorDSU.Controllers
         /// </summary>
         /// <param name="uploadedFile">Обьект файла</param>
         /// <param name="fileType">Тип файла</param>
-        /// <param name="profile">Профиль</param>
         /// <param name="year">Год обучения</param>
         /// <returns></returns>
         [HttpPut]
-        public async Task<object> EditFile(IFormFile uploadedFile, int id, int fileType, string profile, int year = 0)
+        public async Task<object> EditFile(IFormFile uploadedFile, int id, int fileType, int year = 0)
         {
             if (uploadedFile != null)
             {
                 var filedb = _context.FileModels.FirstOrDefault(c => c.Id == id);
-                if (filedb != null && filedb.Year == 0)
+                if (filedb != null && year == 0)
                 {
                     filedb.Year = DateTime.Now.Year;
                 }
@@ -104,13 +96,9 @@ namespace EorDSU.Controllers
                     await uploadedFile.CopyToAsync(fileStream);
                 }
 
-                FileModel file = new() { Name = uploadedFile.FileName, Year = year, FileType = fileType, Profile = _searchEntity.SearchProfile(profile) };
+                FileModel file = new() { Name = uploadedFile.FileName, Year = year };
                 _context.FileModels.Update(file);
                 _context.SaveChanges();
-                if (fileType == 5)//если рпд под пятым номером
-                {
-                    return _parsingService.ParsingRPD(path);
-                }
                 return file;
             }
             return Ok();

@@ -35,8 +35,9 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
 
 builder.Services.AddScoped<IActiveData, ActiveDataRepository>();
 builder.Services.AddScoped<ISearchEntity, SearchEntityRepository>();
-builder.Services.AddScoped<ParsingService>();
-builder.Services.AddSingleton<AuthOptions>();
+
+builder.Services.AddScoped<AuthOptions>();
+builder.Services.AddScoped<ExcelParsingService>();
 
 builder.WebHost.ConfigureServices(configure => SentrySdk.Init(o =>
 {
