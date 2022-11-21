@@ -20,9 +20,15 @@ namespace EorDSU.Repository
         {
             return _dsuContext.CaseCEdukinds.FirstOrDefault(c => c.Edukind == text);
         }
+
         public PersDepartment SearchPersDepartment(string text)
         {
             return _basePersonContext.PersDepartments.FirstOrDefault(c => c.DepName == text);
+        }
+
+        public CaseSDepartment SearchCaseSDepartment(string text, string code)
+        {
+            return _dsuContext.CaseSDepartments.FirstOrDefault(c => c.DeptName == text && c.Code == code);
         }
 
         public LevelEdu SearchLevelEdu(string text)
@@ -35,24 +41,14 @@ namespace EorDSU.Repository
             return levelEdu;
         }
 
-        public Discipline SearchDiscipline(string text)
+        public StatusDiscipline SearchStatusDiscipline(string text)
         {
-            return _applicationContext.Disciplines.FirstOrDefault(c => c.DisciplineName == text);
+            var statusDiscipline = _applicationContext.StatusDisciplines.FirstOrDefault(c => c.Name == text);
+            if (statusDiscipline == null)
+            {
+                statusDiscipline = new StatusDiscipline(text);
+            }
+            return statusDiscipline;
         }
-
-        public Profile SearchProfile(string text)
-        {
-            return _applicationContext.Profiles.FirstOrDefault(c => c.ProfileName == text);
-        }
-
-        //public StatusDiscipline SearchStatusDiscipline(string text)
-        //{
-        //    var statusDiscipline = _applicationContext.StatusDisciplines.FirstOrDefault(c => c.StatusName == text);
-        //    if (statusDiscipline == null)
-        //    {
-        //        statusDiscipline = new StatusDiscipline(text);
-        //    }
-        //    return statusDiscipline;
-        //}
     }
 }
