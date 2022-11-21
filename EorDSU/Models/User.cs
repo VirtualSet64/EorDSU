@@ -12,5 +12,7 @@ namespace EorDSU.Models
         public string UserName { get; set; } = null!;
         [PasswordPropertyText]
         public string Password { get; set; } = null!;
+        public int? PersDepartmentId { get; set; }
+        public PersDepartment PersDepartment { get; set; } = null!;
     }
 }
