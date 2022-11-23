@@ -20,6 +20,8 @@
         /// Ссылка на страницу с предметами
         /// </summary>
         public string? LinkToPRD { get; set; }
+        public LevelEdu? LevelEdu { get; set; }
+        public int? LevelEduId { get; set; }
         public int? CaseSDepartmentId { get; set; }
         public CaseSDepartment? CaseSDepartment { get; set; }
         public int? PersDepartmentId { get; set; }

@@ -70,7 +70,7 @@ namespace EorDSU.Controllers
         {
             User? user = _context.Users.FirstOrDefault(p => p.UserName == requestUser.UserName && p.Password == requestUser.Password);
             // если пользователь не найден, отправляем статусный код 401
-            if (user is null) return Ok();
+            if (user is null) return BadRequest();
 
             var claims = new List<Claim> { new Claim(ClaimTypes.Name, user.UserName) };
             // создаем JWT-токен
