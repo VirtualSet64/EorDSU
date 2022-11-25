@@ -18,7 +18,7 @@ namespace EorDSU.DBService
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)
         {
-            Database.EnsureDeleted();   // удаляем базу данных при первом обращении
+            //Database.EnsureDeleted();   // удаляем базу данных при первом обращении
             Database.EnsureCreated();   // создаем базу данных при первом обращении
         }
     }

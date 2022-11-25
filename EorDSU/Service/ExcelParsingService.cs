@@ -19,22 +19,38 @@ namespace EorDSU.Service
             _searchEntity = searchEntity;
         }
 
-        public AddEduPlanResponse ParsingService(string path)
+        public Profile ParsingService(string path)
         {
             Excel.Application ObjWorkExcel = new(); //открыть эксель
             Excel.Workbook ObjWorkBook = ObjWorkExcel.Workbooks.Open(@path, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing); //открыть файл
 
-            AddEduPlanResponse addEduPlanResponse = new();
-            TitulPage(ObjWorkBook, addEduPlanResponse);
-            PlanSvodPage(ObjWorkBook, addEduPlanResponse);
+            Profile profile = new()
+            {
+                CaseSDepartment = new(),
+                PersDepartment = new(),
+                CaseCEdukind = new(),
+                Disciplines = new(),
+                FileModels = new(),
+                LevelEdu = new()
+            };
+            TitulPage(ObjWorkBook, profile);
+            PlanSvodPage(ObjWorkBook, profile);
 
             ObjWorkBook.Close(false, Type.Missing, Type.Missing); //закрыть не сохраняя
             ObjWorkExcel.Quit(); // выйти из экселя
-            GC.Collect(); // убрать за собой            
-            return addEduPlanResponse;
+            GC.Collect(); // убрать за собой
+
+            var sd = _applicationContext.Profiles.ToList();
+            if (!_applicationContext.Profiles.Any(x => x.ProfileName == profile.ProfileName))
+            {
+                _applicationContext.Profiles.Add(profile);
+            }
+
+            _applicationContext.SaveChanges();
+            return profile;
         }
 
-        private void TitulPage(Excel.Workbook ObjWorkBook, AddEduPlanResponse addEduPlanResponse)
+        private void TitulPage(Excel.Workbook ObjWorkBook, Profile profile)
         {
             Excel.Worksheet ObjWorkSheet = (Excel.Worksheet)ObjWorkBook.Sheets[1]; //получить 1 лист
             var lastCell = ObjWorkSheet.Cells.SpecialCells(Excel.XlCellType.xlCellTypeLastCell);//1 ячейку
@@ -48,41 +64,37 @@ namespace EorDSU.Service
             //addEduPlanResponse.CaseCEdukind = _searchEntity.SearchEdukind(list[2, 41].Split(" ")[^1]);
             //[^1] = List[List.Lenght - 1]
 
-            addEduPlanResponse.Profile = new()
-            {
-                ProfileName = list[3, 29],
-                TermEdu = int.Parse(list[2, 42].Split(" ")[^1][0].ToString()),
-                CaseSDepartment = _searchEntity.SearchCaseSDepartment(list[3, 28].Split(" ")[^1], list[3, 26]),
-                PersDepartment = _searchEntity.SearchPersDepartment(list[3, 36]),
-                Year = int.Parse(list[22, 39])
-            };
+            profile.ProfileName = list[3, 29];
+            profile.TermEdu = int.Parse(list[2, 42].Split(" ")[^1][0].ToString());
+            //profile.CaseSDepartmentId = _searchEntity.SearchCaseSDepartment(list[3, 28].Split(" ")[^1]).DepartmentId;
+            //profile.PersDepartmentId = _searchEntity.SearchPersDepartment(list[3, 36]).DepId;
+            profile.Year = int.Parse(list[22, 39]);
 
-            addEduPlanResponse.Code = list[3, 26];
+            var code = list[3, 26];
 
-            addEduPlanResponse.Profile.CaseSDepartment = _searchEntity.SearchCaseSDepartment(list[3, 28].Split(addEduPlanResponse.Code)[^1].Trim(), list[3, 26]);
-
+            profile.CaseSDepartment ??= _searchEntity.SearchCaseSDepartment(list[3, 28].Split(code)[^1].Trim());
             if (list[7, 24].Split(" ")[^1] == "Специалистов")
             {
-                addEduPlanResponse.Profile.LevelEdu = _searchEntity.SearchLevelEdu("специалитет");
+                profile.LevelEdu = _searchEntity.SearchLevelEdu("специалитет");
             }
             if (list[7, 24].Split(" ")[^1] == "магистратуры")
             {
-                addEduPlanResponse.Profile.LevelEdu = _searchEntity.SearchLevelEdu("магистратура");
+                profile.LevelEdu = _searchEntity.SearchLevelEdu("магистратура");
             }
             else
             {
                 var tempLevelEdu = list[7, 24].Split(" ")[^1];
-                addEduPlanResponse.Profile.LevelEdu = _searchEntity.SearchLevelEdu(tempLevelEdu.Remove(tempLevelEdu.Length - 1));
+                profile.LevelEdu = _searchEntity.SearchLevelEdu(tempLevelEdu.Remove(tempLevelEdu.Length - 1));
             }
 
-            if (addEduPlanResponse.Profile.CaseSDepartment == null)
+            if (profile.CaseSDepartmentId == null)
             {
-                string v = list[3, 28].Split(addEduPlanResponse.Code)[^1].Trim() + $" ({addEduPlanResponse.Profile.LevelEdu.Name})";
-                addEduPlanResponse.Profile.CaseSDepartment = _searchEntity.SearchCaseSDepartment(v, list[3, 26]);
+                string v = list[3, 28].Split(code)[^1].Trim() + $" ({profile.LevelEdu.Name})";
+                profile.CaseSDepartment = _searchEntity.SearchCaseSDepartment(v);
             }
         }
 
-        private void PlanSvodPage(Excel.Workbook ObjWorkBook, AddEduPlanResponse addEduPlanResponse)
+        private void PlanSvodPage(Excel.Workbook ObjWorkBook, Profile profile)
         {
             var ObjWorkSheet = (Excel.Worksheet)ObjWorkBook.Sheets[3]; //получить 3 лист
             var lastCell = ObjWorkSheet.Cells.SpecialCells(Excel.XlCellType.xlCellTypeLastCell);//1 ячейку
@@ -94,7 +106,7 @@ namespace EorDSU.Service
                     list[i, j] = ObjWorkSheet.Cells[j + 1, i + 1].Text.ToString();//считываем текст в строку
                 }
 
-            addEduPlanResponse.Disciplines = new();
+            profile.Disciplines = new();
 
             int mandatoryDisciplinesCount = 0;
             int unmandatoryDisciplinesCount = 0;
@@ -147,9 +159,9 @@ namespace EorDSU.Service
                     {
                         DisciplineName = list[2, i],
                         StatusDiscipline = _searchEntity.SearchStatusDiscipline("Обязательная часть "),
-                        Profile = addEduPlanResponse.Profile,
+                        ProfileId = profile.Id,
                     };
-                    addEduPlanResponse.Disciplines.Add(discipline);
+                    profile.Disciplines.Add(discipline);
                 }
             }
             for (int i = mandatoryDisciplinesCount + 1; i < unmandatoryDisciplinesCount || (unmandatoryDisciplinesCount == 0 && i < complexModulesCount); i++)
@@ -166,9 +178,9 @@ namespace EorDSU.Service
                     {
                         DisciplineName = list[2, i],
                         StatusDiscipline = _searchEntity.SearchStatusDiscipline("Часть, формируемая участниками образовательных отношений "),
-                        Profile = addEduPlanResponse.Profile,
+                        ProfileId = profile.Id,
                     };
-                    addEduPlanResponse.Disciplines.Add(discipline);
+                    profile.Disciplines.Add(discipline);
                 }
             }
 
@@ -180,9 +192,9 @@ namespace EorDSU.Service
                     {
                         DisciplineName = list[2, i],
                         StatusDiscipline = _searchEntity.SearchStatusDiscipline("К.М.Комплексные модули "),
-                        Profile = addEduPlanResponse.Profile,
+                        ProfileId = profile.Id,
                     };
-                    addEduPlanResponse.Disciplines.Add(discipline);
+                    profile.Disciplines.Add(discipline);
                 }
             }
             for (int i = complexModulesCount + 2; i < pacticMandatoryCount; i++)
@@ -191,9 +203,9 @@ namespace EorDSU.Service
                 {
                     DisciplineName = list[2, i],
                     StatusDiscipline = _searchEntity.SearchStatusDiscipline("Блок 2.Практика. Обязательная часть "),
-                    Profile = addEduPlanResponse.Profile,
+                    ProfileId = profile.Id,
                 };
-                addEduPlanResponse.Disciplines.Add(discipline);
+                profile.Disciplines.Add(discipline);
             }
 
             for (int i = pacticMandatoryCount + 1; i < pacticUnmandatoryCount; i++)
@@ -202,9 +214,9 @@ namespace EorDSU.Service
                 {
                     DisciplineName = list[2, i],
                     StatusDiscipline = _searchEntity.SearchStatusDiscipline("Блок 2.Практика. Часть, формируемая участниками образовательных отношений "),
-                    Profile = addEduPlanResponse.Profile,
+                    ProfileId = profile.Id,
                 };
-                addEduPlanResponse.Disciplines.Add(discipline);
+                profile.Disciplines.Add(discipline);
             }
 
             for (int i = pacticUnmandatoryCount + 2; i < giaCount; i++)
@@ -213,9 +225,9 @@ namespace EorDSU.Service
                 {
                     DisciplineName = list[2, i],
                     StatusDiscipline = _searchEntity.SearchStatusDiscipline("Блок 3.Государственная итоговая аттестация. "),
-                    Profile = addEduPlanResponse.Profile,
+                    ProfileId = profile.Id,
                 };
-                addEduPlanResponse.Disciplines.Add(discipline);
+                profile.Disciplines.Add(discipline);
             }
 
             for (int i = giaCount + 2; i < list.GetLength(1); i++)
@@ -224,9 +236,9 @@ namespace EorDSU.Service
                 {
                     DisciplineName = list[2, i],
                     StatusDiscipline = _searchEntity.SearchStatusDiscipline($"ФТД.Факультативы. {list[0, 49]}".Trim()),
-                    Profile = addEduPlanResponse.Profile,
+                    ProfileId = profile.Id,
                 };
-                addEduPlanResponse.Disciplines.Add(discipline);
+                profile.Disciplines.Add(discipline);
             }
         }
     }

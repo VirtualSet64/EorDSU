@@ -7,7 +7,7 @@ namespace EorDSU.Interface
         public LevelEdu SearchLevelEdu(string text);
         public CaseCEdukind SearchEdukind(string text);
         public PersDepartment SearchPersDepartment(string text);
-        public CaseSDepartment SearchCaseSDepartment(string text, string code);
+        public CaseSDepartment SearchCaseSDepartment(string text);
         public StatusDiscipline SearchStatusDiscipline(string text);
     }
 }

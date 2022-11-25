@@ -12,7 +12,6 @@
         {
             Name = name;
         }
-
         public LevelEdu()
         {
         }

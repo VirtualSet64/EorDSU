@@ -51,7 +51,7 @@ namespace EorDSU.Controllers
             {
                 uploadedFile.CopyToAsync(fileStream);
             }
-            
+
             FileRPD file = new() { Name = uploadedFile.FileName, Year = year };
             discipline.FileRPD = file;
             _context.FileRPDs.Add(file);

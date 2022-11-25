@@ -20,29 +20,24 @@ namespace EorDSU.Controllers
     public class EorController : Controller
     {
         private readonly ApplicationContext _context;
-        private readonly DSUContext _DSUContextContext;
         private readonly AuthOptions _authOptions;
-        private readonly IActiveData _activeData;
 
-        public EorController(ApplicationContext context, DSUContext DSUContextContext, AuthOptions authOptions, IActiveData activeData)
+        public EorController(ApplicationContext context, AuthOptions authOptions)
         {
             _context = context;
             _authOptions = authOptions;
-            _DSUContextContext = DSUContextContext;
-            _activeData = activeData;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetData()
         {
-            DataResponseForAll dataResponseForAll = new()
+            DataResponseForSvedenOOPDGU dataResponseForSvedenOOPDGU = new()
             {
-                PersDivision = _activeData.GetPersDivisions(),
-                CaseSDepartments = await _DSUContextContext.CaseSDepartments.ToListAsync(),
-                CaseCEdukinds = await _DSUContextContext.CaseCEdukinds.ToListAsync(),
-                LevelEdus = await _context.LevelEdues.ToListAsync(),
-                Profiles = await _context.Profiles.ToListAsync(),
-                FileModels = await _context.FileModels.ToListAsync(),
+                Profiles = await _context.Profiles
+                        .Include(x => x.LevelEdu)
+                        .Include(x => x.CaseSDepartment)
+                        .Include(x => x.PersDepartment)
+                        .ToListAsync(),
                 SrokDeystvGosAccred = "24.04.2025",
             };
             //dataResponseForAll.PersDivision = _activeData.GetPersDivisions();
@@ -52,12 +47,8 @@ namespace EorDSU.Controllers
             //dataResponseForAll.Profiles = await _context.Profiles.ToListAsync();
             //dataResponseForAll.FileModels = await _context.FileModels.ToListAsync();
             //dataResponseForAll.SrokDeystvGosAccred = "24.04.2025";
-            foreach (var item in dataResponseForAll.Profiles)
-            {
-                dataResponseForAll.Years.Add((int)item.Year);
-            }
 
-            return Ok(dataResponseForAll);
+            return Ok(dataResponseForSvedenOOPDGU);
         }
 
         /// <summary>
@@ -85,14 +76,13 @@ namespace EorDSU.Controllers
             };
 
             ////// Переделать
-            PersDivision faculty = _activeData.GetPersDivisions().FirstOrDefault(x => x.DivId == requestUser.PersDepartment.DivId);
-            DataResponseForMethodist dataResponseForMethodist = new()
+            DataResponseForSvedenOOPDGU dataResponseForSvedenOOPDGU = new()
             {
-                CaseSDepartments = await _DSUContextContext.CaseSDepartments.Where(x => x.FacId == faculty.DivId).ToListAsync(),
-                CaseCEdukinds = await _DSUContextContext.CaseCEdukinds.ToListAsync(),
-                LevelEdus = await _context.LevelEdues.ToListAsync(),
-                Profiles = await _context.Profiles.ToListAsync(),
-                FileModels = await _context.FileModels.ToListAsync(),
+                Profiles = await _context.Profiles
+                            .Include(x => x.LevelEdu)
+                            .Include(x => x.CaseSDepartment)
+                            .Include(x => x.PersDepartment)
+                            .ToListAsync(),
                 SrokDeystvGosAccred = "24.04.2025",
             };
             ///////

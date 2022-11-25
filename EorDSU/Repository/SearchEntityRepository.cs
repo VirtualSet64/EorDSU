@@ -23,31 +23,27 @@ namespace EorDSU.Repository
 
         public PersDepartment SearchPersDepartment(string text)
         {
-            return _basePersonContext.PersDepartments.FirstOrDefault(c => c.DepName == text);
+            var sd = _basePersonContext.PersDepartments.FirstOrDefault(c => c.DepName == text);
+            return sd;
         }
 
-        public CaseSDepartment SearchCaseSDepartment(string text, string code)
+        public CaseSDepartment SearchCaseSDepartment(string text)
         {
-            return _dsuContext.CaseSDepartments.FirstOrDefault(c => c.DeptName == text && c.Code == code);
+            var sd = _dsuContext.CaseSDepartments.FirstOrDefault(c => c.DeptName == text);
+            return sd;
         }
 
         public LevelEdu SearchLevelEdu(string text)
         {
             var levelEdu = _applicationContext.LevelEdues.FirstOrDefault(c => c.Name == text);
-            if (levelEdu == null)
-            {
-                levelEdu = new LevelEdu(text);
-            }
+            levelEdu ??= new LevelEdu(text);
             return levelEdu;
         }
 
         public StatusDiscipline SearchStatusDiscipline(string text)
         {
             var statusDiscipline = _applicationContext.StatusDisciplines.FirstOrDefault(c => c.Name == text);
-            if (statusDiscipline == null)
-            {
-                statusDiscipline = new StatusDiscipline(text);
-            }
+            statusDiscipline ??= new StatusDiscipline(text);
             return statusDiscipline;
         }
     }

@@ -13,6 +13,6 @@ namespace EorDSU.Models
         [PasswordPropertyText]
         public string Password { get; set; } = null!;
         public int? PersDepartmentId { get; set; }
-        public PersDepartment PersDepartment { get; set; } = null!;
+        public virtual PersDepartment PersDepartment { get; set; } = null!;
     }
 }
