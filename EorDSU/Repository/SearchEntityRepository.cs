@@ -23,8 +23,7 @@ namespace EorDSU.Repository
 
         public PersDepartment SearchPersDepartment(string text)
         {
-            var sd = _basePersonContext.PersDepartments.FirstOrDefault(c => c.DepName == text);
-            return sd;
+            return _basePersonContext.PersDepartments.FirstOrDefault(c => c.DepName == text);
         }
 
         public CaseSDepartment SearchCaseSDepartment(string text)
@@ -36,14 +35,26 @@ namespace EorDSU.Repository
         public LevelEdu SearchLevelEdu(string text)
         {
             var levelEdu = _applicationContext.LevelEdues.FirstOrDefault(c => c.Name == text);
-            levelEdu ??= new LevelEdu(text);
+            if (levelEdu == null)
+            {
+                levelEdu = new LevelEdu(text);
+                _applicationContext.LevelEdues.Add(levelEdu);
+                _applicationContext.SaveChanges();
+            }
+
             return levelEdu;
         }
 
         public StatusDiscipline SearchStatusDiscipline(string text)
         {
             var statusDiscipline = _applicationContext.StatusDisciplines.FirstOrDefault(c => c.Name == text);
-            statusDiscipline ??= new StatusDiscipline(text);
+            if (statusDiscipline == null)
+            {
+                statusDiscipline = new StatusDiscipline(text);
+                _applicationContext.StatusDisciplines.Add(statusDiscipline);
+                _applicationContext.SaveChanges();
+            }
+
             return statusDiscipline;
         }
     }

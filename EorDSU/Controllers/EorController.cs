@@ -20,35 +20,40 @@ namespace EorDSU.Controllers
     public class EorController : Controller
     {
         private readonly ApplicationContext _context;
+        private readonly DSUContext _dSUContext;
+        private readonly IActiveData _activeData;
         private readonly AuthOptions _authOptions;
+        private readonly IConfiguration Configuration;
 
-        public EorController(ApplicationContext context, AuthOptions authOptions)
+        public EorController(ApplicationContext context, AuthOptions authOptions, IActiveData activeData, DSUContext dSUContext, IConfiguration configuration)
         {
             _context = context;
             _authOptions = authOptions;
+            _activeData = activeData;
+            _dSUContext = dSUContext;
+            Configuration = configuration;
         }
 
+        /// <summary>
+        /// Получение всеъ данных 
+        /// </summary>
+        /// <returns></returns>
+        [Route("GetData")]
         [HttpGet]
         public async Task<IActionResult> GetData()
         {
-            DataResponseForSvedenOOPDGU dataResponseForSvedenOOPDGU = new()
+            List<DataResponseForSvedenOOPDGU> dataResponseForSvedenOOPDGUs = new();
+            foreach (var item in await _activeData.GetProfiles().ToListAsync())
             {
-                Profiles = await _context.Profiles
-                        .Include(x => x.LevelEdu)
-                        .Include(x => x.CaseSDepartment)
-                        .Include(x => x.PersDepartment)
-                        .ToListAsync(),
-                SrokDeystvGosAccred = "24.04.2025",
-            };
-            //dataResponseForAll.PersDivision = _activeData.GetPersDivisions();
-            //dataResponseForAll.CaseSDepartments = await _DSUContextContext.CaseSDepartments.ToListAsync();
-            //dataResponseForAll.CaseCEdukinds = await _DSUContextContext.CaseCEdukinds.ToListAsync();
-            //dataResponseForAll.LevelEdus = await _context.LevelEdues.ToListAsync();
-            //dataResponseForAll.Profiles = await _context.Profiles.ToListAsync();
-            //dataResponseForAll.FileModels = await _context.FileModels.ToListAsync();
-            //dataResponseForAll.SrokDeystvGosAccred = "24.04.2025";
-
-            return Ok(dataResponseForSvedenOOPDGU);
+                dataResponseForSvedenOOPDGUs.Add(new()
+                {
+                    Profiles = item,
+                    CaseCEdukind = _dSUContext.CaseCEdukinds.FirstOrDefault(x => x.EdukindId == item.CaseCEdukindId),                
+                    CaseSDepartment = _dSUContext.CaseSDepartments.FirstOrDefault(x => x.DepartmentId == item.CaseSDepartmentId),                
+                    SrokDeystvGosAccred = Configuration["SrokDeystvGosAccred"],                
+                });
+            }
+            return Ok(dataResponseForSvedenOOPDGUs);
         }
 
         /// <summary>
@@ -56,6 +61,7 @@ namespace EorDSU.Controllers
         /// </summary>
         /// <param name="requestUser"></param>
         /// <returns></returns>
+        [Route("Login")]
         [HttpPost]
         public async Task<IActionResult> Login(User requestUser)
         {
@@ -75,18 +81,19 @@ namespace EorDSU.Controllers
                 username = user.UserName
             };
 
-            ////// Переделать
-            DataResponseForSvedenOOPDGU dataResponseForSvedenOOPDGU = new()
+            var profiles = await _activeData.GetProfiles().Where(x => x.PersDepartmentId == user.PersDepartmentId).ToListAsync();
+            List<DataResponseForSvedenOOPDGU> dataResponseForSvedenOOPDGUs = new();
+            foreach (var item in profiles)
             {
-                Profiles = await _context.Profiles
-                            .Include(x => x.LevelEdu)
-                            .Include(x => x.CaseSDepartment)
-                            .Include(x => x.PersDepartment)
-                            .ToListAsync(),
-                SrokDeystvGosAccred = "24.04.2025",
-            };
-            ///////
-            return Ok(response);
+                dataResponseForSvedenOOPDGUs.Add(new()
+                {
+                    Profiles = item,
+                    CaseCEdukind = _dSUContext.CaseCEdukinds.FirstOrDefault(x => x.EdukindId == item.CaseCEdukindId),
+                    CaseSDepartment = _dSUContext.CaseSDepartments.FirstOrDefault(x => x.DepartmentId == item.CaseSDepartmentId),
+                    SrokDeystvGosAccred = Configuration["SrokDeystvGosAccred"],
+                });
+            }
+            return Ok(dataResponseForSvedenOOPDGUs);
         }
     }
 }

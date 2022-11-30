@@ -1,17 +1,21 @@
-﻿namespace EorDSU.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace EorDSU.Models
 {
     /// <summary>
     /// Дисциплина
     /// </summary>
     public class Discipline
     {
+        [Key]
         public int Id { get; set; }
-        public string? DisciplineName { get; set; }
+        public string? DisciplineName { get; set; }        
         public int? ProfileId { get; set; }
-        public virtual Profile? Profile { get; set; }
+        public Profile? Profile { get; set; } = new Profile();
         public int? StatusDisciplineId { get; set; }
-        public virtual StatusDiscipline? StatusDiscipline { get; set; }
+        public StatusDiscipline? StatusDiscipline { get; set; } = new StatusDiscipline();
         public int? FileRPDId { get; set; }
-        public virtual FileRPD? FileRPD { get; set; }
+        public FileRPD? FileRPD { get; set; }
+        public bool IsDeleted { get; set; }
     }
 }

@@ -1,7 +1,10 @@
 ﻿using EorDSU.DBService;
+using EorDSU.Interface;
 using EorDSU.Models;
+using EorDSU.Repository;
 using EorDSU.Service;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EorDSU.Controllers
 {
@@ -9,24 +12,27 @@ namespace EorDSU.Controllers
     [Route("[controller]")]
     public class AdminController : Controller
     {
-        private readonly ApplicationContext _context;
+        private readonly IActiveData _activeData;
+        private readonly ApplicationContext _applicationContext;
 
-        public AdminController(ApplicationContext context)
+        public AdminController(IActiveData activeData, ApplicationContext applicationContext)
         {
-            _context = context;
+            _activeData = activeData;
+            _applicationContext = applicationContext;
         }
 
+        [Route("GetFileModels")]
         [HttpGet]
-        public List<FileModel> GetFileModels()
+        public async Task<List<FileModel>> GetFileModelsAsync()
         {
-            return _context.FileModels.ToList();
+            return await _activeData.GetFileModels().ToListAsync();
         }
 
         [Route("GetFileRPDs")]
         [HttpGet]
-        public List<FileRPD> GetFileRPDs()
+        public async Task<List<FileRPD>> GetFileRPDsAsync()
         {
-            return _context.FileRPDs.ToList();
+            return await _activeData.GetFileRPDs().ToListAsync();
         }
 
         /// <summary>
@@ -34,15 +40,16 @@ namespace EorDSU.Controllers
         /// </summary>
         /// <param name="profile"></param>
         /// <returns></returns>
+        [Route("AddFinalFormFile")]
         [HttpPost]
         public IActionResult AddFinalFormFile(Profile profile)
         {
             if (profile != null && profile != null && profile.LevelEdu != null && profile.Disciplines != null)
             {
-                _context.LevelEdues.Add(profile.LevelEdu);
-                _context.Profiles.Add(profile);
-                _context.Disciplines.AddRange(profile.Disciplines);
-                _context.SaveChanges();
+                _applicationContext.LevelEdues.Add(profile.LevelEdu);
+                _applicationContext.Profiles.Add(profile);
+                _applicationContext.Disciplines.AddRange(profile.Disciplines);
+                _applicationContext.SaveChanges();
                 return Ok();
             }
             else

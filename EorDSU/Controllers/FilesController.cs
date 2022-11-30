@@ -26,100 +26,86 @@ namespace EorDSU.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Добавление файлов
         /// </summary>
-        /// <param name="uploadedFile"></param>
-        /// <param name="fileTypeId"></param>
-        /// <param name="profileId"></param>
+        /// <param name="uploadedFile">Файл</param>
+        /// <param name="fileTypeId">Тип Файла</param>
+        /// <param name="profileId">Профиль</param>
         /// <param name="year"></param>
         /// <returns></returns>
+        [Route("AddFile")]
         [HttpPost]
-        public async Task<ActionResult<List<Profile>>> AddFile(IFormFile uploadedFile, int fileTypeId, int year = 0)
+        public async Task<IActionResult> AddFile(IFormFile uploadedFile, int fileTypeId = 2, int profileId = 0)
         {
-            if (uploadedFile != null)
+            if (uploadedFile == null)
+                return BadRequest();
+
+            // путь к папке Files
+            string path = Configuration["FileFolder"] + "/" + uploadedFile.FileName;
+            // сохраняем файл в папку Files в каталоге wwwroot
+            using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
             {
-                if (year == 0)
-                {
-                    year = DateTime.Now.Year;
-                }
-
-                // путь к папке Files
-                string path = Configuration["FileFolder"] + "/" + uploadedFile.FileName;
-                // сохраняем файл в папку Files в каталоге wwwroot
-                using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
-                {
-                    await uploadedFile.CopyToAsync(fileStream);
-                }
-
-                if (fileTypeId == (int)FileType.EduPlan && (Path.GetExtension(path) == ".xls" || Path.GetExtension(path) == ".xlsx"))
-                {
-                    return Ok(_excelParsingService.ParsingService(path));
-                }
-                //else
-                //{
-                //    FileModel file = new() { Name = uploadedFile.FileName, ProfileId = profileId, Year = year, Type = (FileType)fileTypeId };
-                //    _context.FileModels.Add(file);
-                //    _context.SaveChanges();
-                //    return Ok(file);
-                //}
+                await uploadedFile.CopyToAsync(fileStream);
             }
-            return BadRequest();
+
+            if (fileTypeId == (int)FileType.EduPlan && (Path.GetExtension(path) == ".xls" || Path.GetExtension(path) == ".xlsx"))
+                return Ok(_excelParsingService.ParsingService(path));
+
+            FileModel file = new() { Name = uploadedFile.FileName, ProfileId = profileId, Type = (FileType)fileTypeId };
+
+            _context.FileModels.Add(file);
+            _context.SaveChanges();
+
+            return Ok(file);
         }
-                
+
         /// <summary>
         /// Изменение файла
         /// </summary>
-        /// <param name="uploadedFile">Обьект файла</param>
-        /// <param name="fileType">Тип файла</param>
-        /// <param name="year">Год обучения</param>
+        /// <param name="uploadedFile"></param>
+        /// <param name="fileId"></param>
+        /// <param name="profileId"></param>
+        /// <param name="year"></param>
         /// <returns></returns>
+        [Route("EditFile")]
         [HttpPut]
-        public async Task<IActionResult> EditFile(IFormFile uploadedFile, int fileId, int profileId = -1, int year = 0)
+        public async Task<IActionResult> EditFile(IFormFile uploadedFile, int fileId, int profileId = 0)
         {
-            if (uploadedFile != null)
-            {
-                if (profileId > 0)
-                {
-                    var filedb = _context.FileModels.FirstOrDefault(c => c.Id == fileId);
-                    if (filedb != null && year == 0)
-                    {
-                        filedb.Year = DateTime.Now.Year;
-                    }
-                    // путь к папке Files
-                    string path = Configuration["FileFolder"] + uploadedFile.FileName;
-                    // сохраняем файл в папку Files в каталоге wwwroot
-                    using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
-                    {
-                        await uploadedFile.CopyToAsync(fileStream);
-                    }
+            if (uploadedFile == null && profileId <= 0)
+                return BadRequest();
 
-                    FileModel file = new() { Name = uploadedFile.FileName, ProfileId = profileId, Year = year };
-                    _context.FileModels.Update(file);
-                    _context.SaveChanges();
-                    return Ok();
-                }
+            var filedb = _context.FileModels.FirstOrDefault(c => c.Id == fileId);
+            // путь к папке Files
+            string path = Configuration["FileFolder"] + uploadedFile.FileName;
+            // сохраняем файл в папку Files в каталоге wwwroot
+            using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
+            {
+                await uploadedFile.CopyToAsync(fileStream);
             }
-            return BadRequest();
+
+            FileModel file = new() { Name = uploadedFile.FileName, ProfileId = profileId };
+            _context.FileModels.Update(file);
+            _context.SaveChanges();
+            return Ok();
         }
 
         /// <summary>
-        /// 
+        /// Удаление файла
         /// </summary>
         /// <param name="fileId"></param>
         /// <returns></returns>
+        [Route("DeleteFile")]
         [HttpDelete]
         public IActionResult DeleteFile(int fileId)
         {
-            FileModel file = _context.FileModels.FirstOrDefault(x => x.Id == fileId);
+            FileModel? file = _context.FileModels.FirstOrDefault(x => x.Id == fileId);
 
-            if (file != null)
-            {
-                _context.FileModels.Remove(file);
-                _context.SaveChanges();
-                return Ok();
-            }
-            else
+            if (file == null)
                 return BadRequest();
+
+            _context.FileModels.Remove(file);
+            _context.SaveChanges();
+            return Ok();
         }
     }
 }

@@ -10,7 +10,6 @@ namespace EorDSU.Models
     /// </summary>
     public class CaseSDepartment
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Key]
         public int DepartmentId { get; set; }
         public int FacId { get; set; }

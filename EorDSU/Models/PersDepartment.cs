@@ -10,7 +10,6 @@ namespace EorDSU.Models
     /// </summary>
     public class PersDepartment
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.None)]
         [Key]
         public int DepId { get; set; }
         public int? DivId { get; set; }
