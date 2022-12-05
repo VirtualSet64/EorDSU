@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EorDSU.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "admin")]
     [ApiController]
     [Route("[controller]")]
     public class UserController : Controller
     {
-        UserManager<User> _userManager;
+        private readonly UserManager<User> _userManager;
 
         public UserController(UserManager<User> userManager)
         {
@@ -41,9 +41,9 @@ namespace EorDSU.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateUser(RegisterViewModel model)
         {
-            if (!ModelState.IsValid)
+            if (ModelState.IsValid)
             {
-                User user = new User { UserName = model.Login };
+                User user = new() { UserName = model.Login };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

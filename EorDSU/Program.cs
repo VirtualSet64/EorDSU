@@ -30,7 +30,7 @@ builder.Services.AddDbContext<BASEPERSONMDFContext>(options =>
 builder.Services.AddDbContext<DSUContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BaseDekanat"), providerOptions => providerOptions.EnableRetryOnFailure()));
 builder.Services.AddDbContext<ApplicationContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), providerOptions => providerOptions.EnableRetryOnFailure()));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("EOR"), providerOptions => providerOptions.EnableRetryOnFailure()));
 
 builder.Services.AddIdentity<EorDSU.Models.User, IdentityRole>(
                opts =>
@@ -44,13 +44,10 @@ builder.Services.AddIdentity<EorDSU.Models.User, IdentityRole>(
                .AddEntityFrameworkStores<ApplicationContext>();
 
 builder.Services.AddTransient<AccountService>();
+builder.Services.AddScoped<ExcelParsingService>();
 
 builder.Services.AddScoped<IActiveData, ActiveDataRepository>();
 builder.Services.AddScoped<ISearchEntity, SearchEntityRepository>();
-
-
-
-builder.Services.AddScoped<ExcelParsingService>();
 
 builder.WebHost.ConfigureServices(configure => SentrySdk.Init(o =>
 {

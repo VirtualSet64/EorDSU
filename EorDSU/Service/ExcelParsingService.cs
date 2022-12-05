@@ -110,7 +110,7 @@ namespace EorDSU.Service
                     }
                 }
 
-                profile.PersDepartmentId = _searchEntity.SearchPersDepartment(list[3, 36])?.DepId;
+                profile.PersDepartmentId = _searchEntity.SearchPersDepartment("Кафедра " + list[3, 36].ToLower())?.DepId;
                 profile.Year = int.Parse(list[22, 39]);
             }
             catch (Exception ex)

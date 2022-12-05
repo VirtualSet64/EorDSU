@@ -11,7 +11,7 @@ using Sentry;
 
 namespace EorDSU.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "admin")]
     [ApiController]
     [Route("[controller]")]
     public class AdminController : Controller
@@ -43,27 +43,6 @@ namespace EorDSU.Controllers
             return await _activeData.GetFileRPDs().ToListAsync();
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="profile"></param>
-        /// <returns></returns>
-        [Route("AddFinalFormFile")]
-        [HttpPost]
-        public IActionResult AddFinalFormFile(Profile profile)
-        {
-            if (profile != null && profile != null && profile.LevelEdu != null && profile.Disciplines != null)
-            {
-                _applicationContext.LevelEdues.Add(profile.LevelEdu);
-                _applicationContext.Profiles.Add(profile);
-                _applicationContext.Disciplines.AddRange(profile.Disciplines);
-                _applicationContext.SaveChanges();
-                return Ok();
-            }
-            else
-                return BadRequest();
-        }
-
         [Route("GetDataAsync")]
         [HttpGet]
         public async Task<IActionResult> GetDataAsync(int persDepartmentId)
@@ -81,6 +60,26 @@ namespace EorDSU.Controllers
                 });
             }
             return Ok(dataResponseForSvedenOOPDGUs);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="profile"></param>
+        /// <returns></returns>
+        [Route("AddFinalFormFile")]
+        [HttpPost]
+        public IActionResult AddFinalFormFile(Profile profile)
+        {
+            if (profile != null && profile.LevelEdu != null && profile.Disciplines != null)
+            {
+                _applicationContext.LevelEdues.Add(profile.LevelEdu);
+                _applicationContext.Profiles.Add(profile);
+                _applicationContext.Disciplines.AddRange(profile.Disciplines);
+                _applicationContext.SaveChanges();
+                return Ok();
+            }
+            return BadRequest();
         }
     }
 }

@@ -11,8 +11,8 @@ namespace EorDSU.Controllers
     [Route("[controller]")]
     public class RoleController : Controller
     {
-        RoleManager<IdentityRole> _roleManager;
-        UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly UserManager<User> _userManager;
         public RoleController(RoleManager<IdentityRole> roleManager, UserManager<User> userManager)
         {
             _roleManager = roleManager;
@@ -24,6 +24,13 @@ namespace EorDSU.Controllers
         public IActionResult GetRoles()
         {
             return Ok(_roleManager.Roles.ToList());
+        }
+
+        [Route("GetUsers")]
+        [HttpGet]
+        public IActionResult UserList()
+        {
+            return Ok(_userManager.Users.ToList());
         }
 
         [Route("CreateRole")]
@@ -39,25 +46,6 @@ namespace EorDSU.Controllers
                 }
             }
             return BadRequest();
-        }
-
-        [Route("DeleteRole")]
-        [HttpDelete]
-        public async Task<IActionResult> DeleteRole(string id)
-        {
-            IdentityRole role = await _roleManager.FindByIdAsync(id);
-            if (role != null)
-            {
-                await _roleManager.DeleteAsync(role);
-            }
-            return Ok("Index");
-        }
-
-        [Route("GetUsers")]
-        [HttpGet]
-        public IActionResult UserList()
-        {
-            return Ok(_userManager.Users.ToList());
         }
 
         [Route("EditRole")]
@@ -83,8 +71,19 @@ namespace EorDSU.Controllers
 
                 return Ok();
             }
-
             return NotFound();
         }
+
+        [Route("DeleteRole")]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteRole(string id)
+        {
+            IdentityRole role = await _roleManager.FindByIdAsync(id);
+            if (role != null)
+            {
+                await _roleManager.DeleteAsync(role);
+            }
+            return Ok("Index");
+        }        
     }
 }

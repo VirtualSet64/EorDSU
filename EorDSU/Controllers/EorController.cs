@@ -40,15 +40,59 @@ namespace EorDSU.Controllers
             List<DataResponseForSvedenOOPDGU> dataResponseForSvedenOOPDGUs = new();
             foreach (var item in await _activeData.GetProfiles().ToListAsync())
             {
-                dataResponseForSvedenOOPDGUs.Add(new()
-                {
-                    Profiles = item,
-                    CaseCEdukind = _dSUContext.CaseCEdukinds.FirstOrDefault(x => x.EdukindId == item.CaseCEdukindId),                
-                    CaseSDepartment = _dSUContext.CaseSDepartments.FirstOrDefault(x => x.DepartmentId == item.CaseSDepartmentId),                
-                    SrokDeystvGosAccred = Configuration["SrokDeystvGosAccred"],                
-                });
+                FillingData(dataResponseForSvedenOOPDGUs, item);
             }
             return Ok(dataResponseForSvedenOOPDGUs);
+        }
+
+        /// <summary>
+        /// Получение всех данных 
+        /// </summary>
+        /// <returns></returns>
+        [Route("GetDataById")]
+        [HttpGet]
+        public async Task<IActionResult> GetData(int cafedraId)
+        {
+            List<DataResponseForSvedenOOPDGU> dataResponseForSvedenOOPDGUs = new();
+
+            foreach (var item in await _activeData.GetProfiles().Where(x => x.PersDepartmentId == cafedraId).ToListAsync())
+            {
+                FillingData(dataResponseForSvedenOOPDGUs, item);
+            }
+            return Ok(dataResponseForSvedenOOPDGUs);
+        }
+
+        /// <summary>
+        /// Получение всех данных
+        /// </summary>
+        /// <returns></returns>
+        [Route("GetDataFacultyById")]
+        [HttpGet]
+        public async Task<IActionResult> GetDataFacultyById(int facultyId)
+        {
+            List<DataResponseForSvedenOOPDGU> dataResponseForSvedenOOPDGUs = new();
+
+            var persDepartments = _activeData.GetPersDepartments().Where(x => x.DivId == facultyId).ToList();
+
+            foreach (var persDepartment in persDepartments)
+            {
+                foreach (var item in await _activeData.GetProfiles().Where(x => x.PersDepartmentId == persDepartment.DepId).ToListAsync())
+                {
+                    FillingData(dataResponseForSvedenOOPDGUs, item);
+                }
+            }
+            return Ok(dataResponseForSvedenOOPDGUs);
+        }
+
+        private void FillingData(List<DataResponseForSvedenOOPDGU> dataResponseForSvedenOOPDGUs, Profile item)
+        {
+            dataResponseForSvedenOOPDGUs.Add(new()
+            {
+                Profiles = item,
+                CaseCEdukind = _dSUContext.CaseCEdukinds.FirstOrDefault(x => x.EdukindId == item.CaseCEdukindId),
+                CaseSDepartment = _dSUContext.CaseSDepartments.FirstOrDefault(x => x.DepartmentId == item.CaseSDepartmentId),
+                SrokDeystvGosAccred = Configuration["SrokDeystvGosAccred"],
+            });
         }
     }
 }

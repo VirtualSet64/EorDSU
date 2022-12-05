@@ -19,24 +19,33 @@ namespace EorDSU.Controllers
             _signInManager = signInManager;
         }
 
-        [Route("Register")]
-        [HttpPost]
-        public async Task<IActionResult> Register(RegisterViewModel model)
+        [Route("Logout")]
+        [HttpGet]
+        public async Task<IActionResult> Logout()
         {
-            if (ModelState.IsValid)
-            {
-                User user = new() { UserName = model.Login, PersDepartmentId = model.PersDepartmentId };
-                // добавляем пользователя
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    // установка куки
-                    await _signInManager.SignInAsync(user, false);
-                    return Ok();
-                }
-            }
-            return BadRequest();
+            // удаляем аутентификационные куки
+            await _signInManager.SignOutAsync();
+            return Ok();
         }
+
+        //[Route("Register")]
+        //[HttpPost]
+        //public async Task<IActionResult> Register(RegisterViewModel model)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        User user = new() { UserName = model.Login, PersDepartmentId = model.PersDepartmentId };
+        //        // добавляем пользователя
+        //        var result = await _userManager.CreateAsync(user, model.Password);
+        //        if (result.Succeeded)
+        //        {
+        //            // установка куки
+        //            await _signInManager.SignInAsync(user, false);
+        //            return Ok();
+        //        }
+        //    }
+        //    return BadRequest();
+        //}
 
         [Route("Login")]
         [HttpPost]
@@ -60,15 +69,6 @@ namespace EorDSU.Controllers
                 }
             }
             return BadRequest();
-        }
-
-        [Route("Logout")]
-        [HttpPost]
-        public async Task<IActionResult> Logout()
-        {
-            // удаляем аутентификационные куки
-            await _signInManager.SignOutAsync();
-            return Ok();
         }
     }
 }
