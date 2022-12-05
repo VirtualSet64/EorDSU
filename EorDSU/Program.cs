@@ -3,19 +3,14 @@ using EorDSU.Interface;
 using EorDSU.Models;
 using EorDSU.Repository;
 using EorDSU.Service;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OAuth;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using Sentry;
 using Microsoft.AspNetCore.Authorization;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 using System.Text;
-using EorDSU.ConfigInfo;
+using Microsoft.Office.Interop.Excel;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,10 +32,24 @@ builder.Services.AddDbContext<DSUContext>(options =>
 builder.Services.AddDbContext<ApplicationContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"), providerOptions => providerOptions.EnableRetryOnFailure()));
 
+builder.Services.AddIdentity<EorDSU.Models.User, IdentityRole>(
+               opts =>
+               {
+                   opts.Password.RequiredLength = 2;  
+                   opts.Password.RequireNonAlphanumeric = false;  
+                   opts.Password.RequireLowercase = false; 
+                   opts.Password.RequireUppercase = false;
+                   opts.Password.RequireDigit = false; 
+               })
+               .AddEntityFrameworkStores<ApplicationContext>();
+
+builder.Services.AddTransient<AccountService>();
+
 builder.Services.AddScoped<IActiveData, ActiveDataRepository>();
 builder.Services.AddScoped<ISearchEntity, SearchEntityRepository>();
 
-builder.Services.AddScoped<AuthOptions>();
+
+
 builder.Services.AddScoped<ExcelParsingService>();
 
 builder.WebHost.ConfigureServices(configure => SentrySdk.Init(o =>
@@ -57,27 +66,6 @@ builder.WebHost.ConfigureServices(configure => SentrySdk.Init(o =>
 }));
 
 builder.Services.AddAuthorization();
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            // указывает, будет ли валидироваться издатель при валидации токена
-            ValidateIssuer = true,
-            // строка, представляющая издателя
-            ValidIssuer = builder.Configuration.GetConnectionString("ISSUER"),
-            // будет ли валидироваться потребитель токена
-            ValidateAudience = true,
-            // установка потребителя токена
-            ValidAudience = builder.Configuration.GetConnectionString("AUDIENCE"),
-            // будет ли валидироваться время существования
-            ValidateLifetime = true,
-            // установка ключа безопасности
-            IssuerSigningKey = new AuthOptions(builder.Configuration).GetSymmetricSecurityKey(),
-            // валидация ключа безопасности
-            ValidateIssuerSigningKey = true,
-        };
-    });
 
 var app = builder.Build();
 

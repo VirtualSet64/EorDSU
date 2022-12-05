@@ -5,7 +5,7 @@ using FileModel = EorDSU.Models.FileModel;
 
 namespace EorDSU.DBService
 {
-    public class ApplicationContext : DbContext//IdentityDbContext<User>
+    public class ApplicationContext : IdentityDbContext<User>
     {
         public DbSet<Discipline> Disciplines { get; set; } = null!;
         public DbSet<Profile> Profiles { get; set; } = null!;
@@ -13,7 +13,6 @@ namespace EorDSU.DBService
         public DbSet<FileRPD> FileRPDs { get; set; } = null!;
         public DbSet<LevelEdu> LevelEdues { get; set; } = null!;
         public DbSet<StatusDiscipline> StatusDisciplines { get; set; } = null!;
-        public DbSet<User> Users { get; set; } = null!;
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)

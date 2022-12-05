@@ -1,12 +1,13 @@
-﻿using EorDSU.ConfigInfo;
-using EorDSU.DBService;
+﻿using EorDSU.DBService;
 using EorDSU.Interface;
 using EorDSU.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.IO;
 
 namespace EorDSU.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class RPDController : Controller

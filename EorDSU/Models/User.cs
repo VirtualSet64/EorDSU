@@ -5,13 +5,8 @@ using System.Runtime.CompilerServices;
 
 namespace EorDSU.Models
 {
-    public class User
+    public class User : IdentityUser
     {
-        public int Id { get; set; }
-        public string UserName { get; set; } = null!;
-        [PasswordPropertyText]
-        public string Password { get; set; } = null!;        
-        public int? PersDepartmentId { get; set; }
-        public bool IsDeleted { get; set; }
+        public int PersDepartmentId { get; set; }
     }
 }

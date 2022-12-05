@@ -66,50 +66,58 @@ namespace EorDSU.Service
         /// <param name="profile"></param>
         private void TitulPage(Excel.Workbook ObjWorkBook, Profile profile)
         {
-            Excel.Worksheet ObjWorkSheet = (Excel.Worksheet)ObjWorkBook.Sheets[1]; //получить 1 лист
-            var lastCell = ObjWorkSheet.Cells.SpecialCells(Excel.XlCellType.xlCellTypeLastCell);//1 ячейку
-            string[,] list = new string[lastCell.Column, lastCell.Row]; // массив значений с листа равен по размеру листу
-
-            for (int i = 0; i < lastCell.Column; i++) //по всем колонкам
-                for (int j = 0; j < lastCell.Row; j++) // по всем строкам
-
-                    list[i, j] = ObjWorkSheet.Cells[j + 1, i + 1].Text.ToString();//считываем текст в строку
-
-            profile.CaseCEdukindId = _searchEntity.SearchEdukind(list[2, 41].Split(" ")[^1])?.EdukindId;
-            //[^1] = List[List.Lenght - 1]
-
-            if (list[7, 24].Split(" ")[^1] == "Специалистов")
+            try
             {
-                profile.LevelEdu = _searchEntity.SearchLevelEdu("специалитет");
-            }
-            if (list[7, 24].Split(" ")[^1] == "магистратуры")
-            {
-                profile.LevelEdu = _searchEntity.SearchLevelEdu("магистратура");
-            }
-            else
-            {
-                var tempLevelEdu = list[7, 24].Split(" ")[^1];
-                profile.LevelEdu = _searchEntity.SearchLevelEdu(tempLevelEdu.Remove(tempLevelEdu.Length - 1));
-            }
+                Excel.Worksheet ObjWorkSheet = (Excel.Worksheet)ObjWorkBook.Sheets[1]; //получить 1 лист
+                var lastCell = ObjWorkSheet.Cells.SpecialCells(Excel.XlCellType.xlCellTypeLastCell);//1 ячейку
+                string[,] list = new string[lastCell.Column, lastCell.Row]; // массив значений с листа равен по размеру листу
 
-            var code = list[3, 26];
+                for (int i = 0; i < lastCell.Column; i++) //по всем колонкам
+                    for (int j = 0; j < lastCell.Row; j++) // по всем строкам
 
-            profile.ProfileName = list[3, 29];
-            profile.TermEdu = int.Parse(list[2, 42].Split(" ")[^1][0].ToString());
-            profile.CaseSDepartmentId = _searchEntity.SearchCaseSDepartment(list[3, 28].Split(" ")[^1])?.DepartmentId;
+                        list[i, j] = ObjWorkSheet.Cells[j + 1, i + 1].Text.ToString();//считываем текст в строку
 
-            if (profile.CaseSDepartmentId == null)
-            {
-                profile.CaseSDepartmentId = _searchEntity.SearchCaseSDepartment(list[3, 28].Split(code)[^1].Trim())?.DepartmentId;
+                profile.CaseCEdukindId = _searchEntity.SearchEdukind(list[2, 41].Split(" ")[^1])?.EdukindId;
+                //[^1] = List[List.Lenght - 1]
+
+                if (list[7, 24].Split(" ")[^1] == "Специалистов")
+                {
+                    profile.LevelEdu = _searchEntity.SearchLevelEdu("специалитет");
+                }
+                if (list[7, 24].Split(" ")[^1] == "магистратуры")
+                {
+                    profile.LevelEdu = _searchEntity.SearchLevelEdu("магистратура");
+                }
+                else
+                {
+                    var tempLevelEdu = list[7, 24].Split(" ")[^1];
+                    profile.LevelEdu = _searchEntity.SearchLevelEdu(tempLevelEdu.Remove(tempLevelEdu.Length - 1));
+                }
+
+                var code = list[3, 26];
+
+                profile.ProfileName = list[3, 29];
+                profile.TermEdu = int.Parse(list[2, 42].Split(" ")[^1][0].ToString());
+                profile.CaseSDepartmentId = _searchEntity.SearchCaseSDepartment(list[3, 28].Split(" ")[^1])?.DepartmentId;
+
                 if (profile.CaseSDepartmentId == null)
                 {
-                    string v = list[3, 28].Split(code)[^1].Trim() + $" ({profile.LevelEdu.Name})";
-                    profile.CaseSDepartmentId = _searchEntity.SearchCaseSDepartment(v)?.DepartmentId;
+                    profile.CaseSDepartmentId = _searchEntity.SearchCaseSDepartment(list[3, 28].Split(code)[^1].Trim())?.DepartmentId;
+                    if (profile.CaseSDepartmentId == null)
+                    {
+                        string v = list[3, 28].Split(code)[^1].Trim() + $" ({profile.LevelEdu.Name})";
+                        profile.CaseSDepartmentId = _searchEntity.SearchCaseSDepartment(v)?.DepartmentId;
+                    }
                 }
-            }
 
-            profile.PersDepartmentId = _searchEntity.SearchPersDepartment(list[3, 36])?.DepId;
-            profile.Year = int.Parse(list[22, 39]);
+                profile.PersDepartmentId = _searchEntity.SearchPersDepartment(list[3, 36])?.DepId;
+                profile.Year = int.Parse(list[22, 39]);
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureException(ex);
+                throw;
+            }
         }
 
         /// <summary>
