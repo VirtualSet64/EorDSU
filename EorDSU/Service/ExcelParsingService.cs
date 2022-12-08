@@ -24,7 +24,7 @@ namespace EorDSU.Service
             _activeData = activeData;
         }
 
-        public Profile ParsingService(string path)
+        public async Task<Profile> ParsingService(string path)
         {
             try
             {
@@ -32,12 +32,10 @@ namespace EorDSU.Service
                 Excel.Workbook ObjWorkBook = ObjWorkExcel.Workbooks.Open(@path, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing); //открыть файл
 
                 Profile profile = new();
-                TitulPage(ObjWorkBook, profile);
-                PlanSvodPage(ObjWorkBook, profile);
+                TitulPage(ObjWorkBook, ObjWorkExcel, profile);
+                PlanSvodPage(ObjWorkBook, ObjWorkExcel, profile);
 
-                ObjWorkBook.Close(false, Type.Missing, Type.Missing); //закрыть не сохраняя
-                ObjWorkExcel.Quit(); // выйти из экселя
-                GC.Collect(); // убрать за собой
+                ClearAndExitExcel(ObjWorkBook, ObjWorkExcel);
 
                 var profilesFromDB = _activeData.GetProfiles().ToList();
 
@@ -47,9 +45,9 @@ namespace EorDSU.Service
                                  x.CaseSDepartmentId == profile.CaseSDepartmentId &&
                                  x.LevelEdu == profile.LevelEdu &&
                                  x.Year == profile.Year))
-                    _applicationContext.Profiles.Add(profile);
+                    await _applicationContext.Profiles.AddAsync(profile);
 
-                _applicationContext.SaveChanges();
+                await _applicationContext.SaveChangesAsync();
                 return profile;
             }
             catch (Exception ex)
@@ -64,7 +62,7 @@ namespace EorDSU.Service
         /// </summary>
         /// <param name="ObjWorkBook"></param>
         /// <param name="profile"></param>
-        private void TitulPage(Excel.Workbook ObjWorkBook, Profile profile)
+        private void TitulPage(Excel.Workbook ObjWorkBook, Excel.Application ObjWorkExcel, Profile profile)
         {
             try
             {
@@ -115,6 +113,7 @@ namespace EorDSU.Service
             }
             catch (Exception ex)
             {
+                ClearAndExitExcel(ObjWorkBook, ObjWorkExcel);
                 SentrySdk.CaptureException(ex);
                 throw;
             }
@@ -125,7 +124,7 @@ namespace EorDSU.Service
         /// </summary>
         /// <param name="ObjWorkBook"></param>
         /// <param name="profile"></param>
-        private void PlanSvodPage(Excel.Workbook ObjWorkBook, Profile profile)
+        private void PlanSvodPage(Excel.Workbook ObjWorkBook, Excel.Application ObjWorkExcel, Profile profile)
         {
             try
             {
@@ -289,9 +288,17 @@ namespace EorDSU.Service
             }
             catch (Exception ex)
             {
+                ClearAndExitExcel(ObjWorkBook, ObjWorkExcel);
                 SentrySdk.CaptureException(ex);
                 throw;
             }
+        }
+
+        private static void ClearAndExitExcel(Excel.Workbook ObjWorkBook, Excel.Application ObjWorkExcel)
+        {
+            ObjWorkBook.Close(false, Type.Missing, Type.Missing); //закрыть не сохраняя
+            ObjWorkExcel.Quit(); // выйти из экселя
+            GC.Collect(); // убрать за собой
         }
     }
 }

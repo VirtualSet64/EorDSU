@@ -10,12 +10,10 @@ namespace EorDSU.Controllers
     [Route("[controller]")]
     public class AccountController : Controller
     {
-        private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AccountController(SignInManager<User> signInManager)
         {
-            _userManager = userManager;
             _signInManager = signInManager;
         }
 
@@ -27,25 +25,6 @@ namespace EorDSU.Controllers
             await _signInManager.SignOutAsync();
             return Ok();
         }
-
-        //[Route("Register")]
-        //[HttpPost]
-        //public async Task<IActionResult> Register(RegisterViewModel model)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        User user = new() { UserName = model.Login, PersDepartmentId = model.PersDepartmentId };
-        //        // добавляем пользователя
-        //        var result = await _userManager.CreateAsync(user, model.Password);
-        //        if (result.Succeeded)
-        //        {
-        //            // установка куки
-        //            await _signInManager.SignInAsync(user, false);
-        //            return Ok();
-        //        }
-        //    }
-        //    return BadRequest();
-        //}
 
         [Route("Login")]
         [HttpPost]

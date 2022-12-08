@@ -43,7 +43,6 @@ builder.Services.AddIdentity<EorDSU.Models.User, IdentityRole>(
                })
                .AddEntityFrameworkStores<ApplicationContext>();
 
-builder.Services.AddTransient<AccountService>();
 builder.Services.AddScoped<ExcelParsingService>();
 
 builder.Services.AddScoped<IActiveData, ActiveDataRepository>();

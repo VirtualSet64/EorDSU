@@ -22,11 +22,11 @@ namespace EorDSU.Controllers
         private readonly IActiveData _activeData;
         private readonly IConfiguration Configuration;
 
-        public EorController(IActiveData activeData, DSUContext dSUContext, IConfiguration configuration)
+        public EorController(IActiveData activeData, IConfiguration configuration, DSUContext dSUContext)
         {
             _activeData = activeData;
-            _dSUContext = dSUContext;
             Configuration = configuration;
+            _dSUContext = dSUContext;            
         }
 
         /// <summary>

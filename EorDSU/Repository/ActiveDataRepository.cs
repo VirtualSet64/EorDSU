@@ -11,10 +11,22 @@ namespace EorDSU.Repository
     {
         private readonly BASEPERSONMDFContext _bASEPERSONMDFContext;
         private readonly ApplicationContext _applicationContext;
-        public ActiveDataRepository(BASEPERSONMDFContext bASEPERSONMDFContext, ApplicationContext applicationContext)
+        private readonly DSUContext _dSUContext;
+        public ActiveDataRepository(BASEPERSONMDFContext bASEPERSONMDFContext, ApplicationContext applicationContext, DSUContext dSUContext)
         {
             _bASEPERSONMDFContext = bASEPERSONMDFContext;
             _applicationContext = applicationContext;
+            _dSUContext = dSUContext;
+        }
+
+        public IQueryable<CaseSDepartment> GetCaseSDepartments()
+        {
+            return _dSUContext.CaseSDepartments.Where(x => x.Deleted == false);
+        }
+
+        public IQueryable<CaseCEdukind> GetCaseCEdukind()
+        {
+            return _dSUContext.CaseCEdukinds;
         }
 
         public IQueryable<PersDivision> GetPersDivisions()

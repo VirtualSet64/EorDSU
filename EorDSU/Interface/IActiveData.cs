@@ -5,6 +5,8 @@ namespace EorDSU.Interface
 {
     public interface IActiveData
     {
+        public IQueryable<CaseCEdukind> GetCaseCEdukind();
+        public IQueryable<CaseSDepartment> GetCaseSDepartments();
         public IQueryable<PersDivision> GetPersDivisions();
         public IQueryable<PersDepartment> GetPersDepartments();
         public IQueryable<Discipline> GetDisciplines();

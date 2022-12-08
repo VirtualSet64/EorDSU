@@ -17,16 +17,14 @@ namespace EorDSU.Controllers
     public class AdminController : Controller
     {
         private readonly IActiveData _activeData;
-        private readonly ApplicationContext _applicationContext;
-        private readonly DSUContext _dSUContext;
         private readonly IConfiguration Configuration;
+        private readonly ApplicationContext _applicationContext;
 
-        public AdminController(IActiveData activeData, ApplicationContext applicationContext, DSUContext dSUContext, IConfiguration configuration)
+        public AdminController(IActiveData activeData, IConfiguration configuration, ApplicationContext applicationContext)
         {
             _activeData = activeData;
-            _applicationContext = applicationContext;
-            _dSUContext = dSUContext;
             Configuration = configuration;
+            _applicationContext = applicationContext;      
         }
 
         [Route("GetFileModels")]
@@ -54,8 +52,8 @@ namespace EorDSU.Controllers
                 dataResponseForSvedenOOPDGUs.Add(new()
                 {
                     Profiles = item,
-                    CaseCEdukind = _dSUContext.CaseCEdukinds.FirstOrDefault(x => x.EdukindId == item.CaseCEdukindId),
-                    CaseSDepartment = _dSUContext.CaseSDepartments.FirstOrDefault(x => x.DepartmentId == item.CaseSDepartmentId),
+                    CaseCEdukind = _activeData.GetCaseCEdukind().FirstOrDefault(x => x.EdukindId == item.CaseCEdukindId),
+                    CaseSDepartment = _activeData.GetCaseSDepartments().FirstOrDefault(x => x.DepartmentId == item.CaseSDepartmentId),
                     SrokDeystvGosAccred = Configuration["SrokDeystvGosAccred"],
                 });
             }
