@@ -18,15 +18,13 @@ namespace EorDSU.Controllers
     [Route("[controller]")]
     public class EorController : Controller
     {
-        private readonly DSUContext _dSUContext;
         private readonly IActiveData _activeData;
         private readonly IConfiguration Configuration;
 
-        public EorController(IActiveData activeData, IConfiguration configuration, DSUContext dSUContext)
+        public EorController(IActiveData activeData, IConfiguration configuration)
         {
             _activeData = activeData;
-            Configuration = configuration;
-            _dSUContext = dSUContext;            
+            Configuration = configuration;       
         }
 
         /// <summary>
@@ -89,8 +87,8 @@ namespace EorDSU.Controllers
             dataResponseForSvedenOOPDGUs.Add(new()
             {
                 Profiles = item,
-                CaseCEdukind = _dSUContext.CaseCEdukinds.FirstOrDefault(x => x.EdukindId == item.CaseCEdukindId),
-                CaseSDepartment = _dSUContext.CaseSDepartments.FirstOrDefault(x => x.DepartmentId == item.CaseSDepartmentId),
+                CaseCEdukind = _activeData.GetCaseCEdukind().FirstOrDefault(x => x.EdukindId == item.CaseCEdukindId),
+                CaseSDepartment = _activeData.GetCaseSDepartments().FirstOrDefault(x => x.DepartmentId == item.CaseSDepartmentId),
                 SrokDeystvGosAccred = Configuration["SrokDeystvGosAccred"],
             });
         }
