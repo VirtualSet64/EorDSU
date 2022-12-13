@@ -11,6 +11,7 @@ using Sentry;
 using Microsoft.AspNetCore.Authorization;
 using System.Text;
 using Microsoft.Office.Interop.Excel;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,11 +36,11 @@ builder.Services.AddDbContext<ApplicationContext>(options =>
 builder.Services.AddIdentity<EorDSU.Models.User, IdentityRole>(
                opts =>
                {
-                   opts.Password.RequiredLength = 2;  
-                   opts.Password.RequireNonAlphanumeric = false;  
-                   opts.Password.RequireLowercase = false; 
+                   opts.Password.RequiredLength = 2;
+                   opts.Password.RequireNonAlphanumeric = false;
+                   opts.Password.RequireLowercase = false;
                    opts.Password.RequireUppercase = false;
-                   opts.Password.RequireDigit = false; 
+                   opts.Password.RequireDigit = false;
                })
                .AddEntityFrameworkStores<ApplicationContext>();
 
@@ -65,6 +66,18 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<EorDSU.Models.User>>();
+    var rolesManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    if (userManager.Users.ToList().Count == 0)
+    {
+        string adminLogin = builder.Configuration["AdminLogin"];
+        string password = builder.Configuration["AdminPassword"];
+        await RoleInitializer.InitializeAsync(adminLogin, password, userManager, rolesManager);
+    }    
+}
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -82,5 +95,23 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+
+//app.Run(async context =>
+//{
+//    using (var scope = app.Services.CreateScope())
+//    {
+//        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<EorDSU.Models.User>>();
+//        var rolesManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+//        if (userManager.Users == null)
+//        {
+//            string adminLogin = builder.Configuration["AdminLogin"];
+//            string password = builder.Configuration["AdminPassword"];
+//            await RoleInitializer.InitializeAsync(adminLogin, password, userManager, rolesManager);
+//        }
+//        else
+//            app.Run();
+//    }
+//});
 
 app.Run();

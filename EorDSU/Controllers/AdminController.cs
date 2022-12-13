@@ -27,6 +27,10 @@ namespace EorDSU.Controllers
             _applicationContext = applicationContext;      
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         [Route("GetFileModels")]
         [HttpGet]
         public async Task<List<FileModel>> GetFileModelsAsync()
@@ -34,6 +38,10 @@ namespace EorDSU.Controllers
             return await _activeData.GetFileModels().ToListAsync();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         [Route("GetFileRPDs")]
         [HttpGet]
         public async Task<List<FileRPD>> GetFileRPDsAsync()
@@ -41,11 +49,19 @@ namespace EorDSU.Controllers
             return await _activeData.GetFileRPDs().ToListAsync();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="persDepartmentId"></param>
+        /// <returns></returns>
         [Route("GetDataAsync")]
         [HttpGet]
         public async Task<IActionResult> GetDataAsync(int persDepartmentId)
         {
             var profiles = await _activeData.GetProfiles().Where(x => x.PersDepartmentId == persDepartmentId).ToListAsync();
+            if (profiles == null)
+                return BadRequest();
+
             List<DataResponseForSvedenOOPDGU> dataResponseForSvedenOOPDGUs = new();
             foreach (var item in profiles)
             {

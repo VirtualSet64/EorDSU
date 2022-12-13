@@ -13,6 +13,5 @@ namespace EorDSU.ViewModels
         [DataType(DataType.Password)]
         [Display(Name = "Пароль")]
         public string Password { get; set; }
-        public string ReturnUrl { get; set; }
     }
 }

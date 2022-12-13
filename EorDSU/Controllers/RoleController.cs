@@ -41,16 +41,14 @@ namespace EorDSU.Controllers
             {
                 IdentityResult result = await _roleManager.CreateAsync(new IdentityRole(name));
                 if (result.Succeeded)
-                {
                     return Ok();
-                }
             }
             return BadRequest();
         }
 
         [Route("EditRole")]
         [HttpPut]
-        public async Task<IActionResult> Edit(string userId, List<string> roles)
+        public async Task<IActionResult> EditRole(string userId, List<string> roles)
         {
             // получаем пользователя
             User user = await _userManager.FindByIdAsync(userId);
@@ -59,7 +57,7 @@ namespace EorDSU.Controllers
                 // получем список ролей пользователя
                 var userRoles = await _userManager.GetRolesAsync(user);
                 // получаем все роли
-                var allRoles = _roleManager.Roles.ToList();
+                //var allRoles = _roleManager.Roles.ToList();
                 // получаем список ролей, которые были добавлены
                 var addedRoles = roles.Except(userRoles);
                 // получаем роли, которые были удалены

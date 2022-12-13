@@ -36,11 +36,7 @@ namespace EorDSU.Controllers
                     await _signInManager.PasswordSignInAsync(model.Login, model.Password, false, false);
                 if (result.Succeeded)
                 {
-                    // проверяем, принадлежит ли URL приложению
-                    if (!string.IsNullOrEmpty(model.ReturnUrl))
-                    {
-                        return Ok(model.ReturnUrl);
-                    }
+                    return Ok();
                 }
                 else
                 {
