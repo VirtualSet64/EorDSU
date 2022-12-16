@@ -32,7 +32,7 @@ namespace EorDSU.Controllers
             User user = await _userManager.FindByIdAsync(id);
             if (user == null)
                 return NotFound();
-            
+
             EditViewModel model = new() { Id = user.Id, Login = user.UserName };
             return Ok(model);
         }
@@ -43,7 +43,7 @@ namespace EorDSU.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = new() { UserName = model.Login };
+                User user = new() { UserName = model.Login, PersDepartmentId = model.PersDepartmentId };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {
@@ -63,12 +63,11 @@ namespace EorDSU.Controllers
                 if (user != null)
                 {
                     user.UserName = model.Login;
+                    user.PersDepartmentId = model.PersDepartmentId;
 
                     var result = await _userManager.UpdateAsync(user);
                     if (result.Succeeded)
-                    {
                         return Ok();
-                    }
                 }
             }
             return BadRequest();
@@ -80,9 +79,7 @@ namespace EorDSU.Controllers
         {
             User user = await _userManager.FindByIdAsync(id);
             if (user != null)
-            {
                 await _userManager.DeleteAsync(user);
-            }
             return Ok();
         }
     }

@@ -1,17 +1,10 @@
 using EorDSU.DBService;
 using EorDSU.Interface;
-using EorDSU.Models;
 using EorDSU.Repository;
 using EorDSU.Service;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Sentry;
-using Microsoft.AspNetCore.Authorization;
-using System.Text;
-using Microsoft.Office.Interop.Excel;
-using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -52,7 +45,7 @@ builder.Services.AddScoped<ISearchEntity, SearchEntityRepository>();
 builder.WebHost.ConfigureServices(configure => SentrySdk.Init(o =>
 {
     // Tells which project in Sentry to send events to:
-    o.Dsn = "https://f2dd48eaeae94c1cac84df1ec97d899b@o4503999231623168.ingest.sentry.io/4503999239094272";
+    o.Dsn = builder.Configuration["SentyDSN"]; ;
     // When configuring for the first time, to see what the SDK is doing:
     o.Debug = true;
     // Set traces_sample_rate to 1.0 to capture 100% of transactions for performance monitoring.
@@ -95,23 +88,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-
-//app.Run(async context =>
-//{
-//    using (var scope = app.Services.CreateScope())
-//    {
-//        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<EorDSU.Models.User>>();
-//        var rolesManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-//        if (userManager.Users == null)
-//        {
-//            string adminLogin = builder.Configuration["AdminLogin"];
-//            string password = builder.Configuration["AdminPassword"];
-//            await RoleInitializer.InitializeAsync(adminLogin, password, userManager, rolesManager);
-//        }
-//        else
-//            app.Run();
-//    }
-//});
 
 app.Run();

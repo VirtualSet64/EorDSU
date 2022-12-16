@@ -1,10 +1,12 @@
 ﻿using EorDSU.DBService;
 using EorDSU.Interface;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace EorDSU.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class DataController : Controller

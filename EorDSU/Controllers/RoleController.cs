@@ -26,13 +26,6 @@ namespace EorDSU.Controllers
             return Ok(_roleManager.Roles.ToList());
         }
 
-        [Route("GetUsers")]
-        [HttpGet]
-        public IActionResult UserList()
-        {
-            return Ok(_userManager.Users.ToList());
-        }
-
         [Route("CreateRole")]
         [HttpPost]
         public async Task<IActionResult> CreateRole(string name)
@@ -78,10 +71,8 @@ namespace EorDSU.Controllers
         {
             IdentityRole role = await _roleManager.FindByIdAsync(id);
             if (role != null)
-            {
                 await _roleManager.DeleteAsync(role);
-            }
-            return Ok("Index");
-        }        
+            return Ok();
+        }
     }
 }
