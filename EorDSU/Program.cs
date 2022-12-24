@@ -1,9 +1,15 @@
+using BasePersonDBService.DataContext;
+using BasePersonDBService.Interfaces;
+using BasePersonDBService.Services;
+using DSUContextDBService.DataContext;
+using DSUContextDBService.Interfaces;
+using DSUContextDBService.Services;
 using EorDSU.DBService;
 using EorDSU.Interface;
-using EorDSU.Repository;
 using EorDSU.Service;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Office.Interop.Excel;
 using Sentry;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,8 +45,10 @@ builder.Services.AddIdentity<EorDSU.Models.User, IdentityRole>(
 
 builder.Services.AddScoped<ExcelParsingService>();
 
-builder.Services.AddScoped<IActiveData, ActiveDataRepository>();
-builder.Services.AddScoped<ISearchEntity, SearchEntityRepository>();
+builder.Services.AddScoped<IDSUActiveData, DSUActiveData>();
+builder.Services.AddScoped<IBasePersonActiveData, BasePersonActiveData>();
+builder.Services.AddScoped<IApplicationActiveData, ActiveDataService>();
+builder.Services.AddScoped<ISearchEntity, SearchEntityService>();
 
 builder.WebHost.ConfigureServices(configure => SentrySdk.Init(o =>
 {

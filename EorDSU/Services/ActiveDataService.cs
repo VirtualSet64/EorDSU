@@ -1,42 +1,24 @@
-﻿using EorDSU.DBService;
+﻿using BasePersonDBService.DataContext;
+using DSUContextDBService.DataContext;
+using EorDSU.DBService;
 using EorDSU.Interface;
 using EorDSU.Models;
 using Microsoft.EntityFrameworkCore;
 using Sentry;
 using System.IO;
 
-namespace EorDSU.Repository
+namespace EorDSU.Service
 {
-    public class ActiveDataRepository : IActiveData
+    public class ActiveDataService : IApplicationActiveData
     {
         private readonly BASEPERSONMDFContext _bASEPERSONMDFContext;
         private readonly ApplicationContext _applicationContext;
         private readonly DSUContext _dSUContext;
-        public ActiveDataRepository(BASEPERSONMDFContext bASEPERSONMDFContext, ApplicationContext applicationContext, DSUContext dSUContext)
+        public ActiveDataService(BASEPERSONMDFContext bASEPERSONMDFContext, ApplicationContext applicationContext, DSUContext dSUContext)
         {
             _bASEPERSONMDFContext = bASEPERSONMDFContext;
             _applicationContext = applicationContext;
             _dSUContext = dSUContext;
-        }
-
-        public IQueryable<CaseSDepartment> GetCaseSDepartments()
-        {
-            return _dSUContext.CaseSDepartments.Where(x => x.Deleted == false);
-        }
-
-        public IQueryable<CaseCEdukind> GetCaseCEdukind()
-        {
-            return _dSUContext.CaseCEdukinds;
-        }
-
-        public IQueryable<PersDivision> GetPersDivisions()
-        {
-            return _bASEPERSONMDFContext.PersDivisions.Where(c => c.IsActive == 1 && c.IsFaculty == 1);
-        }
-
-        public IQueryable<PersDepartment> GetPersDepartments()
-        {
-            return _bASEPERSONMDFContext.PersDepartments.Where(c => c.IsActive == 1 && c.IsKaf == 1);
         }
 
         public IQueryable<Discipline> GetDisciplines()

@@ -1,4 +1,5 @@
-﻿using EorDSU.Models;
+﻿using DSUContextDBService.Models;
+using EorDSU.Models;
 
 namespace EorDSU.ResponseModel
 {

@@ -1,4 +1,5 @@
-﻿using EorDSU.DBService;
+﻿using BasePersonDBService.Interfaces;
+using EorDSU.DBService;
 using EorDSU.Interface;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,39 +12,39 @@ namespace EorDSU.Controllers
     [Route("[controller]")]
     public class DataController : Controller
     {
-        private readonly IActiveData _activeData;
+        private readonly IBasePersonActiveData _basePersonActiveData;
 
-        public DataController(IActiveData activeData)
+        public DataController(IBasePersonActiveData basePersonActiveData)
         {
-            _activeData = activeData;
+            _basePersonActiveData = basePersonActiveData;
         }
 
         [Route("GetAllKafedra")]
         [HttpGet]
         public async Task<IActionResult> GetPersDepartments()
         {
-            return Ok(await _activeData.GetPersDepartments().ToListAsync());
+            return Ok(await _basePersonActiveData.GetPersDepartments().ToListAsync());
         }
 
         [Route("GetKafedra")]
         [HttpGet]
         public async Task<IActionResult> GetPersDepartments(int kafedraId)
         {
-            return Ok(await _activeData.GetPersDepartments().FirstOrDefaultAsync(x => x.DepId == kafedraId));
+            return Ok(await _basePersonActiveData.GetPersDepartments().FirstOrDefaultAsync(x => x.DepId == kafedraId));
         }
 
         [Route("GetAllFaculty")]
         [HttpGet]
         public async Task<IActionResult> GetPersDivisions()
         {
-            return Ok(await _activeData.GetPersDivisions().ToListAsync());
+            return Ok(await _basePersonActiveData.GetPersDivisions().ToListAsync());
         }
 
         [Route("GetFaculty")]
         [HttpGet]
         public async Task<IActionResult> GetPersDivision(int facultyId)
         {
-            return Ok(await _activeData.GetPersDivisions().FirstOrDefaultAsync(x => x.DivId == facultyId));
+            return Ok(await _basePersonActiveData.GetPersDivisions().FirstOrDefaultAsync(x => x.DivId == facultyId));
         }
     }
 }

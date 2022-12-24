@@ -14,9 +14,9 @@ namespace EorDSU.Controllers
     public class DisciplineController : Controller
     {
         private readonly ApplicationContext _context;
-        private readonly IActiveData _activeData;
+        private readonly IApplicationActiveData _activeData;
 
-        public DisciplineController(ApplicationContext context, IActiveData activeData)
+        public DisciplineController(ApplicationContext context, IApplicationActiveData activeData)
         {
             _context = context;
             _activeData = activeData;

@@ -1,15 +1,19 @@
-﻿using EorDSU.DBService;
+﻿using BasePersonDBService.DataContext;
+using DSUContextDBService.DataContext;
+using DSUContextDBService.Models;
+using EorDSU.DBService;
 using EorDSU.Interface;
 using EorDSU.Models;
+using Models;
 
-namespace EorDSU.Repository
+namespace EorDSU.Service
 {
-    public class SearchEntityRepository : ISearchEntity
+    public class SearchEntityService : ISearchEntity
     {
         private readonly DSUContext _dsuContext;
         private readonly ApplicationContext _applicationContext;
         private readonly BASEPERSONMDFContext _basePersonContext;
-        public SearchEntityRepository(DSUContext dsuContext, ApplicationContext applicationContext, BASEPERSONMDFContext basePersonContext)
+        public SearchEntityService(DSUContext dsuContext, ApplicationContext applicationContext, BASEPERSONMDFContext basePersonContext)
         {
             _dsuContext = dsuContext;
             _applicationContext = applicationContext;
@@ -28,8 +32,7 @@ namespace EorDSU.Repository
 
         public CaseSDepartment SearchCaseSDepartment(string text)
         {
-            var sd = _dsuContext.CaseSDepartments.FirstOrDefault(c => c.DeptName == text);
-            return sd;
+            return _dsuContext.CaseSDepartments.FirstOrDefault(c => c.DeptName == text);;
         }
 
         public LevelEdu SearchLevelEdu(string text)

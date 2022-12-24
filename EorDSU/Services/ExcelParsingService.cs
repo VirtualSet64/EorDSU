@@ -1,4 +1,5 @@
-﻿using EorDSU.DBService;
+﻿using DSUContextDBService.DataContext;
+using EorDSU.DBService;
 using EorDSU.Interface;
 using EorDSU.Models;
 using EorDSU.ResponseModel;
@@ -14,9 +15,9 @@ namespace EorDSU.Service
         private readonly ApplicationContext _applicationContext;
         private readonly DSUContext _dSUContext;
         private readonly ISearchEntity _searchEntity;
-        private readonly IActiveData _activeData;
+        private readonly IApplicationActiveData _activeData;
 
-        public ExcelParsingService(ApplicationContext applicationContext, DSUContext dSUContext, ISearchEntity searchEntity, IActiveData activeData)
+        public ExcelParsingService(ApplicationContext applicationContext, DSUContext dSUContext, ISearchEntity searchEntity, IApplicationActiveData activeData)
         {
             _applicationContext = applicationContext;
             _dSUContext = dSUContext;

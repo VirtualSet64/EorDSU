@@ -1,7 +1,7 @@
-﻿using EorDSU.DBService;
+﻿using DSUContextDBService.Interfaces;
+using EorDSU.DBService;
 using EorDSU.Interface;
 using EorDSU.Models;
-using EorDSU.Repository;
 using EorDSU.ResponseModel;
 using EorDSU.Service;
 using Microsoft.AspNetCore.Authorization;
@@ -16,15 +16,17 @@ namespace EorDSU.Controllers
     [Route("[controller]")]
     public class AdminController : Controller
     {
-        private readonly IActiveData _activeData;
+        private readonly IApplicationActiveData _activeData;
+        private readonly IDSUActiveData _dSUActiveData;
         private readonly IConfiguration Configuration;
         private readonly ApplicationContext _applicationContext;
 
-        public AdminController(IActiveData activeData, IConfiguration configuration, ApplicationContext applicationContext)
+        public AdminController(IApplicationActiveData activeData, IConfiguration configuration, ApplicationContext applicationContext, IDSUActiveData dSUActiveData)
         {
             _activeData = activeData;
             Configuration = configuration;
-            _applicationContext = applicationContext;      
+            _applicationContext = applicationContext;  
+            _dSUActiveData = dSUActiveData;
         }
 
         /// <summary>
@@ -39,7 +41,7 @@ namespace EorDSU.Controllers
         }
 
         /// <summary>
-        /// 
+        /// sadsa
         /// </summary>
         /// <returns></returns>
         [Route("GetFileRPDs")]
@@ -52,7 +54,7 @@ namespace EorDSU.Controllers
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="persDepartmentId"></param>
+        /// <param name="persDepartmentId">sada</param>
         /// <returns></returns>
         [Route("GetDataAsync")]
         [HttpGet]
@@ -68,8 +70,8 @@ namespace EorDSU.Controllers
                 dataResponseForSvedenOOPDGUs.Add(new()
                 {
                     Profiles = item,
-                    CaseCEdukind = _activeData.GetCaseCEdukind().FirstOrDefault(x => x.EdukindId == item.CaseCEdukindId),
-                    CaseSDepartment = _activeData.GetCaseSDepartments().FirstOrDefault(x => x.DepartmentId == item.CaseSDepartmentId),
+                    CaseCEdukind = _dSUActiveData.GetCaseCEdukind((int)item.CaseCEdukindId),
+                    CaseSDepartment = _dSUActiveData.GetCaseSDepartment((int)item.CaseSDepartmentId),
                     SrokDeystvGosAccred = Configuration["SrokDeystvGosAccred"],
                 });
             }

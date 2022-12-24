@@ -19,9 +19,9 @@ namespace EorDSU.Controllers
         private readonly IWebHostEnvironment _appEnvironment;
         private readonly IConfiguration Configuration;
         private readonly ExcelParsingService _excelParsingService;
-        private readonly IActiveData _activeData;
+        private readonly IApplicationActiveData _activeData;
 
-        public FilesController(ApplicationContext context, IWebHostEnvironment appEnvironment, IConfiguration configuration, ExcelParsingService excelParsingService, IActiveData activeData)
+        public FilesController(ApplicationContext context, IWebHostEnvironment appEnvironment, IConfiguration configuration, ExcelParsingService excelParsingService, IApplicationActiveData activeData)
         {
             _context = context;
             _appEnvironment = appEnvironment;
