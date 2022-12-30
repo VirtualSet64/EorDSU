@@ -1,6 +1,5 @@
 ﻿using EorDSU.Models;
 using EorDSU.ViewModels;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,13 +34,9 @@ namespace EorDSU.Controllers
                 var result =
                     await _signInManager.PasswordSignInAsync(model.Login, model.Password, false, false);
                 if (result.Succeeded)
-                {
                     return Ok();
-                }
                 else
-                {
                     ModelState.AddModelError("", "Неправильный логин и (или) пароль");
-                }
             }
             return BadRequest();
         }

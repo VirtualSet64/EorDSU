@@ -3,6 +3,7 @@ using EorDSU.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Sentry;
 
 namespace EorDSU.Controllers
 {
@@ -11,9 +12,9 @@ namespace EorDSU.Controllers
     [Route("[controller]")]
     public class UserController : Controller
     {
-        private readonly UserManager<User> _userManager;
+        private readonly UserManager<Models.User> _userManager;
 
-        public UserController(UserManager<User> userManager)
+        public UserController(UserManager<Models.User> userManager)
         {
             _userManager = userManager;
         }
@@ -29,58 +30,90 @@ namespace EorDSU.Controllers
         [HttpGet]
         public async Task<IActionResult> GetUser(string id)
         {
-            User user = await _userManager.FindByIdAsync(id);
-            if (user == null)
-                return NotFound();
+            try
+            {
+                Models.User user = await _userManager.FindByIdAsync(id);
+                if (user == null)
+                    return NotFound();
 
-            EditViewModel model = new() { Id = user.Id, Login = user.UserName };
-            return Ok(model);
+                EditViewModel model = new() { Id = user.Id, Login = user.UserName };
+                return Ok(model);
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureException(ex);
+                throw;
+            }
         }
 
         [Route("CreateUser")]
         [HttpPost]
         public async Task<IActionResult> CreateUser(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                User user = new() { UserName = model.Login, PersDepartmentId = model.PersDepartmentId };
-                var result = await _userManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
+                if (ModelState.IsValid)
                 {
-                    return Ok();
+                    Models.User user = new() { UserName = model.Login, PersDepartmentId = model.PersDepartmentId };
+                    var result = await _userManager.CreateAsync(user, model.Password);
+                    if (result.Succeeded)
+                    {
+                        return Ok();
+                    }
                 }
+                return BadRequest();
             }
-            return BadRequest();
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureException(ex);
+                throw;
+            }
         }
 
         [Route("EditUser")]
         [HttpPut]
         public async Task<IActionResult> EditUser(EditViewModel model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                User user = await _userManager.FindByIdAsync(model.Id);
-                if (user != null)
+                if (ModelState.IsValid)
                 {
-                    user.UserName = model.Login;
-                    user.PersDepartmentId = model.PersDepartmentId;
+                    Models.User user = await _userManager.FindByIdAsync(model.Id);
+                    if (user != null)
+                    {
+                        user.UserName = model.Login;
+                        user.PersDepartmentId = model.PersDepartmentId;
 
-                    var result = await _userManager.UpdateAsync(user);
-                    if (result.Succeeded)
-                        return Ok();
+                        var result = await _userManager.UpdateAsync(user);
+                        if (result.Succeeded)
+                            return Ok();
+                    }
                 }
+                return BadRequest();
             }
-            return BadRequest();
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureException(ex);
+                throw;
+            }
         }
 
         [Route("DeleteUser")]
         [HttpDelete]
         public async Task<ActionResult> DeleteUser(string id)
         {
-            User user = await _userManager.FindByIdAsync(id);
-            if (user != null)
-                await _userManager.DeleteAsync(user);
-            return Ok();
+            try
+            {
+                Models.User user = await _userManager.FindByIdAsync(id);
+                if (user != null)
+                    await _userManager.DeleteAsync(user);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                SentrySdk.CaptureException(ex);
+                throw;
+            }
         }
     }
 }

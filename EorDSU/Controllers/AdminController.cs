@@ -19,13 +19,11 @@ namespace EorDSU.Controllers
         private readonly IApplicationActiveData _activeData;
         private readonly IDSUActiveData _dSUActiveData;
         private readonly IConfiguration Configuration;
-        private readonly ApplicationContext _applicationContext;
 
-        public AdminController(IApplicationActiveData activeData, IConfiguration configuration, ApplicationContext applicationContext, IDSUActiveData dSUActiveData)
+        public AdminController(IApplicationActiveData activeData, IConfiguration configuration, IDSUActiveData dSUActiveData)
         {
             _activeData = activeData;
             Configuration = configuration;
-            _applicationContext = applicationContext;  
             _dSUActiveData = dSUActiveData;
         }
 
@@ -41,7 +39,7 @@ namespace EorDSU.Controllers
         }
 
         /// <summary>
-        /// sadsa
+        /// 
         /// </summary>
         /// <returns></returns>
         [Route("GetFileRPDs")]
@@ -54,14 +52,14 @@ namespace EorDSU.Controllers
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="persDepartmentId">sada</param>
+        /// <param name="persDepartmentId"></param>
         /// <returns></returns>
         [Route("GetDataAsync")]
         [HttpGet]
         public async Task<IActionResult> GetDataAsync(int persDepartmentId)
         {
             var profiles = await _activeData.GetProfiles().Where(x => x.PersDepartmentId == persDepartmentId).ToListAsync();
-            if (profiles == null)
+            if (profiles.Count == 0)
                 return BadRequest();
 
             List<DataResponseForSvedenOOPDGU> dataResponseForSvedenOOPDGUs = new();
@@ -76,26 +74,6 @@ namespace EorDSU.Controllers
                 });
             }
             return Ok(dataResponseForSvedenOOPDGUs);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="profile"></param>
-        /// <returns></returns>
-        [Route("AddFinalFormFile")]
-        [HttpPost]
-        public IActionResult AddFinalFormFile(Profile profile)
-        {
-            if (profile != null && profile.LevelEdu != null && profile.Disciplines != null)
-            {
-                _applicationContext.LevelEdues.Add(profile.LevelEdu);
-                _applicationContext.Profiles.Add(profile);
-                _applicationContext.Disciplines.AddRange(profile.Disciplines);
-                _applicationContext.SaveChanges();
-                return Ok();
-            }
-            return BadRequest();
         }
     }
 }

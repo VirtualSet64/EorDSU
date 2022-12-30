@@ -1,24 +1,16 @@
-﻿using BasePersonDBService.DataContext;
-using DSUContextDBService.DataContext;
-using EorDSU.DBService;
+﻿using EorDSU.DBService;
 using EorDSU.Interface;
 using EorDSU.Models;
 using Microsoft.EntityFrameworkCore;
-using Sentry;
-using System.IO;
 
 namespace EorDSU.Service
 {
     public class ActiveDataService : IApplicationActiveData
     {
-        private readonly BASEPERSONMDFContext _bASEPERSONMDFContext;
         private readonly ApplicationContext _applicationContext;
-        private readonly DSUContext _dSUContext;
-        public ActiveDataService(BASEPERSONMDFContext bASEPERSONMDFContext, ApplicationContext applicationContext, DSUContext dSUContext)
+        public ActiveDataService(ApplicationContext applicationContext)
         {
-            _bASEPERSONMDFContext = bASEPERSONMDFContext;
             _applicationContext = applicationContext;
-            _dSUContext = dSUContext;
         }
 
         public IQueryable<Discipline> GetDisciplines()
@@ -29,6 +21,14 @@ namespace EorDSU.Service
                 .Where(x => x.IsDeleted == false);
         }
 
+        public async Task<Discipline> GetDisciplineById(int id)
+        {
+            return await _applicationContext.Disciplines
+                .Include(x => x.StatusDiscipline)
+                .Include(x => x.FileRPD)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public IQueryable<Profile> GetProfiles()
         {
             return _applicationContext.Profiles
@@ -37,9 +37,22 @@ namespace EorDSU.Service
                 .Where(x => x.IsDeleted == false);
         }
 
+        public async Task<Profile> GetProfileById(int id)
+        {
+            return await _applicationContext.Profiles
+                .Include(x => x.FileModels)
+                .Include(x => x.LevelEdu)
+                .FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public IQueryable<StatusDiscipline> GetStatusDisciplines()
         {
             return _applicationContext.StatusDisciplines.Where(x => x.IsDeleted == false);
+        }
+
+        public Task<StatusDiscipline> GetStatusDisciplineById(int id)
+        {
+            return _applicationContext.StatusDisciplines.FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public IQueryable<LevelEdu> GetLevelEdues()
@@ -47,14 +60,31 @@ namespace EorDSU.Service
             return _applicationContext.LevelEdues.Where(x => x.IsDeleted == false);
         }
 
+        public Task<LevelEdu> GetLevelEduById(int id)
+        {
+            return _applicationContext.LevelEdues.FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public IQueryable<FileRPD> GetFileRPDs()
         {
             return _applicationContext.FileRPDs.Where(x => x.IsDeleted == false);
         }
 
+        public Task<FileRPD> GetFileRPDById(int id)
+        {
+            return _applicationContext.FileRPDs.FirstOrDefaultAsync(x => x.Id == id);
+        }
+
         public IQueryable<FileModel> GetFileModels()
         {
             return _applicationContext.FileModels.Include(x => x.Profile).Where(x => x.IsDeleted == false);
+        }
+
+        public Task<FileModel> GetFileModelById(int id)
+        {
+            return _applicationContext.FileModels
+                .Include(x => x.Profile)
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
     }
 }

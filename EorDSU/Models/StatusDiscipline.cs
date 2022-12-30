@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace EorDSU.Models
+﻿namespace EorDSU.Models
 {
     public class StatusDiscipline
     {

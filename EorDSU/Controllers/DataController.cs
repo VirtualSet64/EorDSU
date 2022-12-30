@@ -13,7 +13,6 @@ namespace EorDSU.Controllers
     public class DataController : Controller
     {
         private readonly IBasePersonActiveData _basePersonActiveData;
-
         public DataController(IBasePersonActiveData basePersonActiveData)
         {
             _basePersonActiveData = basePersonActiveData;
@@ -28,9 +27,9 @@ namespace EorDSU.Controllers
 
         [Route("GetKafedra")]
         [HttpGet]
-        public async Task<IActionResult> GetPersDepartments(int kafedraId)
+        public IActionResult GetPersDepartments(int kafedraId)
         {
-            return Ok(await _basePersonActiveData.GetPersDepartments().FirstOrDefaultAsync(x => x.DepId == kafedraId));
+            return Ok(_basePersonActiveData.GetPersDepartmentById(kafedraId));
         }
 
         [Route("GetAllFaculty")]
@@ -42,9 +41,9 @@ namespace EorDSU.Controllers
 
         [Route("GetFaculty")]
         [HttpGet]
-        public async Task<IActionResult> GetPersDivision(int facultyId)
+        public IActionResult GetPersDivision(int facultyId)
         {
-            return Ok(await _basePersonActiveData.GetPersDivisions().FirstOrDefaultAsync(x => x.DivId == facultyId));
+            return Ok(_basePersonActiveData.GetPersDivisionById(facultyId));
         }
     }
 }

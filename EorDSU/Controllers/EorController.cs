@@ -9,6 +9,7 @@ using EorDSU.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Sentry;
 using System.IdentityModel.Tokens.Jwt;
 using System.IO;
 using System.Security.Claims;
@@ -27,7 +28,7 @@ namespace EorDSU.Controllers
         public EorController(IApplicationActiveData activeData, IConfiguration configuration, IBasePersonActiveData basePersonActiveData, IDSUActiveData dSUActiveData)
         {
             _activeData = activeData;
-            Configuration = configuration;       
+            Configuration = configuration;
             _basePersonActiveData = basePersonActiveData;
             _dSUActiveData = dSUActiveData;
         }

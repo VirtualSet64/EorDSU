@@ -1,5 +1,4 @@
-﻿using Microsoft.Office.Interop.Excel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace EorDSU.ViewModels
 {

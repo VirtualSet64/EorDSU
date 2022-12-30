@@ -5,6 +5,8 @@ using EorDSU.ResponseModel;
 using EorDSU.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Sentry;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -21,7 +23,8 @@ namespace EorDSU.Controllers
         private readonly ExcelParsingService _excelParsingService;
         private readonly IApplicationActiveData _activeData;
 
-        public FilesController(ApplicationContext context, IWebHostEnvironment appEnvironment, IConfiguration configuration, ExcelParsingService excelParsingService, IApplicationActiveData activeData)
+        public FilesController(ApplicationContext context, IWebHostEnvironment appEnvironment, IConfiguration configuration,
+                               ExcelParsingService excelParsingService, IApplicationActiveData activeData)
         {
             _context = context;
             _appEnvironment = appEnvironment;
@@ -29,7 +32,7 @@ namespace EorDSU.Controllers
             _excelParsingService = excelParsingService;
             _activeData = activeData;
         }
-        
+
         /// <summary>
         /// Добавление РПД к дисциплине
         /// </summary>
@@ -44,6 +47,9 @@ namespace EorDSU.Controllers
 
             if (discipline == null || uploadedFile == null)
                 return BadRequest();
+
+            if (_activeData.GetFileRPDs().Any(x => x.Name == uploadedFile.FileName))
+                return BadRequest("Файл с таким названием существует, переименуйте файл или удалите предыдущий");
 
             string path = Configuration["FileFolder"] + uploadedFile.FileName;
             // сохраняем файл в папку Files в каталоге wwwroot
@@ -109,6 +115,26 @@ namespace EorDSU.Controllers
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="profile"></param>
+        /// <returns></returns>
+        [Route("AddFinalFormFile")]
+        [HttpPost]
+        public IActionResult AddFinalFormFile(Profile profile)
+        {
+            if (profile != null && profile.LevelEdu != null && profile.Disciplines != null)
+            {
+                _context.LevelEdues.Add(profile.LevelEdu);
+                _context.Profiles.Add(profile);
+                _context.Disciplines.AddRange(profile.Disciplines);
+                _context.SaveChanges();
+                return Ok();
+            }
+            return BadRequest();
+        }
+
+        /// <summary>
         /// Добавление файлов
         /// </summary>
         /// <param name="uploadedFile">Файл</param>
@@ -122,6 +148,9 @@ namespace EorDSU.Controllers
         {
             if (uploadedFile == null)
                 return BadRequest();
+
+            if (_activeData.GetFileModels().Any(x => x.Name == uploadedFile.FileName))
+                return BadRequest("Файл с таким названием существует, переименуйте файл или удалите предыдущий");
 
             // путь к папке Files
             string path = Configuration["FileFolder"] + "/" + uploadedFile.FileName;

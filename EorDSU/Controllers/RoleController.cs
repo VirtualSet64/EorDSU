@@ -3,6 +3,7 @@ using EorDSU.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Sentry;
 
 namespace EorDSU.Controllers
 {
@@ -12,8 +13,8 @@ namespace EorDSU.Controllers
     public class RoleController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly UserManager<User> _userManager;
-        public RoleController(RoleManager<IdentityRole> roleManager, UserManager<User> userManager)
+        private readonly UserManager<Models.User> _userManager;
+        public RoleController(RoleManager<IdentityRole> roleManager, UserManager<Models.User> userManager)
         {
             _roleManager = roleManager;
             _userManager = userManager;
@@ -44,7 +45,7 @@ namespace EorDSU.Controllers
         public async Task<IActionResult> EditRole(string userId, List<string> roles)
         {
             // получаем пользователя
-            User user = await _userManager.FindByIdAsync(userId);
+            Models.User user = await _userManager.FindByIdAsync(userId);
             if (user != null)
             {
                 // получем список ролей пользователя
@@ -70,8 +71,10 @@ namespace EorDSU.Controllers
         public async Task<IActionResult> DeleteRole(string id)
         {
             IdentityRole role = await _roleManager.FindByIdAsync(id);
-            if (role != null)
-                await _roleManager.DeleteAsync(role);
+            if (role == null)
+                return BadRequest();
+
+            await _roleManager.DeleteAsync(role);
             return Ok();
         }
     }

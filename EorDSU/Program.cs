@@ -7,9 +7,10 @@ using DSUContextDBService.Services;
 using EorDSU.DBService;
 using EorDSU.Interface;
 using EorDSU.Service;
+using EorDSU.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Office.Interop.Excel;
+using Microsoft.Extensions.Logging;
 using Sentry;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -78,6 +79,8 @@ using (var scope = app.Services.CreateScope())
         await RoleInitializer.InitializeAsync(adminLogin, password, userManager, rolesManager);
     }    
 }
+
+app.ConfigureExceptionHandler();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
