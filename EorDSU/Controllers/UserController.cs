@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EorDSU.Controllers
 {
-    //[Authorize(Roles = "admin")]
+    [Authorize(Roles = "admin")]
     [ApiController]
     [Route("[controller]")]
     public class UserController : Controller

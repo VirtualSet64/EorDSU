@@ -12,7 +12,7 @@ using System.IO;
 
 namespace EorDSU.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class DisciplineController : Controller

@@ -68,7 +68,7 @@ namespace EorDSU.Controllers
         /// </summary>
         /// <param name="profile"></param>
         /// <returns></returns>
-        //[Authorize]
+        [Authorize]
         [Route("CreateProfile")]
         [HttpPost]
         public async Task<IActionResult> CreateProfile(Profile profile)
@@ -85,7 +85,7 @@ namespace EorDSU.Controllers
         /// </summary>
         /// <param name="profile"></param>
         /// <returns></returns>
-        //[Authorize]
+        [Authorize]
         [Route("EditProfile")]
         [HttpPut]
         public async Task<IActionResult> EditProfile(Profile profile)
@@ -102,7 +102,7 @@ namespace EorDSU.Controllers
         /// </summary>
         /// <param name="profileId"></param>
         /// <returns></returns>
-        //[Authorize]
+        [Authorize]
         [Route("DeleteProfile")]
         [HttpDelete]
         public async Task<IActionResult> DeleteProfile(int profileId)
