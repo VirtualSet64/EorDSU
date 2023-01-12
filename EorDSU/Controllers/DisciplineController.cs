@@ -1,6 +1,9 @@
-﻿using EorDSU.DBService;
+﻿using EorDSU.Common;
+using EorDSU.Common.Interfaces;
+using EorDSU.DBService;
 using EorDSU.Interface;
 using EorDSU.Models;
+using EorDSU.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,18 +12,16 @@ using System.IO;
 
 namespace EorDSU.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("[controller]")]
     public class DisciplineController : Controller
     {
-        private readonly ApplicationContext _context;
-        private readonly IApplicationActiveData _activeData;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public DisciplineController(ApplicationContext context, IApplicationActiveData activeData)
+        public DisciplineController(IUnitOfWork unitOfWork)
         {
-            _context = context;
-            _activeData = activeData;
+            _unitOfWork = unitOfWork;
         }
 
         /// <summary>
@@ -35,8 +36,7 @@ namespace EorDSU.Controllers
             if (discipline == null)
                 return BadRequest();
 
-            await _context.Disciplines.AddAsync(discipline);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.DisciplineRepository.Create(discipline);
             return Ok();
         }
 
@@ -52,31 +52,22 @@ namespace EorDSU.Controllers
             if (discipline == null)
                 return BadRequest();
 
-            _context.Disciplines.Update(discipline);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.DisciplineRepository.Update(discipline);
             return Ok();
         }
 
-        /// <summary>
-        /// Удаление файла
-        /// </summary>
-        /// <param name="fileId"></param>
-        /// <returns></returns>
-        [Route("DeleteDiscipline")]
-        [HttpDelete]
-        public async Task<IActionResult> DeleteDiscipline(int disciplineId)
-        {
-            var discipline = await _activeData.GetDisciplineById(disciplineId);
-
-            if (discipline == null)
-                return BadRequest();
-
-            if (discipline.FileRPD != null)
-                _context.FileRPDs.Remove(discipline.FileRPD);
-
-            _context.Disciplines.Remove(discipline);
-            await _context.SaveChangesAsync();
-            return Ok();
-        }
+        ///// <summary>
+        ///// Удаление файла
+        ///// </summary>
+        ///// <param name="fileId"></param>
+        ///// <returns></returns>
+        //[Route("DeleteDiscipline")]
+        //[HttpDelete]
+        //public async Task<IActionResult> DeleteDiscipline(int disciplineId)
+        //{
+        //    if (await _disciplineRepository.RemoveDiscipline(disciplineId) == null)
+        //        return BadRequest();
+        //    return Ok();
+        //}
     }
 }

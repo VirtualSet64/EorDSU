@@ -1,20 +1,18 @@
 ﻿using EorDSU.Models;
-using EorDSU.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Sentry;
 
 namespace EorDSU.Controllers
 {
-    [Authorize(Roles = "admin")]
+    //[Authorize(Roles = "admin")]
     [ApiController]
     [Route("[controller]")]
     public class RoleController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly UserManager<Models.User> _userManager;
-        public RoleController(RoleManager<IdentityRole> roleManager, UserManager<Models.User> userManager)
+        private readonly UserManager<User> _userManager;
+        public RoleController(RoleManager<IdentityRole> roleManager, UserManager<User> userManager)
         {
             _roleManager = roleManager;
             _userManager = userManager;

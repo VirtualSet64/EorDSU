@@ -1,4 +1,5 @@
 ﻿using BasePersonDBService.Interfaces;
+using EorDSU.Common.Interfaces;
 using EorDSU.DBService;
 using EorDSU.Interface;
 using Microsoft.AspNetCore.Authorization;
@@ -7,43 +8,43 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EorDSU.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("[controller]")]
-    public class DataController : Controller
+    public class PersonalDataController : Controller
     {
-        private readonly IBasePersonActiveData _basePersonActiveData;
-        public DataController(IBasePersonActiveData basePersonActiveData)
+        private readonly IUnitOfWork _unitOfWork;
+        public PersonalDataController(IUnitOfWork unitOfWork)
         {
-            _basePersonActiveData = basePersonActiveData;
+            _unitOfWork = unitOfWork;
         }
 
         [Route("GetAllKafedra")]
         [HttpGet]
         public async Task<IActionResult> GetPersDepartments()
         {
-            return Ok(await _basePersonActiveData.GetPersDepartments().ToListAsync());
+            return Ok(await _unitOfWork.BasePersonActiveData.GetPersDepartments().ToListAsync());
         }
 
         [Route("GetKafedra")]
         [HttpGet]
         public IActionResult GetPersDepartments(int kafedraId)
         {
-            return Ok(_basePersonActiveData.GetPersDepartmentById(kafedraId));
+            return Ok(_unitOfWork.BasePersonActiveData.GetPersDepartmentById(kafedraId));
         }
 
         [Route("GetAllFaculty")]
         [HttpGet]
         public async Task<IActionResult> GetPersDivisions()
         {
-            return Ok(await _basePersonActiveData.GetPersDivisions().ToListAsync());
+            return Ok(await _unitOfWork.BasePersonActiveData.GetPersDivisions().ToListAsync());
         }
 
         [Route("GetFaculty")]
         [HttpGet]
         public IActionResult GetPersDivision(int facultyId)
         {
-            return Ok(_basePersonActiveData.GetPersDivisionById(facultyId));
+            return Ok(_unitOfWork.BasePersonActiveData.GetPersDivisionById(facultyId));
         }
     }
 }

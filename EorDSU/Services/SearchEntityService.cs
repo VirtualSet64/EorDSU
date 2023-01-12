@@ -1,6 +1,9 @@
 ﻿using BasePersonDBService.DataContext;
+using BasePersonDBService.Interfaces;
 using DSUContextDBService.DataContext;
+using DSUContextDBService.Interfaces;
 using DSUContextDBService.Models;
+using EorDSU.Common.Interfaces;
 using EorDSU.DBService;
 using EorDSU.Interface;
 using EorDSU.Models;
@@ -10,29 +13,27 @@ namespace EorDSU.Service
 {
     public class SearchEntityService : ISearchEntity
     {
-        private readonly DSUContext _dsuContext;
         private readonly ApplicationContext _applicationContext;
-        private readonly BASEPERSONMDFContext _basePersonContext;
-        public SearchEntityService(DSUContext dsuContext, ApplicationContext applicationContext, BASEPERSONMDFContext basePersonContext)
+        private readonly IUnitOfWork _unitOfWork;
+        public SearchEntityService(ApplicationContext applicationContext, IUnitOfWork unitOfWork)
         {
-            _dsuContext = dsuContext;
             _applicationContext = applicationContext;
-            _basePersonContext = basePersonContext;
+            _unitOfWork = unitOfWork;
         }
 
         public CaseCEdukind SearchEdukind(string text)
         {
-            return _dsuContext.CaseCEdukinds.FirstOrDefault(c => c.Edukind == text);
-        }
-
-        public PersDepartment SearchPersDepartment(string text)
-        {
-            return _basePersonContext.PersDepartments.FirstOrDefault(c => c.DepName == text);
+            return _unitOfWork.DSUActiveData.GetCaseCEdukinds().FirstOrDefault(c => c.Edukind == text);
         }
 
         public CaseSDepartment SearchCaseSDepartment(string text)
         {
-            return _dsuContext.CaseSDepartments.FirstOrDefault(c => c.DeptName == text);;
+            return _unitOfWork.DSUActiveData.GetCaseSDepartments().FirstOrDefault(c => c.DeptName == text); ;
+        }
+
+        public PersDepartment SearchPersDepartment(string text)
+        {
+            return _unitOfWork.BasePersonActiveData.GetPersDepartments().FirstOrDefault(c => c.DepName == text);
         }
 
         public LevelEdu SearchLevelEdu(string text)

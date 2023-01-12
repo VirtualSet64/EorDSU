@@ -1,5 +1,4 @@
-﻿using EorDSU.Models;
-using Microsoft.AspNetCore.Diagnostics;
+﻿using Microsoft.AspNetCore.Diagnostics;
 using Sentry;
 using System.Net;
 

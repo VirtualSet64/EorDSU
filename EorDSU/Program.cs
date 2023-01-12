@@ -1,16 +1,10 @@
 using BasePersonDBService.DataContext;
-using BasePersonDBService.Interfaces;
-using BasePersonDBService.Services;
 using DSUContextDBService.DataContext;
-using DSUContextDBService.Interfaces;
-using DSUContextDBService.Services;
+using EorDSU.Common;
 using EorDSU.DBService;
-using EorDSU.Interface;
-using EorDSU.Service;
 using EorDSU.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using Sentry;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,13 +38,6 @@ builder.Services.AddIdentity<EorDSU.Models.User, IdentityRole>(
                })
                .AddEntityFrameworkStores<ApplicationContext>();
 
-builder.Services.AddScoped<ExcelParsingService>();
-
-builder.Services.AddScoped<IDSUActiveData, DSUActiveData>();
-builder.Services.AddScoped<IBasePersonActiveData, BasePersonActiveData>();
-builder.Services.AddScoped<IApplicationActiveData, ActiveDataService>();
-builder.Services.AddScoped<ISearchEntity, SearchEntityService>();
-
 builder.WebHost.ConfigureServices(configure => SentrySdk.Init(o =>
 {
     // Tells which project in Sentry to send events to:
@@ -63,6 +50,8 @@ builder.WebHost.ConfigureServices(configure => SentrySdk.Init(o =>
     // Enable Global Mode if running in a client app
     o.IsGlobalModeEnabled = true;
 }));
+
+builder.Services.AddDBService();
 
 builder.Services.AddAuthorization();
 
@@ -77,7 +66,7 @@ using (var scope = app.Services.CreateScope())
         string adminLogin = builder.Configuration["AdminLogin"];
         string password = builder.Configuration["AdminPassword"];
         await RoleInitializer.InitializeAsync(adminLogin, password, userManager, rolesManager);
-    }    
+    }
 }
 
 app.ConfigureExceptionHandler();

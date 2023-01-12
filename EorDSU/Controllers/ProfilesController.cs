@@ -1,96 +1,114 @@
-﻿using EorDSU.DBService;
-using EorDSU.Interface;
+﻿using EorDSU.Common;
+using EorDSU.Common.Interfaces;
 using EorDSU.Models;
+using EorDSU.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Sentry;
 
 namespace EorDSU.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class ProfilesController : Controller
     {
-        private readonly ApplicationContext _context;
-        private readonly IApplicationActiveData _activeData;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public ProfilesController(ApplicationContext context, IApplicationActiveData activeData)
+        public ProfilesController(IUnitOfWork unitOfWork)
         {
-            _context = context;
-            _activeData = activeData;
+            _unitOfWork = unitOfWork;
         }
 
-        [Route("GetProfiles")]
+        /// <summary>
+        /// Получение всех данных 
+        /// </summary>
+        /// <returns></returns>
+        [Route("GetData")]
         [HttpGet]
-        public IActionResult GetProfiles()
+        public async Task<IActionResult> GetData()
         {
-            return Ok(_activeData.GetProfiles().ToList());
+            return Ok(await _unitOfWork.ProfileRepository.GetData());
         }
 
+        /// <summary>
+        /// Получение всех данных кафедры
+        /// </summary>
+        /// <returns></returns>
+        [Route("GetDataById")]
+        [HttpGet]
+        public async Task<IActionResult> GetData(int cafedraId)
+        {
+            return Ok(await _unitOfWork.ProfileRepository.GetData(cafedraId));
+        }
+
+        /// <summary>
+        /// Получение всех данных факультета
+        /// </summary>
+        /// <returns></returns>
+        [Route("GetDataFacultyById")]
+        [HttpGet]
+        public async Task<IActionResult> GetDataFacultyById(int facultyId)
+        {
+            return Ok(await _unitOfWork.ProfileRepository.GetDataFacultyById(facultyId));
+        }
+
+        /// <summary>
+        /// Получение профиля по id
+        /// </summary>
+        /// <param name="profileId"></param>
+        /// <returns></returns>
         [Route("GetProfileById")]
         [HttpGet]
         public IActionResult GetProfileById(int profileId)
         {
-            return Ok(_activeData.GetProfileById(profileId));
+            return Ok(_unitOfWork.ProfileRepository.GetProfileById(profileId));
         }
 
         /// <summary>
-        /// 
+        /// Создание профиля
         /// </summary>
-        /// <param name="discipline"></param>
+        /// <param name="profile"></param>
         /// <returns></returns>
-        [Route("CreateDiscipline")]
+        //[Authorize]
+        [Route("CreateProfile")]
         [HttpPost]
         public async Task<IActionResult> CreateProfile(Profile profile)
         {
             if (profile == null)
                 return BadRequest();
 
-            await _context.Profiles.AddAsync(profile);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.ProfileRepository.Create(profile);
             return Ok();
         }
 
         /// <summary>
-        /// 
+        /// Изменение профиля
         /// </summary>
-        /// <param name="discipline"></param>
+        /// <param name="profile"></param>
         /// <returns></returns>
-        [Route("EditDiscipline")]
+        //[Authorize]
+        [Route("EditProfile")]
         [HttpPut]
-        public async Task<IActionResult> EditDiscipline(Profile profile)
+        public async Task<IActionResult> EditProfile(Profile profile)
         {
             if (profile == null)
                 return BadRequest();
 
-            _context.Profiles.Update(profile);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.ProfileRepository.Update(profile);
             return Ok();
         }
 
         /// <summary>
-        /// Удаление файла
+        /// Удаление профиля
         /// </summary>
-        /// <param name="fileId"></param>
+        /// <param name="profileId"></param>
         /// <returns></returns>
-        [Route("DeleteDiscipline")]
+        //[Authorize]
+        [Route("DeleteProfile")]
         [HttpDelete]
         public async Task<IActionResult> DeleteProfile(int profileId)
         {
-            var profile = await _activeData.GetProfileById(profileId);
-
-            if (profile == null)
+            if (await _unitOfWork.ProfileRepository.RemoveProfile(profileId) == null)
                 return BadRequest();
-
-            if (profile.Disciplines != null)
-                _context.Disciplines.RemoveRange(profile.Disciplines);
-
-            if (profile.FileModels != null)
-                _context.FileModels.RemoveRange(profile.FileModels);
-
-            _context.Profiles.Remove(profile);
-            await _context.SaveChangesAsync();
             return Ok();
         }
     }
