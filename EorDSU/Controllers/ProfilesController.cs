@@ -94,9 +94,9 @@ namespace EorDSU.Controllers
         /// <param name="profile"></param>
         /// <returns></returns>
         [Authorize]
-        [Route("CreateProfile")]
+        [Route("CreateProfileByFile")]
         [HttpPost]
-        public async Task<IActionResult> CreateProfile(IFormFile uploadedFile)
+        public async Task<IActionResult> CreateProfileByFile(IFormFile uploadedFile)
         {
             if (uploadedFile == null)
                 return BadRequest();
