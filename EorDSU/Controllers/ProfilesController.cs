@@ -84,6 +84,8 @@ namespace EorDSU.Controllers
                              x.LevelEdu == profile.LevelEdu &&
                              x.Year == profile.Year))
                 return BadRequest("Такой профиль уже существует");
+
+            profile.CreateDate = DateTime.Now;
             await _unitOfWork.ProfileRepository.Create(profile);
             return Ok();
         }
@@ -94,9 +96,9 @@ namespace EorDSU.Controllers
         /// <param name="profile"></param>
         /// <returns></returns>
         [Authorize]
-        [Route("CreateProfile")]
+        [Route("CreateProfileByFile")]
         [HttpPost]
-        public async Task<IActionResult> CreateProfile(IFormFile uploadedFile)
+        public async Task<IActionResult> CreateProfileByFile(IFormFile uploadedFile)
         {
             if (uploadedFile == null)
                 return BadRequest();
@@ -118,6 +120,7 @@ namespace EorDSU.Controllers
             if (profile == null)
                 return BadRequest();
 
+            profile.CreateDate = DateTime.Now;
             await _unitOfWork.ProfileRepository.Update(profile);
             return Ok();
         }

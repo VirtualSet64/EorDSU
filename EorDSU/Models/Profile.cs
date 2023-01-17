@@ -58,5 +58,9 @@ namespace EorDSU.Models
         /// </summary>
         public int? PersDepartmentId { get; set; }
         public bool IsDeleted { get; set; }
+        /// <summary>
+        /// Дата создания
+        /// </summary>
+        public DateTime CreateDate { get; set; }
     }
 }

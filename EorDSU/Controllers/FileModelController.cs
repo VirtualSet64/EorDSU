@@ -42,7 +42,7 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("EditFileModel")]
         [HttpPut]
-        public async Task<IActionResult> EditFile(IFormFile uploadedFile, int profileId = 0)
+        public async Task<IActionResult> EditFile(IFormFile uploadedFile, int profileId)
         {
             if (profileId <= 0)
                 return BadRequest();

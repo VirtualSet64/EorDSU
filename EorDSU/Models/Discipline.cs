@@ -17,5 +17,6 @@ namespace EorDSU.Models
         public string? Code { get; set; }
         public FileRPD? FileRPD { get; set; }
         public bool IsDeleted { get; set; }
+        public DateTime CreateDate { get; set; }
     }
 }

@@ -29,6 +29,7 @@ namespace EorDSU.Controllers
             if (discipline == null)
                 return BadRequest();
 
+            discipline.CreateDate = DateTime.Now;
             await _unitOfWork.DisciplineRepository.Create(discipline);
             return Ok();
         }
@@ -45,6 +46,7 @@ namespace EorDSU.Controllers
             if (discipline == null)
                 return BadRequest();
 
+            discipline.CreateDate = DateTime.Now;
             await _unitOfWork.DisciplineRepository.Update(discipline);
             return Ok();
         }
