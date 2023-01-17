@@ -1,6 +1,6 @@
 ﻿using EorDSU.Models;
 
-namespace EorDSU.Interface
+namespace EorDSU.Services.Interface
 {
     public interface IExcelParsingService
     {

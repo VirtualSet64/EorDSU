@@ -14,7 +14,7 @@ namespace EorDSU.Models
         public Profile? Profile { get; set; } = new Profile();
         public int? StatusDisciplineId { get; set; }
         public StatusDiscipline? StatusDiscipline { get; set; } = new StatusDiscipline();
-        //public int? FileRPDId { get; set; }
+        public string? Code { get; set; }
         public FileRPD? FileRPD { get; set; }
         public bool IsDeleted { get; set; }
     }

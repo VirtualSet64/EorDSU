@@ -1,7 +1,6 @@
-﻿using EorDSU.Common;
-using EorDSU.Common.Interfaces;
+﻿using EorDSU.Common.Interfaces;
 using EorDSU.Models;
-using EorDSU.Repository.InterfaceRepository;
+using EorDSU.ResponseModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -32,6 +31,7 @@ namespace EorDSU.Controllers
         /// <summary>
         /// Получение всех данных кафедры
         /// </summary>
+        /// <param name="cafedraId"></param>
         /// <returns></returns>
         [Route("GetDataById")]
         [HttpGet]
@@ -43,6 +43,7 @@ namespace EorDSU.Controllers
         /// <summary>
         /// Получение всех данных факультета
         /// </summary>
+        /// <param name="facultyId"></param>
         /// <returns></returns>
         [Route("GetDataFacultyById")]
         [HttpGet]
@@ -76,8 +77,32 @@ namespace EorDSU.Controllers
             if (profile == null)
                 return BadRequest();
 
+            if (_unitOfWork.ProfileRepository.Get().Any(x => x.ProfileName == profile.ProfileName &&
+                             x.TermEdu == profile.TermEdu &&
+                             x.CaseCEdukindId == profile.CaseCEdukindId &&
+                             x.CaseSDepartmentId == profile.CaseSDepartmentId &&
+                             x.LevelEdu == profile.LevelEdu &&
+                             x.Year == profile.Year))
+                return BadRequest("Такой профиль уже существует");
             await _unitOfWork.ProfileRepository.Create(profile);
             return Ok();
+        }
+
+        /// <summary>
+        /// Создание профиля
+        /// </summary>
+        /// <param name="profile"></param>
+        /// <returns></returns>
+        [Authorize]
+        [Route("CreateProfile")]
+        [HttpPost]
+        public async Task<IActionResult> CreateProfile(IFormFile uploadedFile)
+        {
+            if (uploadedFile == null)
+                return BadRequest();
+
+            ExcelParsingResponse profile = await _unitOfWork.ProfileRepository.CreateProfileAsync(uploadedFile);
+            return Ok(profile);
         }
 
         /// <summary>

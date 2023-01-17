@@ -1,15 +1,11 @@
 ﻿using EorDSU.Common.Interfaces;
-using EorDSU.DBService;
-using EorDSU.Interface;
 using EorDSU.Models;
-using EorDSU.Repository.InterfaceRepository;
-using EorDSU.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EorDSU.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class FileModelController : Controller
@@ -30,7 +26,7 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("CreateFileModel")]
         [HttpPost]
-        public async Task<IActionResult> CreateFileModel(IFormFile uploadedFile, int fileTypeId = 2, int profileId = 0)
+        public async Task<IActionResult> CreateFileModel(IFormFile uploadedFile, int fileTypeId, int profileId)
         {
             FileModel file = await _unitOfWork.FileModelRepository.CreateFileModel(uploadedFile, fileTypeId, profileId);
             if (file == null)

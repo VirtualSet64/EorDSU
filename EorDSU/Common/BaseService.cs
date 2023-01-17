@@ -1,15 +1,4 @@
-﻿using BasePersonDBService.Interfaces;
-using BasePersonDBService.Services;
-using DSUContextDBService.Interfaces;
-using DSUContextDBService.Services;
-using EorDSU.Common.Interfaces;
-using EorDSU.Interface;
-using EorDSU.Models;
-using EorDSU.Repository;
-using EorDSU.Repository.InterfaceRepository;
-using EorDSU.Service;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
+﻿using EorDSU.Common.Interfaces;
 
 namespace EorDSU.Common
 {

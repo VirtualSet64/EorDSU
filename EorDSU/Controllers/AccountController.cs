@@ -20,7 +20,6 @@ namespace EorDSU.Controllers
         [HttpGet]
         public async Task<IActionResult> Logout()
         {
-            // удаляем аутентификационные куки
             await _signInManager.SignOutAsync();
             return Ok();
         }
@@ -31,8 +30,7 @@ namespace EorDSU.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result =
-                    await _signInManager.PasswordSignInAsync(model.Login, model.Password, false, false);
+                var result = await _signInManager.PasswordSignInAsync(model.Login, model.Password, false, false);
                 if (result.Succeeded)
                     return Ok();
                 else

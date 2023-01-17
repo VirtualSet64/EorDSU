@@ -1,14 +1,11 @@
-﻿using BasePersonDBService.Interfaces;
-using EorDSU.Common.Interfaces;
-using EorDSU.DBService;
-using EorDSU.Interface;
+﻿using EorDSU.Common.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace EorDSU.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class PersonalDataController : Controller

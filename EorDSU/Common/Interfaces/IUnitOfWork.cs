@@ -2,6 +2,7 @@
 using DSUContextDBService.Interfaces;
 using EorDSU.Interface;
 using EorDSU.Repository.InterfaceRepository;
+using EorDSU.Services.Interface;
 
 namespace EorDSU.Common.Interfaces
 {

@@ -7,10 +7,10 @@ using DSUContextDBService.Services;
 using EorDSU.Common.Interfaces;
 using EorDSU.DBService;
 using EorDSU.Interface;
-using EorDSU.Models;
 using EorDSU.Repository;
 using EorDSU.Repository.InterfaceRepository;
 using EorDSU.Service;
+using EorDSU.Services.Interface;
 
 namespace EorDSU.Common
 {
@@ -21,15 +21,6 @@ namespace EorDSU.Common
         private readonly DSUContext _dSUContext;
         private readonly IWebHostEnvironment _appEnvironment;
         private readonly IConfiguration Configuration;
-        private IBasePersonActiveData _basePersonActiveData;
-        private IDSUActiveData _dSUActiveData;
-        private IExcelParsingService _excelParsingService;
-        private ISearchEntity _searchEntity;
-
-        private IProfileRepository profileRepository;
-        private IDisciplineRepository disciplineRepository;
-        private IFileModelRepository fileModelRepository;
-        private IFileRPDRepository fileRPDRepository;
 
         public UnitOfWork(ApplicationContext context, IWebHostEnvironment appEnvironment, IConfiguration configuration, BASEPERSONMDFContext bASEPERSONMDFContext, 
             DSUContext dSUContext)
@@ -45,7 +36,7 @@ namespace EorDSU.Common
         {
             get
             {
-                _excelParsingService ??= new ExcelParsingService(this);
+                IExcelParsingService _excelParsingService = new ExcelParsingService(this);
                 return _excelParsingService;
             }
         }
@@ -54,7 +45,7 @@ namespace EorDSU.Common
         {
             get
             {
-                _searchEntity ??= new SearchEntityService(_context, this);
+                ISearchEntity _searchEntity = new SearchEntityService(_context, this);
                 return _searchEntity;
             }
         }
@@ -63,7 +54,7 @@ namespace EorDSU.Common
         {
             get
             {
-                _dSUActiveData ??= new DSUActiveData(_dSUContext);
+                IDSUActiveData _dSUActiveData = new DSUActiveData(_dSUContext);
                 return _dSUActiveData;
             }
         }
@@ -72,7 +63,7 @@ namespace EorDSU.Common
         {
             get
             {
-                _basePersonActiveData ??= new BasePersonActiveData(_bASEPERSONMDFContext);
+                IBasePersonActiveData _basePersonActiveData = new BasePersonActiveData(_bASEPERSONMDFContext);
                 return _basePersonActiveData;
             }
         }
@@ -81,7 +72,7 @@ namespace EorDSU.Common
         {
             get
             {
-                profileRepository ??= new ProfileRepository(_context, this, Configuration);
+                IProfileRepository profileRepository = new ProfileRepository(_context, this, Configuration, _appEnvironment);
                 return profileRepository;
             }
         }
@@ -90,7 +81,7 @@ namespace EorDSU.Common
         {
             get
             {
-                disciplineRepository ??= new DisciplineRepository(_context);
+                IDisciplineRepository disciplineRepository = new DisciplineRepository(_context);
                 return disciplineRepository;
             }
         }
@@ -99,7 +90,7 @@ namespace EorDSU.Common
         {
             get
             {
-                fileModelRepository ??= new FileModelRepository(_context, _appEnvironment, Configuration, this);
+                IFileModelRepository fileModelRepository = new FileModelRepository(_context, _appEnvironment, Configuration);
                 return fileModelRepository;
             }
         }
@@ -108,7 +99,7 @@ namespace EorDSU.Common
         {
             get
             {
-                fileRPDRepository ??= new FileRPDRepository(_context, _appEnvironment, Configuration);
+                IFileRPDRepository fileRPDRepository = new FileRPDRepository(_context, _appEnvironment, Configuration);
                 return fileRPDRepository;
             }
         }

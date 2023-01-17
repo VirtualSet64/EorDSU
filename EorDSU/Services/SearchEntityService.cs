@@ -1,13 +1,8 @@
-﻿using BasePersonDBService.DataContext;
-using BasePersonDBService.Interfaces;
-using DSUContextDBService.DataContext;
-using DSUContextDBService.Interfaces;
-using DSUContextDBService.Models;
-using EorDSU.Common.Interfaces;
+﻿using EorDSU.Common.Interfaces;
 using EorDSU.DBService;
 using EorDSU.Interface;
 using EorDSU.Models;
-using Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace EorDSU.Service
 {
@@ -21,24 +16,33 @@ namespace EorDSU.Service
             _unitOfWork = unitOfWork;
         }
 
-        public CaseCEdukind SearchEdukind(string text)
+        public async Task<short?> SearchEdukind(string text)
         {
-            return _unitOfWork.DSUActiveData.GetCaseCEdukinds().FirstOrDefault(c => c.Edukind == text);
+            var item = await _unitOfWork.DSUActiveData.GetCaseCEdukinds().FirstOrDefaultAsync(c => c.Edukind == text);
+            if (item != null)
+                return item.EdukindId;
+            return null;
         }
 
-        public CaseSDepartment SearchCaseSDepartment(string text)
+        public async Task<int?> SearchCaseSDepartment(string text)
         {
-            return _unitOfWork.DSUActiveData.GetCaseSDepartments().FirstOrDefault(c => c.DeptName == text); ;
+            var item = await _unitOfWork.DSUActiveData.GetCaseSDepartments().FirstOrDefaultAsync(c => c.DeptName == text);
+            if (item != null)
+                return item.DepartmentId;
+            return null;
         }
 
-        public PersDepartment SearchPersDepartment(string text)
+        public async Task<int?> SearchPersDepartment(string text)
         {
-            return _unitOfWork.BasePersonActiveData.GetPersDepartments().FirstOrDefault(c => c.DepName == text);
+            var item = await _unitOfWork.BasePersonActiveData.GetPersDepartments().FirstOrDefaultAsync(c => c.DepName == text);
+            if (item != null)
+                return item.DepId;
+            return null;
         }
 
-        public LevelEdu SearchLevelEdu(string text)
+        public async Task<LevelEdu> SearchLevelEdu(string text)
         {
-            var levelEdu = _applicationContext.LevelEdues.FirstOrDefault(c => c.Name == text);
+            var levelEdu = await _applicationContext.LevelEdues.FirstOrDefaultAsync(c => c.Name == text);
             if (levelEdu == null)
             {
                 levelEdu = new LevelEdu(text);
@@ -49,9 +53,9 @@ namespace EorDSU.Service
             return levelEdu;
         }
 
-        public StatusDiscipline SearchStatusDiscipline(string text)
+        public async Task<StatusDiscipline> SearchStatusDiscipline(string text)
         {
-            var statusDiscipline = _applicationContext.StatusDisciplines.FirstOrDefault(c => c.Name == text);
+            var statusDiscipline = await _applicationContext.StatusDisciplines.FirstOrDefaultAsync(c => c.Name == text);
             if (statusDiscipline == null)
             {
                 statusDiscipline = new StatusDiscipline(text);

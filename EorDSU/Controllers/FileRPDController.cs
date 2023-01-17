@@ -1,20 +1,10 @@
 ﻿using EorDSU.Common.Interfaces;
-using EorDSU.DBService;
-using EorDSU.Interface;
-using EorDSU.Models;
-using EorDSU.Repository.InterfaceRepository;
-using EorDSU.ResponseModel;
-using EorDSU.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Sentry;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace EorDSU.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class FileRPDController : Controller
@@ -27,7 +17,7 @@ namespace EorDSU.Controllers
         }
 
         /// <summary>
-        /// Добавление РПД к дисциплине
+        /// Создание РПД
         /// </summary>
         /// <param name="uploadedFile"></param>
         /// <param name="disciplineId"></param>

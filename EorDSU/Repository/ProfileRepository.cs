@@ -1,13 +1,9 @@
-﻿using BasePersonDBService.Interfaces;
-using DSUContextDBService.Interfaces;
-using EorDSU.Common;
+﻿using EorDSU.Common;
 using EorDSU.Common.Interfaces;
 using EorDSU.Models;
 using EorDSU.Repository.InterfaceRepository;
 using EorDSU.ResponseModel;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Sentry;
 
 namespace EorDSU.Repository
 {
@@ -15,10 +11,12 @@ namespace EorDSU.Repository
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IConfiguration Configuration;
-        public ProfileRepository(DbContext dbContext, IUnitOfWork unitOfWork, IConfiguration configuration) : base(dbContext)
+        private readonly IWebHostEnvironment _appEnvironment;
+        public ProfileRepository(DbContext dbContext, IUnitOfWork unitOfWork, IConfiguration configuration, IWebHostEnvironment appEnvironment) : base(dbContext)
         {
             _unitOfWork = unitOfWork;
             Configuration = configuration;
+            _appEnvironment = appEnvironment;
         }
 
         public async Task<List<DataResponseForSvedenOOPDGU>> GetData()
@@ -62,7 +60,7 @@ namespace EorDSU.Repository
         {
             dataResponseForSvedenOOPDGUs.Add(new()
             {
-                Profiles = item,
+                Profile = item,
                 CaseCEdukind = _unitOfWork.DSUActiveData.GetCaseCEdukindById((int)item.CaseCEdukindId),
                 CaseSDepartment = _unitOfWork.DSUActiveData.GetCaseSDepartmentById((int)item.CaseSDepartmentId),
                 SrokDeystvGosAccred = Configuration["SrokDeystvGosAccred"],
@@ -72,6 +70,20 @@ namespace EorDSU.Repository
         public Profile GetProfileById(int id)
         {
             return GetWithIncludeById(x => x.Id == id, x => x.Disciplines, x => x.FileModels, x => x.LevelEdu);
+        }
+
+        public async Task<ExcelParsingResponse> CreateProfileAsync(IFormFile uploadedFile)
+        {
+            string path = Configuration["FileFolder"] + "/" + uploadedFile.FileName;
+            using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
+                await uploadedFile.CopyToAsync(fileStream);
+
+            ExcelParsingResponse profile = new()
+            {
+                Profile = await _unitOfWork.ExcelParsingService.ParsingService(path)                
+            };
+            profile.CaseSDepartment = _unitOfWork.DSUActiveData.GetCaseSDepartmentById((int)profile.Profile.CaseSDepartmentId);
+            return profile;
         }
 
         public async Task<Profile> RemoveProfile(int id)

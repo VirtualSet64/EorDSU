@@ -13,7 +13,7 @@ namespace EorDSU.DBService
             }
             if (await userManager.FindByNameAsync(adminLogin) == null)
             {
-                User admin = new User { UserName = adminLogin };
+                User admin = new() { UserName = adminLogin };
                 IdentityResult result = await userManager.CreateAsync(admin, password);
                 if (result.Succeeded)
                 {

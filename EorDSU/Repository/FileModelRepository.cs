@@ -1,25 +1,18 @@
 ﻿using EorDSU.Common;
-using EorDSU.Common.Interfaces;
-using EorDSU.Interface;
 using EorDSU.Models;
 using EorDSU.Repository.InterfaceRepository;
-using EorDSU.Service;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Sentry;
 
 namespace EorDSU.Repository
 {
     public class FileModelRepository : GenericRepository<FileModel>, IFileModelRepository
     {
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IWebHostEnvironment _appEnvironment;
         private readonly IConfiguration Configuration;
-        public FileModelRepository(DbContext dbContext, IWebHostEnvironment appEnvironment, IConfiguration configuration, IUnitOfWork unitOfWork) : base(dbContext)
+        public FileModelRepository(DbContext dbContext, IWebHostEnvironment appEnvironment, IConfiguration configuration) : base(dbContext)
         {
             _appEnvironment = appEnvironment;
             Configuration = configuration;
-            _unitOfWork = unitOfWork;
         }
 
         public async Task<FileModel?> CreateFileModel(IFormFile uploadedFile, int fileTypeId, int profileId)
@@ -33,10 +26,7 @@ namespace EorDSU.Repository
 
             FileModel file = new() { Name = uploadedFile.FileName, ProfileId = profileId, Type = (FileType)fileTypeId };
 
-            if (fileTypeId == (int)FileType.EduPlan && (Path.GetExtension(path) == ".xls" || Path.GetExtension(path) == ".xlsx"))
-                await _unitOfWork.ExcelParsingService.ParsingService(path);
-            else
-                await Create(file);
+            await Create(file);
 
             return file;
         }

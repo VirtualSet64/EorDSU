@@ -1,7 +1,6 @@
 ﻿using EorDSU.Common;
 using EorDSU.Models;
 using EorDSU.Repository.InterfaceRepository;
-using EorDSU.Service;
 using Microsoft.EntityFrameworkCore;
 
 namespace EorDSU.Repository

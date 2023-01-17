@@ -1,14 +1,7 @@
-﻿using EorDSU.Common;
-using EorDSU.Common.Interfaces;
-using EorDSU.DBService;
-using EorDSU.Interface;
+﻿using EorDSU.Common.Interfaces;
 using EorDSU.Models;
-using EorDSU.Repository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Sentry;
-using System.IO;
 
 namespace EorDSU.Controllers
 {
@@ -25,7 +18,7 @@ namespace EorDSU.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Создание дисциплины
         /// </summary>
         /// <param name="discipline"></param>
         /// <returns></returns>
@@ -41,7 +34,7 @@ namespace EorDSU.Controllers
         }
 
         /// <summary>
-        /// 
+        /// Изменение дисциплины
         /// </summary>
         /// <param name="discipline"></param>
         /// <returns></returns>
@@ -56,18 +49,18 @@ namespace EorDSU.Controllers
             return Ok();
         }
 
-        ///// <summary>
-        ///// Удаление файла
-        ///// </summary>
-        ///// <param name="fileId"></param>
-        ///// <returns></returns>
-        //[Route("DeleteDiscipline")]
-        //[HttpDelete]
-        //public async Task<IActionResult> DeleteDiscipline(int disciplineId)
-        //{
-        //    if (await _disciplineRepository.RemoveDiscipline(disciplineId) == null)
-        //        return BadRequest();
-        //    return Ok();
-        //}
+        /// <summary>
+        /// Удаление дисциплины
+        /// </summary>
+        /// <param name="disciplineId"></param>
+        /// <returns></returns>
+        [Route("DeleteDiscipline")]
+        [HttpDelete]
+        public async Task<IActionResult> DeleteDiscipline(int disciplineId)
+        {
+            if (await _unitOfWork.DisciplineRepository.RemoveDiscipline(disciplineId) == null)
+                return BadRequest();
+            return Ok();
+        }
     }
 }

@@ -1,13 +1,11 @@
-﻿using BasePersonDBService.Interfaces;
-using DSUContextDBService.Interfaces;
-using EorDSU.Common.Interfaces;
+﻿using EorDSU.Common.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace EorDSU.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class DekanatDataController : Controller
@@ -25,11 +23,14 @@ namespace EorDSU.Controllers
             return Ok(await _unitOfWork.DSUActiveData.GetCaseSDepartments().ToListAsync());
         }
 
-        [Route("GetCaseSDepartmentById")]
+        [Route("GetCaseSDepartmentByKafedraId")]
         [HttpGet]
-        public IActionResult GetCaseSDepartmentById(int kafedraId)
+        public async Task<IActionResult> GetCaseSDepartmentByIdAsync(int kafedraId)
         {
-            return Ok(_unitOfWork.DSUActiveData.GetCaseSDepartmentById(kafedraId));
+            int? facultyId = _unitOfWork.BasePersonActiveData.GetPersDepartmentById(kafedraId).DivId;
+            if (facultyId == null)
+                return BadRequest();
+            return Ok(await _unitOfWork.DSUActiveData.GetCaseSDepartmentByFacultyId(facultyId).ToListAsync());
         }
     }
 }

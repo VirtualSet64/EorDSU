@@ -46,9 +46,7 @@ namespace EorDSU.Controllers
                 User user = new() { UserName = model.Login, PersDepartmentId = model.PersDepartmentId };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
-                {
                     return Ok();
-                }
             }
             return BadRequest();
         }
