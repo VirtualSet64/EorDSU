@@ -1,13 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace EorDSU.Models
+﻿namespace EorDSU.Models
 {
     /// <summary>
     /// Дисциплина
     /// </summary>
     public class Discipline
     {
-        [Key]
         public int Id { get; set; }
         public string? DisciplineName { get; set; }        
         public int? ProfileId { get; set; }
@@ -18,5 +15,6 @@ namespace EorDSU.Models
         public FileRPD? FileRPD { get; set; }
         public bool IsDeleted { get; set; }
         public DateTime CreateDate { get; set; }
+        public DateTime UpdateDate { get; set; }
     }
 }

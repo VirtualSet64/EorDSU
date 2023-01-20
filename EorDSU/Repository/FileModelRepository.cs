@@ -46,7 +46,7 @@ namespace EorDSU.Repository
             using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
                 await uploadedFile.CopyToAsync(fileStream);
 
-            FileModel file = new() { Name = uploadedFile.FileName, ProfileId = profileId, CreateDate = DateTime.Now };
+            FileModel file = new() { Name = uploadedFile.FileName, ProfileId = profileId, UpdateDate = DateTime.Now };
             await Update(file);
             return file;
         }

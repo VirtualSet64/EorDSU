@@ -47,7 +47,7 @@ namespace EorDSU.Controllers
             if (profileId <= 0)
                 return BadRequest();
 
-            FileModel file = new() { Name = uploadedFile.FileName, ProfileId = profileId };
+            FileModel file = new() { Name = uploadedFile.FileName, ProfileId = profileId, CreateDate = DateTime.Now };
             await _unitOfWork.FileModelRepository.Update(file);
             return Ok();
         }

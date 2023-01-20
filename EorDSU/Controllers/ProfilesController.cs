@@ -103,7 +103,7 @@ namespace EorDSU.Controllers
             if (uploadedFile == null)
                 return BadRequest();
 
-            ExcelParsingResponse profile = await _unitOfWork.ProfileRepository.CreateProfileAsync(uploadedFile);
+            ExcelParsingResponse profile = await _unitOfWork.ProfileRepository.ParsedProfileForPreview(uploadedFile);
             return Ok(profile);
         }
 
@@ -120,7 +120,7 @@ namespace EorDSU.Controllers
             if (profile == null)
                 return BadRequest();
 
-            profile.CreateDate = DateTime.Now;
+            profile.UpdateDate = DateTime.Now;
             await _unitOfWork.ProfileRepository.Update(profile);
             return Ok();
         }
