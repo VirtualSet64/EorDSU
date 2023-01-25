@@ -32,8 +32,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Anket\BasePersonDBService\BasePersonDBService.csproj" />
-    <ProjectReference Include="..\..\Anket\DSUContextDBService\DSUContextDBService.csproj" />
+    <ProjectReference Include="..\BasePersonDBService\BasePersonDBService.csproj" />
+    <ProjectReference Include="..\DSUContextDBService\DSUContextDBService.csproj" />
   </ItemGroup>
 
 </Project>
