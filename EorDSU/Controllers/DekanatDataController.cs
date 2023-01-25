@@ -1,4 +1,5 @@
-﻿using EorDSU.Common.Interfaces;
+﻿using EorDSU.Common;
+using EorDSU.Common.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,13 @@ namespace EorDSU.Controllers
             if (facultyId == null)
                 return BadRequest();
             return Ok(await _unitOfWork.DSUActiveData.GetCaseSDepartmentByFacultyId(facultyId).ToListAsync());
+        }
+
+        [Route("GetCaseSEdukinds")]
+        [HttpGet]
+        public async Task<IActionResult> GetCaseSEdukinds()
+        {
+            return Ok(_unitOfWork.DSUActiveData.GetCaseCEdukinds());
         }
     }
 }

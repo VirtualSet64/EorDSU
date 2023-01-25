@@ -1,13 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace EorDSU.Models
+﻿namespace EorDSU.Models
 {
     /// <summary>
     /// Профиль обучения
     /// </summary>
     public class Profile
     {
-        [Key]
         public int Id { get; set; } 
         /// <summary>
         /// Название профиля
@@ -58,5 +55,13 @@ namespace EorDSU.Models
         /// </summary>
         public int? PersDepartmentId { get; set; }
         public bool IsDeleted { get; set; }
+        /// <summary>
+        /// Дата создания
+        /// </summary>
+        public DateTime CreateDate { get; set; }
+        /// <summary>
+        /// Дата последнего обновления
+        /// </summary>
+        public DateTime UpdateDate { get; set; }
     }
 }

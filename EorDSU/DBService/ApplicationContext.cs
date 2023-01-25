@@ -41,7 +41,7 @@ namespace EorDSU.DBService
             modelBuilder.Entity<Discipline>()
             .HasOne(u => u.FileRPD)
             .WithOne(p => p.Discipline)
-            .HasForeignKey<FileRPD>(p => p.DisciplineId);
+            .OnDelete(DeleteBehavior.Cascade);
 
             base.OnModelCreating(modelBuilder);
         }

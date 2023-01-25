@@ -84,6 +84,8 @@ namespace EorDSU.Controllers
                              x.LevelEdu == profile.LevelEdu &&
                              x.Year == profile.Year))
                 return BadRequest("Такой профиль уже существует");
+
+            profile.CreateDate = DateTime.Now;
             await _unitOfWork.ProfileRepository.Create(profile);
             return Ok();
         }
@@ -101,7 +103,7 @@ namespace EorDSU.Controllers
             if (uploadedFile == null)
                 return BadRequest();
 
-            ExcelParsingResponse profile = await _unitOfWork.ProfileRepository.CreateProfileAsync(uploadedFile);
+            ExcelParsingResponse profile = await _unitOfWork.ProfileRepository.ParsedProfileForPreview(uploadedFile);
             return Ok(profile);
         }
 
@@ -118,6 +120,7 @@ namespace EorDSU.Controllers
             if (profile == null)
                 return BadRequest();
 
+            profile.UpdateDate = DateTime.Now;
             await _unitOfWork.ProfileRepository.Update(profile);
             return Ok();
         }

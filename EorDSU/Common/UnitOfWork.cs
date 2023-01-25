@@ -103,5 +103,14 @@ namespace EorDSU.Common
                 return fileRPDRepository;
             }
         }
+
+        IStatusDisciplineRepository IUnitOfWork.StatusDisciplineRepository
+        {
+            get
+            {
+                IStatusDisciplineRepository statusDisciplineRepository = new StatusDisciplineRepository(_context);
+                return statusDisciplineRepository;
+            }
+        }
     }
 }

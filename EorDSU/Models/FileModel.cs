@@ -11,5 +11,7 @@
         public Profile? Profile { get; set; }
         public FileType? Type { get; set; }
         public bool IsDeleted { get; set; }
+        public DateTime CreateDate { get; set; }
+        public DateTime UpdateDate { get; set; }
     }
 }
