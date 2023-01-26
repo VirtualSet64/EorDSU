@@ -13,16 +13,6 @@ namespace DSUContextDBService.Services
             _dSUContext = dSUContext;
         }
 
-        public CaseCEdue GetCaseCEdueById(int id)
-        {
-            return _dSUContext.CaseCEdues.FirstOrDefault(x => x.EduesId == id);
-        }
-
-        public IQueryable<CaseCEdue> GetCaseCEdues()
-        {
-            return _dSUContext.CaseCEdues;
-        }
-
         public CaseCEdukind GetCaseCEdukindById(int id)
         {
             return _dSUContext.CaseCEdukinds.FirstOrDefault(x => x.EdukindId == id);

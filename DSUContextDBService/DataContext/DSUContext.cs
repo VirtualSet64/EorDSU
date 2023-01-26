@@ -14,26 +14,11 @@ namespace DSUContextDBService.DataContext
         {
         }
 
-        public virtual DbSet<CaseCEdue> CaseCEdues { get; set; } = null!;
         public virtual DbSet<CaseCEdukind> CaseCEdukinds { get; set; } = null!;
         public virtual DbSet<CaseSDepartment> CaseSDepartments { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<CaseCEdue>(entity =>
-            {
-                entity.HasNoKey();
-
-                entity.ToView("CASE_C_EDUES");
-
-                entity.Property(e => e.EduesId).HasColumnName("EDUES_ID");
-
-                entity.Property(e => e.EduesName)
-                    .HasMaxLength(50)
-                    .IsUnicode(false)
-                    .HasColumnName("EDUES_NAME");
-            });
-
             modelBuilder.Entity<CaseCEdukind>(entity =>
             {
                 entity.HasNoKey();
