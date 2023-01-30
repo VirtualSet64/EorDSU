@@ -19,24 +19,26 @@ namespace EorDSU.Repository
         /// Создание файлов
         /// </summary>
         /// <param name="uploads"></param>
+        /// <param name="fileNameList"></param>
         /// <param name="fileTypeId"></param>
         /// <param name="profileId"></param>
         /// <returns></returns>
-        public async Task<List<FileModel>?> CreateFileModel(IFormFileCollection uploads, int fileTypeId, int profileId)
+        public async Task<List<FileModel>?> CreateFileModel(IFormFileCollection uploads, List<string> fileNameList, int fileTypeId, int profileId)
         {
             List<FileModel> files = new();
-            foreach (var uploadedFile in uploads)
+            for (int i = 0; i < uploads.Count; i++)
             {
-                if (Get().Any(x => x.Name == uploadedFile.FileName))
+                if (Get().Any(x => x.Name == uploads[i].FileName))
                     return null;
 
-                string path = Configuration["FileFolder"] + "/" + uploadedFile.FileName;
+                string path = Configuration["FileFolder"] + "/" + uploads[i].FileName;
                 using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
-                    await uploadedFile.CopyToAsync(fileStream);
+                    await uploads[i].CopyToAsync(fileStream);
 
                 FileModel file = new()
                 {
-                    Name = uploadedFile.FileName,
+                    Name = uploads[i].FileName,
+                    OutputFileName = fileNameList[i],
                     ProfileId = profileId,
                     Type = (FileType)fileTypeId,
                     CreateDate = DateTime.Now
@@ -52,23 +54,25 @@ namespace EorDSU.Repository
         /// Изменение файлов
         /// </summary>
         /// <param name="uploads"></param>
+        /// <param name="fileNameList"></param>
         /// <param name="profileId"></param>
         /// <returns></returns>
-        public async Task<List<FileModel>?> EditFile(IFormFileCollection uploads, int profileId)
+        public async Task<List<FileModel>?> EditFile(IFormFileCollection uploads, List<string> fileNameList, int profileId)
         {
             List<FileModel> files = new();
-            foreach (var uploadedFile in uploads)
+            for (int i = 0; i < uploads.Count; i++)
             {
-                if (Get().Any(x => x.Name == uploadedFile.FileName))
+                if (Get().Any(x => x.Name == uploads[i].FileName))
                     return null;
 
-                string path = Configuration["FileFolder"] + uploadedFile.FileName;
+                string path = Configuration["FileFolder"] + uploads[i].FileName;
                 using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
-                    await uploadedFile.CopyToAsync(fileStream);
+                    await uploads[i].CopyToAsync(fileStream);
 
                 FileModel file = new()
                 {
-                    Name = uploadedFile.FileName,
+                    Name = uploads[i].FileName,
+                    OutputFileName = fileNameList[i],
                     ProfileId = profileId,
                     UpdateDate = DateTime.Now
                 };

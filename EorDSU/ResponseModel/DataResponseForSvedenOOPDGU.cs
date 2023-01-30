@@ -8,6 +8,5 @@ namespace EorDSU.ResponseModel
         public Profile? Profile { get; set; }
         public CaseSDepartment? CaseSDepartment { get; set; }
         public CaseCEdukind? CaseCEdukind { get; set; }
-        public string? SrokDeystvGosAccred { get; set; }
     }
 }

@@ -13,7 +13,7 @@
         /// <summary>
         /// Срок обучения
         /// </summary>
-        public int? TermEdu { get; set; }
+        public string? TermEdu { get; set; }
         /// <summary>
         /// 
         /// </summary>

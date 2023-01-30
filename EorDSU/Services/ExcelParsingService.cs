@@ -1,6 +1,7 @@
 ﻿using EorDSU.Common.Interfaces;
 using EorDSU.Models;
 using EorDSU.Services.Interface;
+using System.Collections.Generic;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace EorDSU.Service
@@ -21,7 +22,6 @@ namespace EorDSU.Service
 
             Profile profile = new();
             await TitulPage(ObjWorkBook, profile);
-            await PlanSvodPage(ObjWorkBook, profile);
 
             ClearAndExitExcel(ObjWorkBook, ObjWorkExcel);
 
@@ -35,6 +35,7 @@ namespace EorDSU.Service
         /// <param name="profile"></param>
         private async Task TitulPage(Excel.Workbook ObjWorkBook, Profile profile)
         {
+
             Excel.Worksheet ObjWorkSheet = (Excel.Worksheet)ObjWorkBook.Sheets[1]; //получить 1 лист
             var lastCell = ObjWorkSheet.Cells.SpecialCells(Excel.XlCellType.xlCellTypeLastCell);//1 ячейку
             string[,] list = new string[lastCell.Column, lastCell.Row]; // массив значений с листа равен по размеру листу
@@ -44,27 +45,52 @@ namespace EorDSU.Service
 
                     list[i, j] = ObjWorkSheet.Cells[j + 1, i + 1].Text.ToString();//считываем текст в строку
 
-            profile.CaseCEdukindId = await _unitOfWork.SearchEntity.SearchEdukind(list[2, 41].Split(" ")[^1]);
-            //[^1] = List[List.Lenght - 1]
+            //if (list[15, 15] == "основное общее образование")
+            //{
+            //    await TitulPageForCollegeAsync(list, profile);
+            //    await PlanSvodPage(ObjWorkBook, profile, true);
+            //}
+            //else
+            //{
+                await TitulPageForVuz(list, profile);
+                await PlanSvodPage(ObjWorkBook, profile, false);
+            //}
+        }
 
-            if (list[7, 24].Split(" ")[^1] == "Специалистов")
+        private async Task TitulPageForCollegeAsync(string[,] list, Profile profile)
+        {
+            string code = list[0, 13];
+            profile.LevelEdu = await _unitOfWork.SearchEntity.SearchLevelEdu("основное общее образование");
+            profile.CaseCEdukindId = await _unitOfWork.SearchEntity.SearchEdukind(list[6, 26]);
+            profile.CaseSDepartmentId = await _unitOfWork.SearchEntity.SearchCaseSDepartment(list[6, 13].Split(" ")[^1]);
+            profile.ProfileName = list[20, 28];
+            profile.TermEdu = list[28, 26].Split(" ")[^1][0].ToString();
+            profile.Year = int.Parse(list[44, 26]);
+            if (profile.CaseSDepartmentId == null)
+                profile.CaseSDepartmentId = await _unitOfWork.SearchEntity.SearchCaseSDepartment(list[6, 13].Split(code)[^1].Trim());
+        }
+
+        private async Task TitulPageForVuz(string[,] list, Profile profile)
+        {
+            profile.CaseCEdukindId = await _unitOfWork.SearchEntity.SearchEdukind(list[2, 41].Split(" ")[^1]);
+
+            switch (list[7, 24].Split(" ")[^1])
             {
-                profile.LevelEdu = await _unitOfWork.SearchEntity.SearchLevelEdu("специалитет");
-            }
-            if (list[7, 24].Split(" ")[^1] == "магистратуры")
-            {
-                profile.LevelEdu = await _unitOfWork.SearchEntity.SearchLevelEdu("магистратура");
-            }
-            else
-            {
-                var tempLevelEdu = list[7, 24].Split(" ")[^1];
-                profile.LevelEdu = await _unitOfWork.SearchEntity.SearchLevelEdu(tempLevelEdu.Remove(tempLevelEdu.Length - 1));
+                case "Специалистов":
+                    profile.LevelEdu = await _unitOfWork.SearchEntity.SearchLevelEdu("специалитет");
+                    break;
+                case "магистратуры":
+                    profile.LevelEdu = await _unitOfWork.SearchEntity.SearchLevelEdu("магистратура");
+                    break;
+                case "бакалавриата":
+                    profile.LevelEdu = await _unitOfWork.SearchEntity.SearchLevelEdu("бакалавриат");
+                    break;
             }
 
             var code = list[3, 26];
 
             profile.ProfileName = list[3, 29];
-            profile.TermEdu = int.Parse(list[2, 42].Split(" ")[^1][0].ToString());
+            profile.TermEdu = list[2, 42].Split(" ")[^1][0].ToString();
             profile.CaseSDepartmentId = await _unitOfWork.SearchEntity.SearchCaseSDepartment(list[3, 28].Split(" ")[^1]);
 
             if (profile.CaseSDepartmentId == null)
@@ -86,7 +112,7 @@ namespace EorDSU.Service
         /// </summary>
         /// <param name="ObjWorkBook"></param>
         /// <param name="profile"></param>
-        private async Task PlanSvodPage(Excel.Workbook ObjWorkBook, Profile profile)
+        private async Task PlanSvodPage(Excel.Workbook ObjWorkBook, Profile profile, bool isCollege)
         {
             var ObjWorkSheet = (Excel.Worksheet)ObjWorkBook.Sheets[3]; //получить 3 лист
             var lastCell = ObjWorkSheet.Cells.SpecialCells(Excel.XlCellType.xlCellTypeLastCell);//1 ячейку
@@ -100,13 +126,21 @@ namespace EorDSU.Service
 
             profile.Disciplines = new();
 
+            //if (isCollege)
+            //    await DisciplineForCollege(list, profile);
+            //else
+            await DisciplinesForVuz(list, profile);
+        }
+
+        private async Task DisciplinesForVuz(string[,] list, Profile profile)
+        {
             int mandatoryDisciplinesCount = 0;
             int unmandatoryDisciplinesCount = 0;
             int complexModulesCount = 0;
             int pacticMandatoryCount = 0;
             int pacticUnmandatoryCount = 0;
             int giaCount = 0;
-            for (int i = 5; i < list.Length; i++)
+            for (int i = 5; i < list.GetLength(1); i++)
             {
                 if (list[0, i].Trim() == "Часть, формируемая участниками образовательных отношений" && mandatoryDisciplinesCount == 0)
                 {
@@ -251,6 +285,65 @@ namespace EorDSU.Service
                     discipline.StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline($"ФТД.Факультативы. {list[0, giaCount + 1]}".Trim());
 
                 profile.Disciplines.Add(discipline);
+            }
+        }
+
+        private async Task DisciplineForCollege(string[,] list, Profile profile)
+        {
+            List<int> indexes = new List<int>();
+            string[] statuses =
+                {
+                "Базовые дисциплины",
+                "Профильные дисциплины",
+                "Предлагаемые ОО",
+                "ПРОФЕССИОНАЛЬНАЯ ПОДГОТОВКА",
+                "Общий гуманитарный и социально-экономический цикл",
+                "Математический и общий естественнонаучный цикл",
+                "Профессиональный цикл",
+                "Общепрофессиональные дисциплины",
+                "Профессиональные модули",
+                "Оперативно-служебная деятельность",
+                "Всего часов с учетом практик",
+                "Организационно-управленческая деятельность",
+
+                };
+
+            int giaStart = 0;
+            int giaEnd = 0;
+
+            for (int i = 5; i < list.GetLength(1); i++)
+            {
+                if (statuses.Any(x => list[2, i].Trim() == x))
+                    indexes.Add(i);
+
+                if (list[2, i].Trim() == "Государственная итоговая аттестация")
+                    giaStart = i;
+
+                if (list[2, i].Trim() == "КОНСУЛЬТАЦИИ по О")
+                    giaEnd = i;
+            }
+
+            for (int i = 0; i < indexes.Count - 1; i++)
+            {
+                await FillingDataAsync(list, indexes[i], indexes[i + 1], profile);
+            }
+            await FillingDataAsync(list, giaStart, giaEnd, profile);
+        }
+
+        private async Task FillingDataAsync(string[,] list, int start, int end, Profile profile)
+        {
+            for (int i = start + 1; i < end; i++)
+            {
+                if (list[2, i] != "")
+                    profile.Disciplines.Add(new Discipline()
+                    {
+                        DisciplineName = list[2, i],
+                        Code = list[1, i],
+                        StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline(list[2, start]),
+                        Profile = profile,
+                        ProfileId = profile.Id,
+                        CreateDate = DateTime.Now,
+                    });
             }
         }
 

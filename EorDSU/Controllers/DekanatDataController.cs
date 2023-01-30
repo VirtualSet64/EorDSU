@@ -38,7 +38,7 @@ namespace EorDSU.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCaseSEdukinds()
         {
-            return Ok(_unitOfWork.DSUActiveData.GetCaseCEdukinds());
+            return Ok(await _unitOfWork.DSUActiveData.GetCaseCEdukinds().ToListAsync());
         }
     }
 }

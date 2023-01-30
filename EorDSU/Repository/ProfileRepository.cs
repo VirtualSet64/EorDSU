@@ -48,7 +48,7 @@ namespace EorDSU.Repository
 
             foreach (var persDepartment in persDepartments)
             {
-                foreach (var item in await Get().Where(x => x.PersDepartmentId == persDepartment.DepId).ToListAsync())
+                foreach (var item in Get().Where(x => x.PersDepartmentId == persDepartment.DepId).ToList())
                 {
                     FillingData(dataResponseForSvedenOOPDGUs, item);
                 }
@@ -62,8 +62,7 @@ namespace EorDSU.Repository
             {
                 Profile = item,
                 CaseCEdukind = _unitOfWork.DSUActiveData.GetCaseCEdukindById((int)item.CaseCEdukindId),
-                CaseSDepartment = _unitOfWork.DSUActiveData.GetCaseSDepartmentById((int)item.CaseSDepartmentId),
-                SrokDeystvGosAccred = Configuration["SrokDeystvGosAccred"],
+                CaseSDepartment = _unitOfWork.DSUActiveData.GetCaseSDepartmentById((int)item.CaseSDepartmentId)
             });
         }
 
@@ -72,13 +71,13 @@ namespace EorDSU.Repository
             return GetWithIncludeById(x => x.Id == id, x => x.Disciplines, x => x.FileModels, x => x.LevelEdu);
         }
 
-        public async Task<ExcelParsingResponse> ParsedProfileForPreview(IFormFile uploadedFile)
+        public async Task<DataResponseForSvedenOOPDGU> ParsedProfileForPreview(IFormFile uploadedFile)
         {
             string path = Configuration["FileFolder"] + "/" + uploadedFile.FileName;
             using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
                 await uploadedFile.CopyToAsync(fileStream);
 
-            ExcelParsingResponse profile = new()
+            DataResponseForSvedenOOPDGU profile = new()
             {
                 Profile = await _unitOfWork.ExcelParsingService.ParsingService(path)                
             };

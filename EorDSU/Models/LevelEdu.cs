@@ -1,10 +1,13 @@
-﻿namespace EorDSU.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace EorDSU.Models
 {
     /// <summary>
     /// Уровень образования
     /// </summary>
     public class LevelEdu
     {
+        [Key]
         public int Id { get; set; }
         public string? Name { get; set; }
         public bool IsDeleted { get; set; }

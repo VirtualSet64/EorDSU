@@ -103,7 +103,7 @@ namespace EorDSU.Controllers
             if (uploadedFile == null)
                 return BadRequest();
 
-            ExcelParsingResponse profile = await _unitOfWork.ProfileRepository.ParsedProfileForPreview(uploadedFile);
+            DataResponseForSvedenOOPDGU profile = await _unitOfWork.ProfileRepository.ParsedProfileForPreview(uploadedFile);
             return Ok(profile);
         }
 
