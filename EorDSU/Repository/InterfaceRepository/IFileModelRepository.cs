@@ -5,7 +5,7 @@ namespace EorDSU.Repository.InterfaceRepository
 {
     public interface IFileModelRepository : IGenericRepository<FileModel>
     {
-        public Task<List<FileModel>?> CreateFileModel(IFormFileCollection uploads, List<string> fileNameList, int fileTypeId, int profileId);
-        public Task<List<FileModel>?> EditFile(IFormFileCollection uploads, List<string> fileNameList, int profileId);
+        public Task<FileModel?> CreateFileModel(IFormFile upload, string fileName, int fileTypeId, int profileId);
+        public Task<FileModel?> EditFile(IFormFile upload, string fileName, int profileId);
     }
 }

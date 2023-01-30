@@ -26,12 +26,12 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("CreateFileModel")]
         [HttpPost]
-        public async Task<IActionResult> CreateFileModel(IFormFileCollection uploads, List<string> fileNameList, int fileTypeId, int profileId)
+        public async Task<IActionResult> CreateFileModel(IFormFile upload, string fileName, int fileTypeId, int profileId)
         {
-            List<FileModel> files = await _unitOfWork.FileModelRepository.CreateFileModel(uploads, fileNameList, fileTypeId, profileId);
-            if (files == null)
+            FileModel file = await _unitOfWork.FileModelRepository.CreateFileModel(upload, fileName, fileTypeId, profileId);
+            if (file == null)
                 return BadRequest();
-            return Ok(files);
+            return Ok(file);
         }
 
         /// <summary>
@@ -42,12 +42,12 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("EditFileModel")]
         [HttpPut]
-        public async Task<IActionResult> EditFile(IFormFileCollection uploads, List<string> fileNameList, int profileId)
+        public async Task<IActionResult> EditFile(IFormFile upload, string fileName, int profileId)
         {
             if (profileId <= 0)
                 return BadRequest();
 
-            List<FileModel> files = await _unitOfWork.FileModelRepository.EditFile(uploads, fileNameList, profileId);
+            FileModel files = await _unitOfWork.FileModelRepository.EditFile(upload, fileName, profileId);
             return Ok(files);
         }
 

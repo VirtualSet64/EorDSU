@@ -23,31 +23,25 @@ namespace EorDSU.Repository
         /// <param name="fileTypeId"></param>
         /// <param name="profileId"></param>
         /// <returns></returns>
-        public async Task<List<FileModel>?> CreateFileModel(IFormFileCollection uploads, List<string> fileNameList, int fileTypeId, int profileId)
+        public async Task<FileModel?> CreateFileModel(IFormFile upload, string fileName, int fileTypeId, int profileId)
         {
-            List<FileModel> files = new();
-            for (int i = 0; i < uploads.Count; i++)
+            if (Get().Any(x => x.Name == upload.FileName))
+                return null;
+
+            string path = Configuration["FileFolder"] + "/" + upload.FileName;
+            using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
+                await upload.CopyToAsync(fileStream);
+
+            FileModel file = new()
             {
-                if (Get().Any(x => x.Name == uploads[i].FileName))
-                    return null;
-
-                string path = Configuration["FileFolder"] + "/" + uploads[i].FileName;
-                using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
-                    await uploads[i].CopyToAsync(fileStream);
-
-                FileModel file = new()
-                {
-                    Name = uploads[i].FileName,
-                    OutputFileName = fileNameList[i],
-                    ProfileId = profileId,
-                    Type = (FileType)fileTypeId,
-                    CreateDate = DateTime.Now
-                };                
-                await Create(file);
-
-                files.Add(file);
-            }
-            return files;
+                Name = upload.FileName,
+                OutputFileName = fileName,
+                ProfileId = profileId,
+                Type = (FileType)fileTypeId,
+                CreateDate = DateTime.Now
+            };
+            await Create(file);
+            return file;
         }
 
         /// <summary>
@@ -57,30 +51,25 @@ namespace EorDSU.Repository
         /// <param name="fileNameList"></param>
         /// <param name="profileId"></param>
         /// <returns></returns>
-        public async Task<List<FileModel>?> EditFile(IFormFileCollection uploads, List<string> fileNameList, int profileId)
+        public async Task<FileModel?> EditFile(IFormFile upload, string fileName, int profileId)
         {
-            List<FileModel> files = new();
-            for (int i = 0; i < uploads.Count; i++)
+            if (Get().Any(x => x.Name == upload.FileName))
+                return null;
+
+            string path = Configuration["FileFolder"] + upload.FileName;
+            using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
+                await upload.CopyToAsync(fileStream);
+
+            FileModel file = new()
             {
-                if (Get().Any(x => x.Name == uploads[i].FileName))
-                    return null;
+                Name = upload.FileName,
+                OutputFileName = fileName,
+                ProfileId = profileId,
+                UpdateDate = DateTime.Now
+            };
+            await Update(file);
 
-                string path = Configuration["FileFolder"] + uploads[i].FileName;
-                using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
-                    await uploads[i].CopyToAsync(fileStream);
-
-                FileModel file = new()
-                {
-                    Name = uploads[i].FileName,
-                    OutputFileName = fileNameList[i],
-                    ProfileId = profileId,
-                    UpdateDate = DateTime.Now
-                };
-                await Update(file);
-
-                files.Add(file);
-            }
-            return files;
+            return file;
         }
     }
 }
