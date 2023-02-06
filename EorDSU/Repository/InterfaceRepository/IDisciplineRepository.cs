@@ -5,7 +5,7 @@ namespace EorDSU.Repository.InterfaceRepository
 {
     public interface IDisciplineRepository : IGenericRepository<Discipline>
     {
-        public IQueryable<Discipline> GetDisciplines();
+        public IEnumerable<Discipline> GetDisciplinesByProfileId(int profileId);
         public Discipline GetDisciplinesById(int id);
         public Task<Discipline> RemoveDiscipline(int id);
     }

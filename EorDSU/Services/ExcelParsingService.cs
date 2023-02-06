@@ -52,8 +52,8 @@ namespace EorDSU.Service
             //}
             //else
             //{
-                await TitulPageForVuz(list, profile);
-                await PlanSvodPage(ObjWorkBook, profile, false);
+            await TitulPageForVuz(list, profile);
+            await PlanSvodPage(ObjWorkBook, profile, false);
             //}
         }
 
@@ -66,8 +66,7 @@ namespace EorDSU.Service
             profile.ProfileName = list[20, 28];
             profile.TermEdu = list[28, 26].Split(" ")[^1][0].ToString();
             profile.Year = int.Parse(list[44, 26]);
-            if (profile.CaseSDepartmentId == null)
-                profile.CaseSDepartmentId = await _unitOfWork.SearchEntity.SearchCaseSDepartment(list[6, 13].Split(code)[^1].Trim());
+            profile.CaseSDepartmentId ??= await _unitOfWork.SearchEntity.SearchCaseSDepartment(list[6, 13].Split(code)[^1].Trim());
         }
 
         private async Task TitulPageForVuz(string[,] list, Profile profile)
@@ -78,12 +77,15 @@ namespace EorDSU.Service
             {
                 case "Специалистов":
                     profile.LevelEdu = await _unitOfWork.SearchEntity.SearchLevelEdu("специалитет");
+                    profile.LevelEduId = profile.LevelEdu.Id;
                     break;
                 case "магистратуры":
                     profile.LevelEdu = await _unitOfWork.SearchEntity.SearchLevelEdu("магистратура");
+                    profile.LevelEduId = profile.LevelEdu.Id;
                     break;
                 case "бакалавриата":
                     profile.LevelEdu = await _unitOfWork.SearchEntity.SearchLevelEdu("бакалавриат");
+                    profile.LevelEduId = profile.LevelEdu.Id;
                     break;
             }
 
@@ -188,7 +190,9 @@ namespace EorDSU.Service
                         StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("Обязательная часть"),
                         Profile = profile,
                         ProfileId = profile.Id,
+                        CreateDate = DateTime.Now,
                     };
+                    discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
                     profile.Disciplines.Add(discipline);
                 }
             }
@@ -209,7 +213,9 @@ namespace EorDSU.Service
                         StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("Часть, формируемая участниками образовательных отношений"),
                         Profile = profile,
                         ProfileId = profile.Id,
+                        CreateDate = DateTime.Now,
                     };
+                    discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
                     profile.Disciplines.Add(discipline);
                 }
             }
@@ -225,7 +231,9 @@ namespace EorDSU.Service
                         StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("К.М.Комплексные модули"),
                         Profile = profile,
                         ProfileId = profile.Id,
+                        CreateDate = DateTime.Now,
                     };
+                    discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
                     profile.Disciplines.Add(discipline);
                 }
             }
@@ -238,7 +246,9 @@ namespace EorDSU.Service
                     StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("Блок 2.Практика. Обязательная часть"),
                     Profile = profile,
                     ProfileId = profile.Id,
+                    CreateDate = DateTime.Now,
                 };
+                discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
                 profile.Disciplines.Add(discipline);
             }
 
@@ -251,7 +261,9 @@ namespace EorDSU.Service
                     StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("Блок 2.Практика. Часть, формируемая участниками образовательных отношений"),
                     Profile = profile,
                     ProfileId = profile.Id,
+                    CreateDate = DateTime.Now,
                 };
+                discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
                 profile.Disciplines.Add(discipline);
             }
 
@@ -264,7 +276,9 @@ namespace EorDSU.Service
                     StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("Блок 3.Государственная итоговая аттестация."),
                     Profile = profile,
                     ProfileId = profile.Id,
+                    CreateDate = DateTime.Now,
                 };
+                discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
                 profile.Disciplines.Add(discipline);
             }
 
@@ -276,21 +290,24 @@ namespace EorDSU.Service
                     Code = list[1, i],
                     Profile = profile,
                     ProfileId = profile.Id,
+                    CreateDate = DateTime.Now,
                 };
+
                 var sda = list[0, giaCount + 1].Trim();
 
                 if (sda.Length < 2)
                     discipline.StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline($"ФТД.Факультативы".Trim());
                 else
                     discipline.StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline($"ФТД.Факультативы. {list[0, giaCount + 1]}".Trim());
-
+                
+                discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
                 profile.Disciplines.Add(discipline);
             }
         }
 
         private async Task DisciplineForCollege(string[,] list, Profile profile)
         {
-            List<int> indexes = new List<int>();
+            List<int> indexes = new();
             string[] statuses =
                 {
                 "Базовые дисциплины",

@@ -1,7 +1,7 @@
 ﻿using DSUContextDBService.Models;
 using EorDSU.Models;
 
-namespace EorDSU.ResponseModel
+namespace EorDSU.ViewModels
 {
     public class DataResponseForSvedenOOPDGU
     {

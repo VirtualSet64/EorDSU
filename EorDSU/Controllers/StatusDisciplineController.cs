@@ -18,16 +18,25 @@ namespace EorDSU.Controllers
             _unitOfWork = unitOfWork;
         }
 
+        /// <summary>
+        /// Получение статусов дисциплин
+        /// </summary>
+        /// <returns></returns>
         [Route("GetStatusDiscipline")]
         [HttpGet]
         public async Task<IActionResult> GetStatusDiscipline()
         {
-            List<StatusDiscipline> statusDisciplines = await _unitOfWork.StatusDisciplineRepository.GetStatusDiscipline().ToListAsync();
+            List<StatusDiscipline> statusDisciplines = _unitOfWork.StatusDisciplineRepository.GetStatusDiscipline();
             if (statusDisciplines == null)
                 return BadRequest();
             return Ok(statusDisciplines);
         }
 
+        /// <summary>
+        /// Получение статуса дисциплины по id
+        /// </summary>
+        /// <param name="statusDisciplineId"></param>
+        /// <returns></returns>
         [Route("GetStatusDisciplineById")]
         [HttpGet]
         public IActionResult GetStatusDiscipline(int statusDisciplineId)
@@ -38,6 +47,11 @@ namespace EorDSU.Controllers
             return Ok(statusDiscipline);
         }
 
+        /// <summary>
+        /// Создание статуса дисциплины
+        /// </summary>
+        /// <param name="statusDiscipline"></param>
+        /// <returns></returns>
         [Route("CreateStatusDiscipline")]
         [HttpPost]
         public async Task<IActionResult> CreateStatusDiscipline(StatusDiscipline statusDiscipline)
@@ -49,6 +63,11 @@ namespace EorDSU.Controllers
             return Ok(); 
         }
 
+        /// <summary>
+        /// Изменение статуса дисциплины
+        /// </summary>
+        /// <param name="statusDiscipline"></param>
+        /// <returns></returns>
         [Route("UpdateStatusDiscipline")]
         [HttpPut]
         public async Task<IActionResult> EditStatusDiscipline(StatusDiscipline statusDiscipline)
@@ -60,6 +79,11 @@ namespace EorDSU.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Удаление статуса дисциплины
+        /// </summary>
+        /// <param name="statusDisciplineId"></param>
+        /// <returns></returns>
         [Route("DeleteStatusDiscipline")]
         [HttpDelete]
         public async Task<IActionResult> DeleteStatusDiscipline(int statusDisciplineId)

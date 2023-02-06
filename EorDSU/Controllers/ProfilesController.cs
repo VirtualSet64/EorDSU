@@ -1,6 +1,7 @@
 ﻿using EorDSU.Common.Interfaces;
 using EorDSU.Models;
-using EorDSU.ResponseModel;
+using EorDSU.Repository.InterfaceRepository;
+using EorDSU.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,13 +32,13 @@ namespace EorDSU.Controllers
         /// <summary>
         /// Получение всех данных кафедры
         /// </summary>
-        /// <param name="cafedraId"></param>
+        /// <param name="kafedraId"></param>
         /// <returns></returns>
         [Route("GetDataById")]
         [HttpGet]
-        public async Task<IActionResult> GetData(int cafedraId)
+        public async Task<IActionResult> GetData(int kafedraId)
         {
-            return Ok(await _unitOfWork.ProfileRepository.GetData(cafedraId));
+            return Ok(await _unitOfWork.ProfileRepository.GetData(kafedraId));
         }
 
         /// <summary>
@@ -86,6 +87,8 @@ namespace EorDSU.Controllers
                 return BadRequest("Такой профиль уже существует");
 
             profile.CreateDate = DateTime.Now;
+            profile.LevelEdu = null;
+            profile.Disciplines?.ForEach(x => x.StatusDiscipline = null);
             await _unitOfWork.ProfileRepository.Create(profile);
             return Ok();
         }
@@ -93,7 +96,7 @@ namespace EorDSU.Controllers
         /// <summary>
         /// Создание профиля
         /// </summary>
-        /// <param name="profile"></param>
+        /// <param name="uploadedFile"></param>
         /// <returns></returns>
         [Authorize]
         [Route("CreateProfileByFile")]

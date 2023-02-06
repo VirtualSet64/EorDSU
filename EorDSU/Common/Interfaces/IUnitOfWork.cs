@@ -13,6 +13,7 @@ namespace EorDSU.Common.Interfaces
         IFileModelRepository FileModelRepository { get; }
         IFileRPDRepository FileRPDRepository { get; }
         IStatusDisciplineRepository StatusDisciplineRepository { get; }
+        ILevelEduRepository LevelEduRepository{ get; }
         IExcelParsingService ExcelParsingService { get; }
         ISearchEntity SearchEntity { get; }
         IDSUActiveData DSUActiveData { get; }

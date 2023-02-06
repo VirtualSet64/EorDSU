@@ -22,6 +22,19 @@ namespace EorDSU.Controllers
         /// </summary>
         /// <param name="discipline"></param>
         /// <returns></returns>
+        [Route("GetDisciplineByProfileId")]
+        [HttpGet]
+        public IActionResult GetDisciplineByProfileId(int profileId)
+        {
+            var disciplines = _unitOfWork.DisciplineRepository.GetDisciplinesByProfileId(profileId).ToList();
+            return Ok(disciplines);
+        }
+
+        /// <summary>
+        /// Создание дисциплины
+        /// </summary>
+        /// <param name="discipline"></param>
+        /// <returns></returns>
         [Route("CreateDiscipline")]
         [HttpPost]
         public async Task<IActionResult> CreateDiscipline(Discipline discipline)
@@ -32,7 +45,7 @@ namespace EorDSU.Controllers
             discipline.CreateDate = DateTime.Now;
             await _unitOfWork.DisciplineRepository.Create(discipline);
             return Ok();
-        }
+        }        
 
         /// <summary>
         /// Изменение дисциплины

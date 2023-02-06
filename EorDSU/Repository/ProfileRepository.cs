@@ -2,7 +2,7 @@
 using EorDSU.Common.Interfaces;
 using EorDSU.Models;
 using EorDSU.Repository.InterfaceRepository;
-using EorDSU.ResponseModel;
+using EorDSU.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace EorDSU.Repository
@@ -19,30 +19,30 @@ namespace EorDSU.Repository
             _appEnvironment = appEnvironment;
         }
 
-        public async Task<List<DataResponseForSvedenOOPDGU>> GetData()
+        public async Task<List<DataForTableResponse>> GetData()
         {
-            List<DataResponseForSvedenOOPDGU> dataResponseForSvedenOOPDGUs = new();
+            List<DataForTableResponse> dataForTableResponse = new();
             foreach (var item in await Get().ToListAsync())
             {
-                FillingData(dataResponseForSvedenOOPDGUs, item);
+                FillingData(dataForTableResponse, item);
             }
-            return dataResponseForSvedenOOPDGUs;
+            return dataForTableResponse;
         }
 
-        public async Task<List<DataResponseForSvedenOOPDGU>> GetData(int cafedraId)
+        public async Task<List<DataForTableResponse>> GetData(int cafedraId)
         {
-            List<DataResponseForSvedenOOPDGU> dataResponseForSvedenOOPDGUs = new();
+            List<DataForTableResponse> dataForTableResponse = new();
 
             foreach (var item in await Get().Where(x => x.PersDepartmentId == cafedraId).ToListAsync())
             {
-                FillingData(dataResponseForSvedenOOPDGUs, item);
+                FillingData(dataForTableResponse, item);
             }
-            return dataResponseForSvedenOOPDGUs;
+            return dataForTableResponse;
         }
 
-        public async Task<List<DataResponseForSvedenOOPDGU>> GetDataFacultyById(int facultyId)
+        public async Task<List<DataForTableResponse>> GetDataFacultyById(int facultyId)
         {
-            List<DataResponseForSvedenOOPDGU> dataResponseForSvedenOOPDGUs = new();
+            List<DataForTableResponse> dataForTableResponse = new();
 
             var persDepartments = await _unitOfWork.BasePersonActiveData.GetPersDepartments().Where(x => x.DivId == facultyId).ToListAsync();
 
@@ -50,19 +50,20 @@ namespace EorDSU.Repository
             {
                 foreach (var item in Get().Where(x => x.PersDepartmentId == persDepartment.DepId).ToList())
                 {
-                    FillingData(dataResponseForSvedenOOPDGUs, item);
+                    FillingData(dataForTableResponse, item);
                 }
             }
-            return dataResponseForSvedenOOPDGUs;
+            return dataForTableResponse;
         }
 
-        private void FillingData(List<DataResponseForSvedenOOPDGU> dataResponseForSvedenOOPDGUs, Profile item)
+        private void FillingData(List<DataForTableResponse> dataForTableResponse, Profile item)
         {
-            dataResponseForSvedenOOPDGUs.Add(new()
+            dataForTableResponse.Add(new()
             {
                 Profile = item,
                 CaseCEdukind = _unitOfWork.DSUActiveData.GetCaseCEdukindById((int)item.CaseCEdukindId),
-                CaseSDepartment = _unitOfWork.DSUActiveData.GetCaseSDepartmentById((int)item.CaseSDepartmentId)
+                CaseSDepartment = _unitOfWork.DSUActiveData.GetCaseSDepartmentById((int)item.CaseSDepartmentId),
+                Practics = _unitOfWork.DisciplineRepository.GetDisciplinesByProfileId(item.Id).Where(x => x.Code.Contains("Б2") == true).ToList()
             });
         }
 

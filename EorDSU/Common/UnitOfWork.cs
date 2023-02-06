@@ -112,5 +112,14 @@ namespace EorDSU.Common
                 return statusDisciplineRepository;
             }
         }
+
+        ILevelEduRepository IUnitOfWork.LevelEduRepository
+        {
+            get
+            {
+                ILevelEduRepository levelEduRepository = new LevelEduRepository(_context);
+                return levelEduRepository;
+            }
+        }
     }
 }

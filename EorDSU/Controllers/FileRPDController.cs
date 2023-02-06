@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EorDSU.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class FileRPDController : Controller
@@ -37,8 +37,7 @@ namespace EorDSU.Controllers
         /// Изменение файла РПД
         /// </summary>
         /// <param name="uploadedFile"></param>
-        /// <param name="fileId"></param>
-        /// <param name="profileId"></param>
+        /// <param name="disciplineId"></param>
         /// <returns></returns>
         [Route("EditRPD")]
         [HttpPut]
@@ -53,7 +52,7 @@ namespace EorDSU.Controllers
         /// <summary>
         /// Удаление файла РПД
         /// </summary>
-        /// <param name="fileId"></param>
+        /// <param name="fileRPDId"></param>
         /// <returns></returns>
         [Route("DeleteRPD")]
         [HttpDelete]

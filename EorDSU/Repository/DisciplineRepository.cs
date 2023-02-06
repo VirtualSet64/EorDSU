@@ -12,9 +12,9 @@ namespace EorDSU.Repository
         
         }
 
-        public IQueryable<Discipline> GetDisciplines()
+        public IEnumerable<Discipline> GetDisciplinesByProfileId(int profileId)
         {
-            return GetWithInclude(x => x.IsDeleted == false, x => x.StatusDiscipline, x => x.FileRPD);
+            return GetWithInclude(x => x.ProfileId == profileId && x.IsDeleted == false, x => x.StatusDiscipline, x => x.FileRPD);
         }
 
         public Discipline GetDisciplinesById(int id)

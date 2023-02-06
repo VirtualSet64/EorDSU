@@ -25,7 +25,7 @@
         /// <summary>
         /// Ссылка на страницу с предметами
         /// </summary>
-        public string? LinkToPRD { get; set; }
+        public string? LinkToDisciplinePage { get; set; }
         /// <summary>
         /// Список дисциплин
         /// </summary>
