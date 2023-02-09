@@ -26,22 +26,17 @@ namespace EorDSU.DBService
             modelBuilder.Entity<Discipline>()
                 .HasOne(p => p.Profile)
                 .WithMany(t => t.Disciplines)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.ClientCascade);
 
             modelBuilder.Entity<FileModel>()
                 .HasOne(p => p.Profile)
                 .WithMany(t => t.FileModels)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.ClientCascade);
 
             modelBuilder.Entity<FileRPD>()
                 .HasOne(p => p.Discipline)
                 .WithOne(t => t.FileRPD)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            modelBuilder.Entity<Discipline>()
-            .HasOne(u => u.FileRPD)
-            .WithOne(p => p.Discipline)
-            .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.ClientCascade);
 
             base.OnModelCreating(modelBuilder);
         }

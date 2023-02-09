@@ -18,14 +18,14 @@ namespace EorDSU.Repository
             return Get(x => x.IsDeleted == false).ToList();
         }
 
-        public async Task<StatusDiscipline> GetStatusDisciplineById(int id)
+        public StatusDiscipline GetStatusDisciplineById(int id)
         {
-            return await FindById(id);
+            return FindById(id);
         }
 
         public async Task<StatusDiscipline> RemoveStatusDiscipline(int id)
         {
-            var statusDiscipline = await FindById(id);
+            var statusDiscipline = FindById(id);
             await Remove(statusDiscipline);
             return statusDiscipline;
         }

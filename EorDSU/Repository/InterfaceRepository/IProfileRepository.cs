@@ -8,9 +8,10 @@ namespace EorDSU.Repository.InterfaceRepository
     {
         public Task<List<DataForTableResponse>> GetData();
         public Task<List<DataForTableResponse>> GetData(int cafedraId);
-        public Task<List<DataForTableResponse>> GetDataFacultyById(int facultyId);
+        public Task<List<DataForTableResponse>> GetDataByFacultyId(int facultyId);        
         public Profile GetProfileById(int id);
         public Task<DataResponseForSvedenOOPDGU> ParsedProfileForPreview(IFormFile uploadedFile);
+        public Task<Profile> CreateProfile(Profile profile);        
         public Task<Profile> RemoveProfile(int profileId);
     }
 }

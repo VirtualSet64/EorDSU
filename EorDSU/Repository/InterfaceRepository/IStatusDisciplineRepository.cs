@@ -6,7 +6,7 @@ namespace EorDSU.Repository.InterfaceRepository
     public interface IStatusDisciplineRepository : IGenericRepository<StatusDiscipline>
     {
         public List<StatusDiscipline> GetStatusDiscipline();
-        public Task<StatusDiscipline> GetStatusDisciplineById(int id);
+        public StatusDiscipline GetStatusDisciplineById(int id);
         public Task<StatusDiscipline> RemoveStatusDiscipline(int id);
     }
 }

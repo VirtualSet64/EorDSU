@@ -36,7 +36,7 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("GetDataById")]
         [HttpGet]
-        public async Task<IActionResult> GetData(int kafedraId)
+        public async Task<IActionResult> GetDataByKafedraId(int kafedraId)
         {
             return Ok(await _unitOfWork.ProfileRepository.GetData(kafedraId));
         }
@@ -48,9 +48,9 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("GetDataFacultyById")]
         [HttpGet]
-        public async Task<IActionResult> GetDataFacultyById(int facultyId)
+        public async Task<IActionResult> GetDataByFacultyId(int facultyId)
         {
-            return Ok(await _unitOfWork.ProfileRepository.GetDataFacultyById(facultyId));
+            return Ok(await _unitOfWork.ProfileRepository.GetDataByFacultyId(facultyId));
         }
 
         /// <summary>
@@ -70,13 +70,13 @@ namespace EorDSU.Controllers
         /// </summary>
         /// <param name="profile"></param>
         /// <returns></returns>
-        [Authorize]
+        //[Authorize]
         [Route("CreateProfile")]
         [HttpPost]
         public async Task<IActionResult> CreateProfile(Profile profile)
         {
             if (profile == null)
-                return BadRequest();
+                return BadRequest("Ошибка передачи профиля");
 
             if (_unitOfWork.ProfileRepository.Get().Any(x => x.ProfileName == profile.ProfileName &&
                              x.TermEdu == profile.TermEdu &&
@@ -86,10 +86,7 @@ namespace EorDSU.Controllers
                              x.Year == profile.Year))
                 return BadRequest("Такой профиль уже существует");
 
-            profile.CreateDate = DateTime.Now;
-            profile.LevelEdu = null;
-            profile.Disciplines?.ForEach(x => x.StatusDiscipline = null);
-            await _unitOfWork.ProfileRepository.Create(profile);
+            await _unitOfWork.ProfileRepository.CreateProfile(profile);
             return Ok();
         }
 
@@ -98,13 +95,13 @@ namespace EorDSU.Controllers
         /// </summary>
         /// <param name="uploadedFile"></param>
         /// <returns></returns>
-        [Authorize]
+        //[Authorize]
         [Route("CreateProfileByFile")]
         [HttpPost]
         public async Task<IActionResult> CreateProfileByFile(IFormFile uploadedFile)
         {
             if (uploadedFile == null)
-                return BadRequest();
+                return BadRequest("Ошибка передачи файла");
 
             DataResponseForSvedenOOPDGU profile = await _unitOfWork.ProfileRepository.ParsedProfileForPreview(uploadedFile);
             return Ok(profile);
@@ -115,13 +112,13 @@ namespace EorDSU.Controllers
         /// </summary>
         /// <param name="profile"></param>
         /// <returns></returns>
-        [Authorize]
+        //[Authorize]
         [Route("EditProfile")]
         [HttpPut]
         public async Task<IActionResult> EditProfile(Profile profile)
         {
             if (profile == null)
-                return BadRequest();
+                return BadRequest("Ошибка передачи профиля");
 
             profile.UpdateDate = DateTime.Now;
             await _unitOfWork.ProfileRepository.Update(profile);
@@ -133,14 +130,21 @@ namespace EorDSU.Controllers
         /// </summary>
         /// <param name="profileId"></param>
         /// <returns></returns>
-        [Authorize]
+        //[Authorize]
         [Route("DeleteProfile")]
         [HttpDelete]
         public async Task<IActionResult> DeleteProfile(int profileId)
         {
-            if (await _unitOfWork.ProfileRepository.RemoveProfile(profileId) == null)
-                return BadRequest();
-            return Ok();
+            try
+            {
+                await _unitOfWork.ProfileRepository.RemoveProfile(profileId);
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest("Профиль не найден");
+                throw;
+            }
         }
     }
 }

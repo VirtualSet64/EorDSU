@@ -26,15 +26,9 @@ namespace EorDSU.Common
             return _dbSet.AsNoTracking().Where(predicate);
         }
 
-        public async Task<TEntity> FindById(int id)
+        public TEntity FindById(int id)
         {
-            return await _dbSet.FindAsync(id);
-        }
-
-        public async Task<TEntity> FindByName(string name)
-        {
-            var item = await _dbSet.FindAsync(name);
-            return item;
+            return _dbSet.Find(id);
         }
 
         public async Task Create(TEntity item)

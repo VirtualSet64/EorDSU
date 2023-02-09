@@ -6,8 +6,7 @@ namespace EorDSU.Common.Interfaces
     {
         public IQueryable<TEntity> Get();
         public IEnumerable<TEntity> Get(Func<TEntity, bool> predicate);
-        public Task<TEntity> FindById(int id);
-        public Task<TEntity> FindByName(string name);
+        public TEntity FindById(int id);
         public Task Create(TEntity item);
         public Task CreateRange(IEnumerable<TEntity> items);        
         public Task Remove(int id);

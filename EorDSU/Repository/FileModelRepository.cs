@@ -53,7 +53,7 @@ namespace EorDSU.Repository
         /// <returns></returns>
         public async Task<FileModel?> EditFile(int fileId, IFormFile? upload, string fileName, int profileId)
         {
-            FileModel file = await FindById(fileId);
+            FileModel file = FindById(fileId);
             file.OutputFileName = fileName;
             file.UpdateDate = DateTime.Now;
             if (upload != null)

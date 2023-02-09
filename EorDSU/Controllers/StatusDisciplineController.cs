@@ -24,11 +24,11 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("GetStatusDiscipline")]
         [HttpGet]
-        public async Task<IActionResult> GetStatusDiscipline()
+        public IActionResult GetStatusDiscipline()
         {
             List<StatusDiscipline> statusDisciplines = _unitOfWork.StatusDisciplineRepository.GetStatusDiscipline();
-            if (statusDisciplines == null)
-                return BadRequest();
+            if (!statusDisciplines.Any())
+                return BadRequest("Нет созданных статусов дисциплин");
             return Ok(statusDisciplines);
         }
 

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EorDSU.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("[controller]")]
     public class DisciplineController : Controller
@@ -18,15 +18,18 @@ namespace EorDSU.Controllers
         }
 
         /// <summary>
-        /// Создание дисциплины
+        /// Получение дисциплин данного профиля
         /// </summary>
-        /// <param name="discipline"></param>
+        /// <param name="profileId"></param>
         /// <returns></returns>
         [Route("GetDisciplineByProfileId")]
         [HttpGet]
         public IActionResult GetDisciplineByProfileId(int profileId)
         {
             var disciplines = _unitOfWork.DisciplineRepository.GetDisciplinesByProfileId(profileId).ToList();
+            if (!disciplines.Any())
+                return BadRequest("Нет дисциплин для данного профиля");
+
             return Ok(disciplines);
         }
 

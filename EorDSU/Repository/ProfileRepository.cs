@@ -22,25 +22,25 @@ namespace EorDSU.Repository
         public async Task<List<DataForTableResponse>> GetData()
         {
             List<DataForTableResponse> dataForTableResponse = new();
-            foreach (var item in await Get().ToListAsync())
+            foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels).ToListAsync())
             {
                 FillingData(dataForTableResponse, item);
             }
             return dataForTableResponse;
         }
 
-        public async Task<List<DataForTableResponse>> GetData(int cafedraId)
+        public async Task<List<DataForTableResponse>> GetData(int kafedraId)
         {
             List<DataForTableResponse> dataForTableResponse = new();
 
-            foreach (var item in await Get().Where(x => x.PersDepartmentId == cafedraId).ToListAsync())
+            foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels).Where(x => x.PersDepartmentId == kafedraId).ToListAsync())
             {
                 FillingData(dataForTableResponse, item);
             }
             return dataForTableResponse;
         }
 
-        public async Task<List<DataForTableResponse>> GetDataFacultyById(int facultyId)
+        public async Task<List<DataForTableResponse>> GetDataByFacultyId(int facultyId)
         {
             List<DataForTableResponse> dataForTableResponse = new();
 
@@ -48,7 +48,7 @@ namespace EorDSU.Repository
 
             foreach (var persDepartment in persDepartments)
             {
-                foreach (var item in Get().Where(x => x.PersDepartmentId == persDepartment.DepId).ToList())
+                foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels).Where(x => x.PersDepartmentId == persDepartment.DepId).ToListAsync())
                 {
                     FillingData(dataForTableResponse, item);
                 }
@@ -87,9 +87,19 @@ namespace EorDSU.Repository
             return profile;
         }
 
+        public async Task<Profile> CreateProfile(Profile profile)
+        {
+            profile.CreateDate = DateTime.Now;
+            profile.LevelEdu = null;
+            profile.Disciplines?.ForEach(x => x.StatusDiscipline = null);
+            await Create(profile);
+            return profile;
+        }
+
         public async Task<Profile> RemoveProfile(int id)
         {
-            var profile = GetWithIncludeById(x => x.Id == id, x => x.Disciplines, x => x.FileModels, c => c.LevelEdu);
+            var profile = GetWithIncludeById(x => x.Id == id, x => x.Disciplines, x => x.FileModels, x => x.LevelEdu);
+            profile.Disciplines.ForEach(x => x.StatusDiscipline = null);
             await Remove(profile);
             return profile;
         }

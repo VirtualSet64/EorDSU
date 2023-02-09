@@ -14,7 +14,7 @@ namespace EorDSU.Repository
 
         public IEnumerable<Discipline> GetDisciplinesByProfileId(int profileId)
         {
-            return GetWithInclude(x => x.ProfileId == profileId && x.IsDeleted == false, x => x.StatusDiscipline, x => x.FileRPD);
+            return GetWithInclude(x => x.ProfileId == profileId, x => x.StatusDiscipline, x => x.FileRPD);
         }
 
         public Discipline GetDisciplinesById(int id)
@@ -24,7 +24,7 @@ namespace EorDSU.Repository
 
         public async Task<Discipline> RemoveDiscipline(int id)
         {
-            var discipline = GetWithIncludeById(x => x.Id == id, x => x.FileRPD);
+            var discipline = GetWithIncludeById(x => x.Id == id, x => x.FileRPD, x => x.StatusDiscipline, x => x.Profile);
             await Remove(discipline);
             return discipline;
         }

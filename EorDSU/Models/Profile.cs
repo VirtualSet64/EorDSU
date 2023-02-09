@@ -23,10 +23,6 @@
         /// </summary>
         public string? LinkToPriemResult { get; set; }
         /// <summary>
-        /// Ссылка на страницу с предметами
-        /// </summary>
-        public string? LinkToDisciplinePage { get; set; }
-        /// <summary>
         /// Список дисциплин
         /// </summary>
         public List<Discipline>? Disciplines { get; set; } = new List<Discipline>();
@@ -54,7 +50,6 @@
         /// Id кафедры
         /// </summary>
         public int? PersDepartmentId { get; set; }
-        public bool IsDeleted { get; set; }
         /// <summary>
         /// Дата создания
         /// </summary>
