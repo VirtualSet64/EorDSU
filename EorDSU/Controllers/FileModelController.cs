@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EorDSU.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("[controller]")]
     public class FileModelController : Controller
@@ -25,12 +25,13 @@ namespace EorDSU.Controllers
         /// <param name="fileName">Файл</param>
         /// <param name="fileType">Тип Файла</param>
         /// <param name="profileId">Профиль</param>
+        /// <param name="ecp">Код ЭЦП</param>
         /// <returns></returns>
         [Route("CreateFileModel")]
         [HttpPost]
-        public async Task<IActionResult> CreateFileModel(IFormFile uploadedFile, string fileName, int fileType, int profileId)
+        public async Task<IActionResult> CreateFileModel(IFormFile uploadedFile, string fileName, int fileType, int profileId, string? ecp)
         {
-            FileModel file = await _unitOfWork.FileModelRepository.CreateFileModel(uploadedFile, fileName, fileType, profileId);
+            var file = await _unitOfWork.FileModelRepository.CreateFileModel(uploadedFile, fileName, fileType, profileId, ecp);
             if (file == null)
                 return BadRequest();
             return Ok(file);
@@ -51,7 +52,7 @@ namespace EorDSU.Controllers
             if (profileId <= 0)
                 return BadRequest();
 
-            FileModel files = await _unitOfWork.FileModelRepository.EditFile(fileId, uploadedFile, fileName, profileId);
+            var files = await _unitOfWork.FileModelRepository.EditFile(fileId, fileName, profileId, uploadedFile);
             return Ok(files);
         }
 

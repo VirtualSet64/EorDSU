@@ -6,6 +6,10 @@
         public string? Name { get; set; }
         public int? DisciplineId { get; set; }
         public Discipline? Discipline { get; set; }
+        /// <summary>
+        /// Код ЭЦП
+        /// </summary>
+        public string? ECP { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime UpdateDate { get; set; }
     }

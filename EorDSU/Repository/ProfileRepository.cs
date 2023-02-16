@@ -63,7 +63,7 @@ namespace EorDSU.Repository
                 Profile = item,
                 CaseCEdukind = _unitOfWork.DSUActiveData.GetCaseCEdukindById((int)item.CaseCEdukindId),
                 CaseSDepartment = _unitOfWork.DSUActiveData.GetCaseSDepartmentById((int)item.CaseSDepartmentId),
-                Practics = _unitOfWork.DisciplineRepository.GetDisciplinesByProfileId(item.Id).Where(x => x.Code.Contains("Б2") == true).ToList()
+                Practics = _unitOfWork.DisciplineRepository.GetDisciplinesByProfileId(item.Id).Disciplines?.Where(x => x.Code?.Contains("Б2") == true).ToList()
             });
         }
 
@@ -99,7 +99,7 @@ namespace EorDSU.Repository
         public async Task<Profile> RemoveProfile(int id)
         {
             var profile = GetWithIncludeById(x => x.Id == id, x => x.Disciplines, x => x.FileModels, x => x.LevelEdu);
-            profile.Disciplines.ForEach(x => x.StatusDiscipline = null);
+            profile.Disciplines?.ForEach(x => x.StatusDiscipline = null);
             await Remove(profile);
             return profile;
         }

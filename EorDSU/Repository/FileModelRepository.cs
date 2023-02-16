@@ -23,7 +23,7 @@ namespace EorDSU.Repository
         /// <param name="fileTypeId"></param>
         /// <param name="profileId"></param>
         /// <returns></returns>
-        public async Task<FileModel?> CreateFileModel(IFormFile upload, string fileName, int fileTypeId, int profileId)
+        public async Task<FileModel?> CreateFileModel(IFormFile upload, string fileName, int fileTypeId, int profileId, string? ecp)
         {
             if (Get().Any(x => x.Name == upload.FileName))
                 return null;
@@ -38,6 +38,7 @@ namespace EorDSU.Repository
                 OutputFileName = fileName,
                 ProfileId = profileId,
                 Type = (FileType)fileTypeId,
+                ECP = ecp,
                 CreateDate = DateTime.Now
             };
             await Create(file);
@@ -51,7 +52,7 @@ namespace EorDSU.Repository
         /// <param name="fileNameList"></param>
         /// <param name="profileId"></param>
         /// <returns></returns>
-        public async Task<FileModel?> EditFile(int fileId, IFormFile? upload, string fileName, int profileId)
+        public async Task<FileModel?> EditFile(int fileId, string fileName, int profileId, IFormFile? upload)
         {
             FileModel file = FindById(fileId);
             file.OutputFileName = fileName;

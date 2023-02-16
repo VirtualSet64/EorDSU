@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EorDSU.Controllers
 {
-    [Authorize]
+    //[Authorize]
     [ApiController]
     [Route("[controller]")]
     public class StatusDisciplineController : Controller
@@ -39,7 +39,7 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("GetStatusDisciplineById")]
         [HttpGet]
-        public IActionResult GetStatusDiscipline(int statusDisciplineId)
+        public IActionResult GetStatusDisciplineById(int statusDisciplineId)
         {
             var statusDiscipline = _unitOfWork.StatusDisciplineRepository.GetStatusDisciplineById(statusDisciplineId);
             if (statusDiscipline == null)

@@ -1,5 +1,6 @@
 ﻿using EorDSU.Common.Interfaces;
 using EorDSU.Models;
+using EorDSU.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,11 +27,11 @@ namespace EorDSU.Controllers
         [HttpGet]
         public IActionResult GetDisciplineByProfileId(int profileId)
         {
-            var disciplines = _unitOfWork.DisciplineRepository.GetDisciplinesByProfileId(profileId).ToList();
-            if (!disciplines.Any())
+            ResponseForDiscipline responseForDiscipline = _unitOfWork.DisciplineRepository.GetDisciplinesByProfileId(profileId);
+            if (responseForDiscipline == null && !responseForDiscipline.Disciplines.Any())
                 return BadRequest("Нет дисциплин для данного профиля");
 
-            return Ok(disciplines);
+            return Ok(responseForDiscipline);
         }
 
         /// <summary>

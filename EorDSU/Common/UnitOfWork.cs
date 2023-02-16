@@ -81,7 +81,7 @@ namespace EorDSU.Common
         {
             get
             {
-                IDisciplineRepository disciplineRepository = new DisciplineRepository(_context);
+                IDisciplineRepository disciplineRepository = new DisciplineRepository(_context, this);
                 return disciplineRepository;
             }
         }

@@ -10,6 +10,10 @@
         public string? OutputFileName { get; set; }        
         public int? ProfileId { get; set; }
         public Profile? Profile { get; set; }
+        /// <summary>
+        /// Код ЭЦП
+        /// </summary>
+        public string? ECP { get; set; }
         public FileType? Type { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime UpdateDate { get; set; }

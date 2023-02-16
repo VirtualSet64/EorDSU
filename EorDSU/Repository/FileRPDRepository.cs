@@ -15,7 +15,7 @@ namespace EorDSU.Repository
             Configuration = configuration;
         }
 
-        public async Task<FileRPD?> CreateFileRPD(IFormFile uploadedFile, int disciplineId)
+        public async Task<FileRPD?> CreateFileRPD(IFormFile uploadedFile, int disciplineId, string? ecp)
         {
             if (Get().Any(x => x.Name == uploadedFile.FileName))
                 return null;
@@ -24,23 +24,9 @@ namespace EorDSU.Repository
             using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
                 await uploadedFile.CopyToAsync(fileStream);
             
-            FileRPD file = new() { Name = uploadedFile.FileName, DisciplineId = disciplineId, CreateDate = DateTime.Now };
+            var file = new FileRPD() { Name = uploadedFile.FileName, DisciplineId = disciplineId, ECP = ecp, CreateDate = DateTime.Now };
             await Create(file);
             return file;
-        }
-
-        public async Task<FileRPD?> EditFileRPD(IFormFile uploadedFile, int disciplineId)
-        {
-            if (Get().Any(x => x.Name == uploadedFile.FileName))
-                return null;
-
-            string path = Configuration["FileFolder"] + uploadedFile.FileName;
-            using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
-                await uploadedFile.CopyToAsync(fileStream);
-            
-            FileRPD fileRPD = new() { Name = uploadedFile.FileName, DisciplineId = disciplineId, UpdateDate = DateTime.Now };
-            await Update(fileRPD);
-            return fileRPD;
         }
     }
 }
