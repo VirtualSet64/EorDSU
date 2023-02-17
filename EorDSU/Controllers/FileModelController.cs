@@ -45,9 +45,9 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("EditFileModel")]
         [HttpPut]
-        public async Task<IActionResult> EditFile(int fileId, string fileName, int profileId, IFormFile? uploadedFile)
+        public async Task<IActionResult> EditFile(int fileId, string fileName, int profileId, IFormFile? uploadedFile, string? ecp)
         {
-            var files = await _unitOfWork.FileModelRepository.EditFile(fileId, fileName, profileId, uploadedFile);
+            var files = await _unitOfWork.FileModelRepository.EditFile(fileId, fileName, profileId, uploadedFile, ecp);
             if (files == null)
                 return BadRequest();
             return Ok(files);

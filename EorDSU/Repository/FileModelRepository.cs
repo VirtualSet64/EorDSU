@@ -58,11 +58,13 @@ namespace EorDSU.Repository
         /// <param name="fileNameList"></param>
         /// <param name="profileId"></param>
         /// <returns></returns>
-        public async Task<FileModel?> EditFile(int fileId, string fileName, int profileId, IFormFile? upload)
+        public async Task<FileModel?> EditFile(int fileId, string fileName, int profileId, IFormFile? upload, string? ecp)
         {
             FileModel file = FindById(fileId);
             file.OutputFileName = fileName;
             file.UpdateDate = DateTime.Now;
+            if (ecp != null)
+                file.CodeECP = ecp;
             if (upload != null)
             {
                 if (Get().Any(x => x.Name == upload.FileName))
