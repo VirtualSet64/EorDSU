@@ -24,7 +24,7 @@ namespace EorDSU.Repository
             using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
                 await uploadedFile.CopyToAsync(fileStream);
             
-            var file = new FileRPD() { Name = uploadedFile.FileName, DisciplineId = disciplineId, ECP = ecp, CreateDate = DateTime.Now };
+            var file = new FileRPD() { Name = uploadedFile.FileName, DisciplineId = disciplineId, CodeECP = ecp, CreateDate = DateTime.Now };
             await Create(file);
             return file;
         }

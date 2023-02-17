@@ -23,26 +23,32 @@ namespace EorDSU.Repository
         /// <param name="fileTypeId"></param>
         /// <param name="profileId"></param>
         /// <returns></returns>
-        public async Task<FileModel?> CreateFileModel(IFormFile upload, string fileName, int fileTypeId, int profileId, string? ecp)
+        public async Task<List<FileModel>?> CreateFileModel(List<IFormFile> uploadFiles, string fileName, int fileTypeId, int profileId, string? ecp)
         {
-            if (Get().Any(x => x.Name == upload.FileName))
-                return null;
-
-            string path = Configuration["FileFolder"] + "/" + upload.FileName;
-            using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
-                await upload.CopyToAsync(fileStream);
-
-            FileModel file = new()
+            List<FileModel> files = new();
+            foreach (var uploadFile in uploadFiles)
             {
-                Name = upload.FileName,
-                OutputFileName = fileName,
-                ProfileId = profileId,
-                Type = (FileType)fileTypeId,
-                ECP = ecp,
-                CreateDate = DateTime.Now
-            };
-            await Create(file);
-            return file;
+                if (Get().Any(x => x.Name == uploadFile.FileName))
+                    return null;
+
+                string path = Configuration["FileFolder"] + "/" + uploadFile.FileName;
+                using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
+                    await uploadFile.CopyToAsync(fileStream);
+
+                FileModel file = new()
+                {
+                    Name = uploadFile.FileName,
+                    OutputFileName = fileName,
+                    ProfileId = profileId,
+                    Type = (FileType)fileTypeId,
+                    CodeECP = ecp,
+                    CreateDate = DateTime.Now
+                };
+
+                await Create(file);
+                files.Add(file);
+            }
+            return files;
         }
 
         /// <summary>

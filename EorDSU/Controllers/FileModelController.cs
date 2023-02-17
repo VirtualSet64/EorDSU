@@ -1,6 +1,4 @@
 ﻿using EorDSU.Common.Interfaces;
-using EorDSU.Models;
-using EorDSU.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -29,12 +27,12 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("CreateFileModel")]
         [HttpPost]
-        public async Task<IActionResult> CreateFileModel(IFormFile uploadedFile, string fileName, int fileType, int profileId, string? ecp)
+        public async Task<IActionResult> CreateFileModel(List<IFormFile> uploadedFile, string fileName, int fileType, int profileId, string? ecp)
         {
-            var file = await _unitOfWork.FileModelRepository.CreateFileModel(uploadedFile, fileName, fileType, profileId, ecp);
-            if (file == null)
+            var files = await _unitOfWork.FileModelRepository.CreateFileModel(uploadedFile, fileName, fileType, profileId, ecp);
+            if (files == null || !files.Any())
                 return BadRequest();
-            return Ok(file);
+            return Ok(files);
         }
 
         /// <summary>
@@ -47,12 +45,11 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("EditFileModel")]
         [HttpPut]
-        public async Task<IActionResult> EditFile(int fileId, IFormFile uploadedFile, string fileName, int profileId)
+        public async Task<IActionResult> EditFile(int fileId, string fileName, int profileId, IFormFile? uploadedFile)
         {
-            if (profileId <= 0)
-                return BadRequest();
-
             var files = await _unitOfWork.FileModelRepository.EditFile(fileId, fileName, profileId, uploadedFile);
+            if (files == null)
+                return BadRequest();
             return Ok(files);
         }
 

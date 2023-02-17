@@ -13,7 +13,7 @@
         /// <summary>
         /// Код ЭЦП
         /// </summary>
-        public string? ECP { get; set; }
+        public string? CodeECP { get; set; }
         public FileType? Type { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime UpdateDate { get; set; }

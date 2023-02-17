@@ -1,6 +1,5 @@
 ﻿using EorDSU.Common.Interfaces;
 using EorDSU.Models;
-using EorDSU.Repository.InterfaceRepository;
 using EorDSU.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
