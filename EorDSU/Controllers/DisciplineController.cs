@@ -46,6 +46,11 @@ namespace EorDSU.Controllers
             if (discipline == null)
                 return BadRequest();
 
+            if (_unitOfWork.DisciplineRepository.Get().Any(x => x.DisciplineName == discipline.DisciplineName &&
+                                                           x.StatusDisciplineId == discipline.StatusDisciplineId &&
+                                                           x.ProfileId == discipline.ProfileId))
+                return BadRequest("Такая дисциплина существует");
+
             discipline.CreateDate = DateTime.Now;
             await _unitOfWork.DisciplineRepository.Create(discipline);
             return Ok();

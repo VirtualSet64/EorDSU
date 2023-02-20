@@ -1,4 +1,5 @@
-﻿using EorDSU.Models;
+﻿using EorDSU.Common;
+using EorDSU.Models;
 using EorDSU.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,12 @@ namespace EorDSU.Controllers
     public class AccountController : Controller
     {
         private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<User> _userManager;
 
-        public AccountController(SignInManager<User> signInManager)
+        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager)
         {
             _signInManager = signInManager;
+            _userManager = userManager;
         }
 
         [Route("Logout")]
@@ -32,7 +35,7 @@ namespace EorDSU.Controllers
             {
                 var result = await _signInManager.PasswordSignInAsync(model.Login, model.Password, false, false);
                 if (result.Succeeded)
-                    return Ok();
+                    return Ok(_userManager.Users.FirstOrDefault(x => x.UserName == model.Login));                
                 else
                     ModelState.AddModelError("", "Неправильный логин и (или) пароль");
             }

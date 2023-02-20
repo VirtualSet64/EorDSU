@@ -101,7 +101,6 @@ namespace EorDSU.Service
                 profile.CaseSDepartmentId = await _unitOfWork.SearchEntity.SearchCaseSDepartment(v);
             }
 
-            profile.PersDepartmentId = await _unitOfWork.SearchEntity.SearchPersDepartment("Кафедра " + list[3, 36].ToLower());
             profile.Year = int.Parse(list[22, 39]);
         }
 

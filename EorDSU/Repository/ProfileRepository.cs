@@ -72,7 +72,7 @@ namespace EorDSU.Repository
             return GetWithIncludeById(x => x.Id == id, x => x.Disciplines, x => x.FileModels, x => x.LevelEdu);
         }
 
-        public async Task<DataResponseForSvedenOOPDGU> ParsedProfileForPreview(IFormFile uploadedFile)
+        public async Task<DataResponseForSvedenOOPDGU> ParsingProfileByFile(IFormFile uploadedFile)
         {
             string path = Configuration["FileFolder"] + "/" + uploadedFile.FileName;
             using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
@@ -84,15 +84,6 @@ namespace EorDSU.Repository
             };
             profile.CaseSDepartment = _unitOfWork.DSUActiveData.GetCaseSDepartmentById((int)profile.Profile.CaseSDepartmentId);
             profile.CaseCEdukind = _unitOfWork.DSUActiveData.GetCaseCEdukindById((int)profile.Profile.CaseCEdukindId);
-            return profile;
-        }
-
-        public async Task<Profile> CreateProfile(Profile profile)
-        {
-            profile.CreateDate = DateTime.Now;
-            profile.LevelEdu = null;
-            profile.Disciplines?.ForEach(x => x.StatusDiscipline = null);
-            await Create(profile);
             return profile;
         }
 

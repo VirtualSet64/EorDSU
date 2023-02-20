@@ -38,6 +38,11 @@ namespace EorDSU.DBService
                 .WithOne(t => t.FileRPD)
                 .OnDelete(DeleteBehavior.ClientCascade);
 
+            modelBuilder.Entity<Discipline>()
+                .HasOne(p => p.StatusDiscipline)
+                .WithMany(t => t.Disciplines)
+                .OnDelete(DeleteBehavior.ClientCascade);
+
             base.OnModelCreating(modelBuilder);
         }
     }
