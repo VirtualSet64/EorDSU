@@ -19,7 +19,7 @@ namespace BasePersonDBService.Services
 
         public IQueryable<PersDepartment> GetPersDepartments()
         {
-            return _bASEPERSONMDFContext.PersDepartments.Where(x => x.IsActive == 1);
+            return _bASEPERSONMDFContext.PersDepartments.Where(x => x.IsActive == 1 && x.IsKaf == 1 && x.IsMain == 0);
         }
 
         public PersDivision GetPersDivisionById(int id)
@@ -29,7 +29,7 @@ namespace BasePersonDBService.Services
 
         public IQueryable<PersDivision> GetPersDivisions()
         {
-            return _bASEPERSONMDFContext.PersDivisions.Where(x => x.IsActive == 1);
+            return _bASEPERSONMDFContext.PersDivisions.Where(x => x.IsActive == 1 && x.IsFaculty == 1 && x.ForEor == 1);
         }
 
         public PersFilial GetPersFilialById(int id)
