@@ -1,4 +1,4 @@
-﻿namespace EorDSU.ViewModels
+﻿namespace EorDSU.ViewModels.Account
 {
     public class EditViewModel
     {

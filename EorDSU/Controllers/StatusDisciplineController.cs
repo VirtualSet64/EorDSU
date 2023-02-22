@@ -78,6 +78,7 @@ namespace EorDSU.Controllers
             return Ok();
         }
 
+        [Authorize(Roles = "admin")]
         /// <summary>
         /// Удаление статуса дисциплины
         /// </summary>

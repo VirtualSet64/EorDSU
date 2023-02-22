@@ -1,5 +1,5 @@
 ﻿using EorDSU.Models;
-using EorDSU.ViewModels;
+using EorDSU.ViewModels.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
