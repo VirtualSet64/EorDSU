@@ -30,9 +30,9 @@ namespace EorDSU.Controllers
         public async Task<IActionResult> CreateFileModel(List<IFormFile> uploadedFile, string fileName, int fileType, int profileId, string? ecp)
         {
             var files = await _unitOfWork.FileModelRepository.CreateFileModel(uploadedFile, fileName, fileType, profileId, ecp);
-            if (files == null || !files.Any())
-                return BadRequest("Ошибка добавления файла");
-            return Ok(files);
+            if (files.Any())
+                return Ok(files);
+            return BadRequest("Ошибка добавления файла");            
         }
 
         /// <summary>

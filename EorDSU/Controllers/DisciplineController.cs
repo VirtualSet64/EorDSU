@@ -28,10 +28,9 @@ namespace EorDSU.Controllers
         public IActionResult GetDisciplineByProfileId(int profileId)
         {
             ResponseForDiscipline responseForDiscipline = _unitOfWork.DisciplineRepository.GetDisciplinesByProfileId(profileId);
-            if (responseForDiscipline == null && !responseForDiscipline.Disciplines.Any())
-                return BadRequest("Нет дисциплин для данного профиля");
-
-            return Ok(responseForDiscipline);
+            if (responseForDiscipline.Disciplines.Any())
+                return Ok(responseForDiscipline);
+            return BadRequest("Нет дисциплин для данного профиля");            
         }
 
         /// <summary>

@@ -26,9 +26,9 @@ namespace EorDSU.Controllers
         public IActionResult GetStatusDiscipline()
         {
             List<StatusDiscipline> statusDisciplines = _unitOfWork.StatusDisciplineRepository.GetStatusDiscipline();
-            if (!statusDisciplines.Any())
-                return BadRequest("Нет созданных статусов дисциплин");
-            return Ok(statusDisciplines);
+            if (statusDisciplines.Any())
+                return Ok(statusDisciplines);
+            return BadRequest("Нет созданных статусов дисциплин");
         }
 
         /// <summary>
@@ -40,9 +40,9 @@ namespace EorDSU.Controllers
         public IActionResult GetRemovableStatusDiscipline()
         {
             List<StatusDiscipline> statusDisciplines = _unitOfWork.StatusDisciplineRepository.GetRemovableStatusDiscipline();
-            if (!statusDisciplines.Any())
-                return BadRequest("Нет статусов дисциплин доступных для удаления");
-            return Ok(statusDisciplines);
+            if (statusDisciplines.Any())
+                return Ok(statusDisciplines);
+            return BadRequest("Нет статусов дисциплин доступных для удаления");            
         }
 
         /// <summary>
