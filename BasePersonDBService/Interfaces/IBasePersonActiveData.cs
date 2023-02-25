@@ -10,6 +10,7 @@ namespace BasePersonDBService.Interfaces
         public PersDivision GetPersDivisionById(int id);
         public IQueryable<PersDepartment> GetPersDepartments();
         public PersDepartment GetPersDepartmentById(int id);
+        public IQueryable<PersDepartment> GetPersDepartmentByDivisionId(int id);
         public IQueryable<Person> GetPersons();
         public Person GetPersonById(int id);
     }

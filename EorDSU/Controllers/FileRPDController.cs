@@ -30,7 +30,7 @@ namespace EorDSU.Controllers
             var rpd = await _unitOfWork.FileRPDRepository.CreateFileRPD(uploadedFile, disciplineId, ecp);
 
             if (rpd == null)
-                return BadRequest();
+                return BadRequest("Ошибка добавления файла");
             return Ok(rpd);
         }
 

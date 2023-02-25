@@ -32,6 +32,20 @@ namespace EorDSU.Controllers
         }
 
         /// <summary>
+        /// Получение списка статусов дисциплин доступных для удаления
+        /// </summary>
+        /// <returns></returns>
+        [Route("GetRemovableStatusDiscipline")]
+        [HttpGet]
+        public IActionResult GetRemovableStatusDiscipline()
+        {
+            List<StatusDiscipline> statusDisciplines = _unitOfWork.StatusDisciplineRepository.GetRemovableStatusDiscipline();
+            if (!statusDisciplines.Any())
+                return BadRequest("Нет статусов дисциплин доступных для удаления");
+            return Ok(statusDisciplines);
+        }
+
+        /// <summary>
         /// Получение статуса дисциплины по id
         /// </summary>
         /// <param name="statusDisciplineId"></param>
@@ -42,7 +56,7 @@ namespace EorDSU.Controllers
         {
             var statusDiscipline = _unitOfWork.StatusDisciplineRepository.GetStatusDisciplineById(statusDisciplineId);
             if (statusDiscipline == null)
-                return BadRequest();
+                return BadRequest("Статус дисциплины не найден");
             return Ok(statusDiscipline);
         }
 
@@ -56,7 +70,7 @@ namespace EorDSU.Controllers
         public async Task<IActionResult> CreateStatusDiscipline(StatusDiscipline statusDiscipline)
         {
             if (statusDiscipline == null)
-                return BadRequest();
+                return BadRequest("Ошибка при передаче статуса дисциплины");
 
             await _unitOfWork.StatusDisciplineRepository.Create(statusDiscipline);
             return Ok(); 
@@ -72,7 +86,7 @@ namespace EorDSU.Controllers
         public async Task<IActionResult> EditStatusDiscipline(StatusDiscipline statusDiscipline)
         {
             if (statusDiscipline == null)
-                return BadRequest();
+                return BadRequest("Ошибка при передаче статуса дисциплины");
 
             await _unitOfWork.StatusDisciplineRepository.Update(statusDiscipline);
             return Ok();

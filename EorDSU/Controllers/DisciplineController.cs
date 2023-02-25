@@ -66,7 +66,7 @@ namespace EorDSU.Controllers
         public async Task<IActionResult> EditDiscipline(Discipline discipline)
         {
             if (discipline == null)
-                return BadRequest();
+                return BadRequest("Ошибка передачи дисциплины");
 
             discipline.UpdateDate = DateTime.Now;
             await _unitOfWork.DisciplineRepository.Update(discipline);
@@ -83,7 +83,7 @@ namespace EorDSU.Controllers
         public async Task<IActionResult> DeleteDiscipline(int disciplineId)
         {
             if (await _unitOfWork.DisciplineRepository.RemoveDiscipline(disciplineId) == null)
-                return BadRequest();
+                return BadRequest("Такой дисциплины не существует");
             return Ok();
         }
     }

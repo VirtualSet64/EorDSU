@@ -4,6 +4,7 @@
     {
         public string Id { get; set; }
         public string Login { get; set; }
-        public int PersDepartmentId { get; set; }
+        public string Password { get; set; }
+        public int? PersDepartmentId { get; set; }
     }
 }

@@ -37,17 +37,19 @@ namespace EorDSU.Controllers
                 if (result.Succeeded)
                 {
                     var user = _userManager.Users.FirstOrDefault(x => x.UserName == model.Login);
-                    var roles = await _userManager.GetRolesAsync(user);
                     var userIncludeRoles = new UserIncludeRolesViewModel
                     {
-                        UserName = user.UserName,
+                        UserName = user?.UserName,
                         PersDepartmentId = user.PersDepartmentId,
-                        Role = roles.First()
                     };
+                    var roles = await _userManager.GetRolesAsync(user);
+                    if (roles != null || !roles.Any())
+                        userIncludeRoles.Role = roles.First();
+
                     return Ok(userIncludeRoles);
                 }
                 else
-                    ModelState.AddModelError("", "Неправильный логин и (или) пароль");
+                    return BadRequest("Неправильный логин и (или) пароль");
             }
             return BadRequest();
         }

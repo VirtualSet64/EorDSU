@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EorDSU.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class PersonalDataController : Controller
@@ -23,11 +23,18 @@ namespace EorDSU.Controllers
             return Ok(await _unitOfWork.BasePersonActiveData.GetPersDepartments().ToListAsync());
         }
 
-        [Route("GetKafedra")]
+        [Route("GetPersDepartmentById")]
         [HttpGet]
-        public IActionResult GetPersDepartments(int kafedraId)
+        public IActionResult GetPersDepartmentById(int kafedraId)
         {
             return Ok(_unitOfWork.BasePersonActiveData.GetPersDepartmentById(kafedraId));
+        }
+
+        [Route("GetPersDepartmentByDivisionId")]
+        [HttpGet]
+        public IActionResult GetPersDepartmentByDivisionId(int facultyId)
+        {
+            return Ok(_unitOfWork.BasePersonActiveData.GetPersDepartmentByDivisionId(facultyId));
         }
 
         [Route("GetAllFaculty")]

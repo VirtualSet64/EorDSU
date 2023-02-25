@@ -35,7 +35,7 @@ namespace EorDSU.Controllers
                 if (result.Succeeded)
                     return Ok();
             }
-            return BadRequest();
+            return BadRequest("Некорректное имя роли");
         }
 
         [Route("EditRole")]
@@ -43,7 +43,7 @@ namespace EorDSU.Controllers
         public async Task<IActionResult> EditRole(string userId, List<string> roles)
         {
             // получаем пользователя
-            Models.User user = await _userManager.FindByIdAsync(userId);
+            User user = await _userManager.FindByIdAsync(userId);
             if (user != null)
             {
                 // получем список ролей пользователя
@@ -59,7 +59,7 @@ namespace EorDSU.Controllers
 
                 return Ok();
             }
-            return NotFound();
+            return NotFound("Такой пользователь не найден");
         }
 
         [Route("DeleteRole")]
@@ -68,7 +68,7 @@ namespace EorDSU.Controllers
         {
             IdentityRole role = await _roleManager.FindByIdAsync(id);
             if (role == null)
-                return BadRequest();
+                return BadRequest("Роль не найдена");
 
             await _roleManager.DeleteAsync(role);
             return Ok();

@@ -18,6 +18,11 @@ namespace EorDSU.Repository
             return Get(x => x.IsDeleted == false).ToList();
         }
 
+        public List<StatusDiscipline> GetRemovableStatusDiscipline()
+        {
+            return Get(x => x.Disciplines.Any() == false).ToList();
+        }
+
         public StatusDiscipline GetStatusDisciplineById(int id)
         {
             return FindById(id);

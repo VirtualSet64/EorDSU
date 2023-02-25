@@ -58,10 +58,12 @@ namespace EorDSU.Controllers
             if (ModelState.IsValid)
             {
                 User user = await _userManager.FindByIdAsync(model.Id);
+                var _passwordHasher = HttpContext.RequestServices.GetService(typeof(IPasswordHasher<User>)) as IPasswordHasher<User>;
                 if (user != null)
                 {
                     user.UserName = model.Login;
-                    user.PersDepartmentId = model.PersDepartmentId;
+                    user.PasswordHash = _passwordHasher.HashPassword(user, model.Password);
+                    user.PersDepartmentId = (int)model.PersDepartmentId;                    
 
                     var result = await _userManager.UpdateAsync(user);
                     if (result.Succeeded)

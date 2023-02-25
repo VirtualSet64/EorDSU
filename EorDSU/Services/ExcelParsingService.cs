@@ -35,7 +35,6 @@ namespace EorDSU.Service
         /// <param name="profile"></param>
         private async Task TitulPage(Excel.Workbook ObjWorkBook, Profile profile)
         {
-
             Excel.Worksheet ObjWorkSheet = (Excel.Worksheet)ObjWorkBook.Sheets[1]; //получить 1 лист
             var lastCell = ObjWorkSheet.Cells.SpecialCells(Excel.XlCellType.xlCellTypeLastCell);//1 ячейку
             string[,] list = new string[lastCell.Column, lastCell.Row]; // массив значений с листа равен по размеру листу
@@ -45,9 +44,14 @@ namespace EorDSU.Service
 
                     list[i, j] = ObjWorkSheet.Cells[j + 1, i + 1].Text.ToString();//считываем текст в строку
 
+            var ds = list[7, 24];
             if (list[15, 15] == "основное общее образование")
             {
                 await TitulPageForCollegeAsync(list, profile);
+            }
+            else if (ds == "по программе  аспирантуры")
+            {
+                await TitulPageForPostGraduate(list, profile);
             }
             else
             {
@@ -56,6 +60,12 @@ namespace EorDSU.Service
             }
         }
 
+        /// <summary>
+        /// Парсинг титульной страницы для учебного плана колледжа
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="profile"></param>
+        /// <returns></returns>
         private async Task TitulPageForCollegeAsync(string[,] list, Profile profile)
         {
             string code = list[0, 13];
@@ -68,6 +78,12 @@ namespace EorDSU.Service
             profile.TermEdu = list[28, 26];
         }
 
+        /// <summary>
+        /// Парсинг титульной страницы для учебного плана Вуза
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="profile"></param>
+        /// <returns></returns>
         private async Task TitulPageForVuz(string[,] list, Profile profile)
         {
             profile.CaseCEdukindId = await _unitOfWork.SearchEntity.SearchEdukind(list[2, 41].Split(" ")[^1]);
@@ -100,6 +116,37 @@ namespace EorDSU.Service
                 string v = list[3, 28].Split(code)[^1].Trim() + $" ({profile.LevelEdu?.Name})";
                 profile.CaseSDepartmentId = await _unitOfWork.SearchEntity.SearchCaseSDepartment(v);
             }
+
+            profile.Year = int.Parse(list[22, 39]);
+        }
+
+        /// <summary>
+        /// Парсинг титульной страницы для учебного плана аспирантуры
+        /// </summary>
+        /// <param name="list"></param>
+        /// <param name="profile"></param>
+        /// <returns></returns>
+        private async Task TitulPageForPostGraduate(string[,] list, Profile profile)
+        {
+            var sdd = list[2, 41].Split(":");
+            profile.CaseCEdukindId = await _unitOfWork.SearchEntity.SearchEdukind(list[2, 41].Split(":")[^1]);
+
+            profile.LevelEdu = await _unitOfWork.SearchEntity.SearchLevelEdu("аспирантура");
+            profile.LevelEduId = profile.LevelEdu.Id;
+
+            var code = list[3, 26];
+
+            profile.ProfileName = list[3, 28];
+            var sd = list[2, 42].Split(":");
+            //profile.TermEdu = list[2, 42].Split(" ")[^1][0].ToString();
+            //profile.CaseSDepartmentId = await _unitOfWork.SearchEntity.SearchCaseSDepartment(list[3, 28].Split(" ")[^1])
+            //    ?? await _unitOfWork.SearchEntity.SearchCaseSDepartment(list[3, 28].Split(code)[^1].Trim()); ;
+
+            //if (profile.CaseSDepartmentId == null)
+            //{
+            //    string v = list[3, 28].Split(code)[^1].Trim() + $" ({profile.LevelEdu?.Name})";
+            //    profile.CaseSDepartmentId = await _unitOfWork.SearchEntity.SearchCaseSDepartment(v);
+            //}
 
             profile.Year = int.Parse(list[22, 39]);
         }

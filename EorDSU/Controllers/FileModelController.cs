@@ -31,7 +31,7 @@ namespace EorDSU.Controllers
         {
             var files = await _unitOfWork.FileModelRepository.CreateFileModel(uploadedFile, fileName, fileType, profileId, ecp);
             if (files == null || !files.Any())
-                return BadRequest();
+                return BadRequest("Ошибка добавления файла");
             return Ok(files);
         }
 
@@ -49,7 +49,7 @@ namespace EorDSU.Controllers
         {
             var files = await _unitOfWork.FileModelRepository.EditFile(fileId, fileName, profileId, uploadedFile, ecp);
             if (files == null)
-                return BadRequest();
+                return BadRequest("Ошибка изменения файла");
             return Ok(files);
         }
 
