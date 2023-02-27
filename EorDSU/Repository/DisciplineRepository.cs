@@ -23,8 +23,8 @@ namespace EorDSU.Repository
             {
                 Disciplines = disciplines,
                 Profile = profile,
-                CaseCEdukind = _unitOfWork.DSUActiveData.GetCaseCEdukindById((int)profile.CaseCEdukindId),
-                CaseSDepartment = _unitOfWork.DSUActiveData.GetCaseSDepartmentById((int)profile.CaseSDepartmentId)
+                CaseCEdukind = profile?.CaseCEdukindId == null ? null : _unitOfWork.DSUActiveData.GetCaseCEdukindById((int)profile.CaseCEdukindId),
+                CaseSDepartment = profile?.CaseSDepartmentId == null ? null : _unitOfWork.DSUActiveData.GetCaseSDepartmentById((int)profile.CaseSDepartmentId)
             };
             return responseForDiscipline;
         }

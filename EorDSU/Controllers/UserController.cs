@@ -63,7 +63,8 @@ namespace EorDSU.Controllers
                 {
                     user.UserName = model.Login;
                     user.PasswordHash = _passwordHasher.HashPassword(user, model.Password);
-                    user.PersDepartmentId = (int)model.PersDepartmentId;                    
+                    if (model.PersDepartmentId != null)
+                        user.PersDepartmentId = (int)model.PersDepartmentId;
 
                     var result = await _userManager.UpdateAsync(user);
                     if (result.Succeeded)

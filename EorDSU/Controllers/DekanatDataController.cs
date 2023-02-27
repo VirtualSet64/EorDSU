@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EorDSU.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class DekanatDataController : Controller

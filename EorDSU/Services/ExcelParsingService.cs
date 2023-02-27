@@ -128,17 +128,15 @@ namespace EorDSU.Service
         /// <returns></returns>
         private async Task TitulPageForPostGraduate(string[,] list, Profile profile)
         {
-            var sdd = list[2, 41].Split(":");
-            profile.CaseCEdukindId = await _unitOfWork.SearchEntity.SearchEdukind(list[2, 41].Split(":")[^1]);
+            profile.CaseCEdukindId = await _unitOfWork.SearchEntity.SearchEdukind(list[2, 40].Split(":")[1].Trim());
 
             profile.LevelEdu = await _unitOfWork.SearchEntity.SearchLevelEdu("аспирантура");
             profile.LevelEduId = profile.LevelEdu.Id;
 
-            var code = list[3, 26];
+            //var code = list[3, 26];
 
             profile.ProfileName = list[3, 28];
-            var sd = list[2, 42].Split(":");
-            //profile.TermEdu = list[2, 42].Split(" ")[^1][0].ToString();
+            profile.TermEdu = list[2, 41].Split(":")[1].Trim().ToString();
             //profile.CaseSDepartmentId = await _unitOfWork.SearchEntity.SearchCaseSDepartment(list[3, 28].Split(" ")[^1])
             //    ?? await _unitOfWork.SearchEntity.SearchCaseSDepartment(list[3, 28].Split(code)[^1].Trim()); ;
 

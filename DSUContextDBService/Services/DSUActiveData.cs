@@ -13,7 +13,7 @@ namespace DSUContextDBService.Services
             _dSUContext = dSUContext;
         }
 
-        public CaseCEdukind GetCaseCEdukindById(int id)
+        public CaseCEdukind GetCaseCEdukindById(int? id)
         {
             return _dSUContext.CaseCEdukinds.FirstOrDefault(x => x.EdukindId == id);
         }
@@ -23,7 +23,7 @@ namespace DSUContextDBService.Services
             return _dSUContext.CaseCEdukinds;
         }
 
-        public CaseSDepartment GetCaseSDepartmentById(int id)
+        public CaseSDepartment GetCaseSDepartmentById(int? id)
         {
             return _dSUContext.CaseSDepartments.FirstOrDefault(x => x.DepartmentId == id);
         }

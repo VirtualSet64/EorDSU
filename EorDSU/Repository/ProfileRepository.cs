@@ -61,8 +61,8 @@ namespace EorDSU.Repository
             dataForTableResponse.Add(new()
             {
                 Profile = item,
-                CaseCEdukind = _unitOfWork.DSUActiveData.GetCaseCEdukindById((int)item.CaseCEdukindId),
-                CaseSDepartment = _unitOfWork.DSUActiveData.GetCaseSDepartmentById((int)item.CaseSDepartmentId),
+                CaseCEdukind = item.CaseCEdukindId == null ? null : _unitOfWork.DSUActiveData.GetCaseCEdukindById((int)item.CaseCEdukindId),
+                CaseSDepartment = item.CaseSDepartmentId == null ? null : _unitOfWork.DSUActiveData.GetCaseSDepartmentById((int)item.CaseSDepartmentId),
                 Practics = _unitOfWork.DisciplineRepository.GetDisciplinesByProfileId(item.Id).Disciplines?.Where(x => x.Code?.Contains("Б2") == true).ToList()
             });
         }
@@ -80,10 +80,10 @@ namespace EorDSU.Repository
 
             DataResponseForSvedenOOPDGU profile = new()
             {
-                Profile = await _unitOfWork.ExcelParsingService.ParsingService(path)                
+                Profile = await _unitOfWork.ExcelParsingService.ParsingService(path)
             };
-            profile.CaseSDepartment = _unitOfWork.DSUActiveData.GetCaseSDepartmentById((int)profile.Profile.CaseSDepartmentId);
-            profile.CaseCEdukind = _unitOfWork.DSUActiveData.GetCaseCEdukindById((int)profile.Profile.CaseCEdukindId);
+            profile.CaseSDepartment = profile.Profile.CaseSDepartmentId == null ? null : _unitOfWork.DSUActiveData.GetCaseSDepartmentById((int)profile.Profile.CaseSDepartmentId);
+            profile.CaseCEdukind = profile.Profile.CaseCEdukindId == null ? null : _unitOfWork.DSUActiveData.GetCaseCEdukindById((int)profile.Profile.CaseCEdukindId);
             return profile;
         }
 

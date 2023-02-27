@@ -1,5 +1,4 @@
-﻿using EorDSU.Common;
-using EorDSU.Models;
+﻿using EorDSU.Models;
 using EorDSU.ViewModels.Account;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -37,16 +36,21 @@ namespace EorDSU.Controllers
                 if (result.Succeeded)
                 {
                     var user = _userManager.Users.FirstOrDefault(x => x.UserName == model.Login);
-                    var userIncludeRoles = new UserIncludeRolesViewModel
+                    if (user != null)
                     {
-                        UserName = user?.UserName,
-                        PersDepartmentId = user.PersDepartmentId,
-                    };
-                    var roles = await _userManager.GetRolesAsync(user);
-                    if (roles != null || !roles.Any())
-                        userIncludeRoles.Role = roles.First();
+                        var userIncludeRoles = new UserIncludeRolesViewModel
+                        {
+                            UserName = user?.UserName,
+                            PersDepartmentId = user.PersDepartmentId,
+                        };
+                        var roles = await _userManager.GetRolesAsync(user);
+                        if (roles != null || !roles.Any())
+                            userIncludeRoles.Role = roles.First();
 
-                    return Ok(userIncludeRoles);
+                        return Ok(userIncludeRoles);
+                    }
+                    else
+                        return BadRequest("Пользователь с таким логином не найден");
                 }
                 else
                     return BadRequest("Неправильный логин и (или) пароль");

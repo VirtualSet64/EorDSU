@@ -23,6 +23,10 @@
         /// </summary>
         public string? LinkToPriemResult { get; set; }
         /// <summary>
+        /// Ссылка на страницу с РПД
+        /// </summary>
+        public string? LinkToRPD { get; set; }
+        /// <summary>
         /// Список дисциплин
         /// </summary>
         public List<Discipline>? Disciplines { get; set; } = new List<Discipline>();

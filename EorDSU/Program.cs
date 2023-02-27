@@ -18,7 +18,17 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddCors();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("MyAllowCredentialsPolicy",
+        policy =>
+        {
+            policy.WithOrigins("http://127.0.0.1:5001/")
+                   .AllowAnyHeader()
+                   .AllowAnyMethod()
+                   .AllowCredentials();
+        });
+});
 
 builder.Services.AddDbContext<BASEPERSONMDFContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BasePerson"), providerOptions => providerOptions.EnableRetryOnFailure()));
@@ -78,9 +88,11 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors(builder => builder.AllowAnyOrigin()
-                              .AllowAnyHeader()
-                              .AllowAnyMethod());
+//app.UseCors(builder => builder.AllowAnyOrigin()
+//                              .AllowAnyHeader()
+//                              .AllowAnyMethod());
+
+app.UseCors();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();

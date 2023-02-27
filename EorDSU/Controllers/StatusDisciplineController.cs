@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EorDSU.Controllers
 {
-    //[Authorize]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class StatusDisciplineController : Controller
