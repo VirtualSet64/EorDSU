@@ -17,8 +17,7 @@ namespace EorDSU.ViewModels.Account
         [Display(Name = "Пароль")]
         public string Password { get; set; } = null!;
 
-        [Required]
         [Display(Name = "Роль")]
-        public string Role { get; set; } = null!;
+        public string? Role { get; set; }
     }
 }
