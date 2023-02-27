@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace EorDSU.Controllers
 {
@@ -40,10 +41,11 @@ namespace EorDSU.Controllers
 
         [Route("EditRole")]
         [HttpPut]
-        public async Task<IActionResult> EditRole(string userId, List<string> roles)
+        public async Task<IActionResult> EditRole(string userId, string role)
         {
             // получаем пользователя
             User user = await _userManager.FindByIdAsync(userId);
+            List<string> roles = new() { role };
             if (user != null)
             {
                 // получем список ролей пользователя

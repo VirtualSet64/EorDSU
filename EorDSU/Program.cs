@@ -23,7 +23,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("MyAllowCredentialsPolicy",
         policy =>
         {
-            policy.WithOrigins("http://127.0.0.1:5001/")
+            policy.WithOrigins(builder.Configuration["LinkToFrontEnd"])
                    .AllowAnyHeader()
                    .AllowAnyMethod()
                    .AllowCredentials();
@@ -47,6 +47,17 @@ builder.Services.AddIdentity<EorDSU.Models.User, IdentityRole>(
                    opts.Password.RequireDigit = false;
                })
                .AddEntityFrameworkStores<ApplicationContext>();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    // Cookie settings
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.None;
+    //options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+
+    options.LoginPath = "/Account/Login";
+    options.SlidingExpiration = true;
+});
 
 builder.WebHost.ConfigureServices(configure => SentrySdk.Init(o =>
 {
@@ -88,11 +99,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-//app.UseCors(builder => builder.AllowAnyOrigin()
-//                              .AllowAnyHeader()
-//                              .AllowAnyMethod());
-
-app.UseCors();
+app.UseCors("MyAllowCredentialsPolicy");
 
 app.UseDefaultFiles();
 app.UseStaticFiles();

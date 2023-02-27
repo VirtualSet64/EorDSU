@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EorDSU.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class PersonalDataController : Controller

@@ -16,5 +16,9 @@ namespace EorDSU.ViewModels.Account
         [DataType(DataType.Password)]
         [Display(Name = "Пароль")]
         public string Password { get; set; } = null!;
+
+        [Required]
+        [Display(Name = "Роль")]
+        public string Role { get; set; } = null!;
     }
 }

@@ -52,11 +52,12 @@ namespace EorDSU.Service
             else if (ds == "по программе  аспирантуры")
             {
                 await TitulPageForPostGraduate(list, profile);
+                await PlanSvodPage(ObjWorkBook, profile, true);
             }
             else
             {
                 await TitulPageForVuz(list, profile);
-                await PlanSvodPage(ObjWorkBook, profile);
+                await PlanSvodPage(ObjWorkBook, profile, false);
             }
         }
 
@@ -133,18 +134,8 @@ namespace EorDSU.Service
             profile.LevelEdu = await _unitOfWork.SearchEntity.SearchLevelEdu("аспирантура");
             profile.LevelEduId = profile.LevelEdu.Id;
 
-            //var code = list[3, 26];
-
             profile.ProfileName = list[3, 28];
             profile.TermEdu = list[2, 41].Split(":")[1].Trim().ToString();
-            //profile.CaseSDepartmentId = await _unitOfWork.SearchEntity.SearchCaseSDepartment(list[3, 28].Split(" ")[^1])
-            //    ?? await _unitOfWork.SearchEntity.SearchCaseSDepartment(list[3, 28].Split(code)[^1].Trim()); ;
-
-            //if (profile.CaseSDepartmentId == null)
-            //{
-            //    string v = list[3, 28].Split(code)[^1].Trim() + $" ({profile.LevelEdu?.Name})";
-            //    profile.CaseSDepartmentId = await _unitOfWork.SearchEntity.SearchCaseSDepartment(v);
-            //}
 
             profile.Year = int.Parse(list[22, 39]);
         }
@@ -154,7 +145,7 @@ namespace EorDSU.Service
         /// </summary>
         /// <param name="ObjWorkBook"></param>
         /// <param name="profile"></param>
-        private async Task PlanSvodPage(Excel.Workbook ObjWorkBook, Profile profile)
+        private async Task PlanSvodPage(Excel.Workbook ObjWorkBook, Profile profile, bool isPostGraduate)
         {
             var ObjWorkSheet = (Excel.Worksheet)ObjWorkBook.Sheets[3]; //получить 3 лист
             var lastCell = ObjWorkSheet.Cells.SpecialCells(Excel.XlCellType.xlCellTypeLastCell);//1 ячейку
@@ -168,7 +159,10 @@ namespace EorDSU.Service
 
             profile.Disciplines = new();
 
-            await DisciplinesForVuz(list, profile);
+            if (isPostGraduate)
+                await DisciplinesForPostGraduate(list, profile);
+            else
+                await DisciplinesForVuz(list, profile);
         }
 
         private async Task DisciplinesForVuz(string[,] list, Profile profile)
@@ -336,6 +330,201 @@ namespace EorDSU.Service
                     discipline.StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline($"ФТД.Факультативы".Trim());
                 else
                     discipline.StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline($"ФТД.Факультативы. {list[0, giaCount + 1]}".Trim());
+
+                discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
+                profile.Disciplines?.Add(discipline);
+            }
+        }
+
+        private async Task DisciplinesForPostGraduate(string[,] list, Profile profile)
+        {
+            int preparetionPublications = 0;
+            int interimCertification = 0;
+            int educationComponent = 0;
+            int pactic = 0;
+            int interimCertificationForDiscipline = 0;
+            int finalCertification = 0;
+            for (int i = 5; i < list.GetLength(1); i++)
+            {
+                if (list[0, i].Trim() == "1.2.Подготовка публикаций и(или) заявок на патенты")
+                {
+                    preparetionPublications = i;
+                }
+                if (list[0, i].Trim() == "1.3.Промежуточная аттестация по этапам выполнения научного исследования")
+                {
+                    interimCertification = i;
+                }
+                if (list[0, i].Trim() == "2.Образовательный компонент")
+                {
+                    educationComponent = i;
+                }
+                if (list[0, i].Trim() == "2.2.Практика")
+                {
+                    pactic = i;
+                }
+                if (list[0, i].Trim() == "2.3.Промежуточная аттестация по дисциплинам (модулям) и практике")
+                {
+                    interimCertificationForDiscipline = i;
+                }
+                if (list[0, i].Trim() == "3.Итоговая аттестация")
+                {
+                    finalCertification = i;
+                    break;
+                }
+            }
+
+            for (int i = 5; i < preparetionPublications; i++)
+            {
+                bool isModule = false;
+                for (int j = 0; j < list[2, i].Split(" ").Length; j++)
+                {
+                    if (list[2, i].Split(" ")[j] == "дисциплины" || list[2, i].Split(" ")[j] == "Дисциплины")
+                    {
+                        isModule = true;
+                    }
+                }
+                if (isModule == false)
+                {
+                    Discipline discipline = new()
+                    {
+                        DisciplineName = list[2, i],
+                        Code = list[1, i],
+                        StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("1.1.Научная деятельность, направленная на подготовку диссертации к защите"),
+                        Profile = profile,
+                        ProfileId = profile.Id,
+                        CreateDate = DateTime.Now,
+                    };
+                    discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
+                    profile.Disciplines?.Add(discipline);
+                }
+            }
+
+            for (int i = preparetionPublications + 1; i < interimCertification; i++)
+            {
+                bool isDisciplinesPoViboru = false;
+                var sd = list[2, i].Split(" ")[0];
+                if (sd == "Дисциплины" || list[2, i].Split(" ")[0] == "дисциплины" || list[2, i].Split(" ")[0] == "Дисциплины")
+                {
+                    isDisciplinesPoViboru = true;
+                }
+                if (isDisciplinesPoViboru == false)
+                {
+                    Discipline discipline = new()
+                    {
+                        DisciplineName = list[2, i],
+                        Code = list[1, i],
+                        StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("1.2.Подготовка публикаций и(или) заявок на патенты"),
+                        Profile = profile,
+                        ProfileId = profile.Id,
+                        CreateDate = DateTime.Now,
+                    };
+                    discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
+                    profile.Disciplines?.Add(discipline);
+                }
+            }
+
+            for (int i = interimCertification + 1; i < educationComponent; i++)
+            {
+                bool isDisciplinesPoViboru = false;
+                var sd = list[2, i].Split(" ")[0];
+                if (sd == "Дисциплины" || list[2, i].Split(" ")[0] == "дисциплины" || list[2, i].Split(" ")[0] == "Дисциплины")
+                {
+                    isDisciplinesPoViboru = true;
+                }
+                if (isDisciplinesPoViboru == false)
+                {
+                    Discipline discipline = new()
+                    {
+                        DisciplineName = list[2, i],
+                        Code = list[1, i],
+                        StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("1.3.Промежуточная аттестация по этапам выполнения научного исследования"),
+                        Profile = profile,
+                        ProfileId = profile.Id,
+                        CreateDate = DateTime.Now,
+                    };
+                    discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
+                    profile.Disciplines?.Add(discipline);
+                }
+            }
+
+            for (int i = educationComponent + 2; i < pactic; i++)
+            {
+                bool isDisciplinesPoViboru = false;
+                var sd = list[2, i].Split(" ")[0];
+                if (sd == "Дисциплины" || list[2, i].Split(" ")[0] == "дисциплины" || list[2, i].Split(" ")[0] == "Дисциплины" 
+                                       || list[2, i].Split(" ")[1] == "дисциплины" || list[2, i].Split(" ")[1] == "Дисциплины")
+                {
+                    isDisciplinesPoViboru = true;
+                }
+                if (isDisciplinesPoViboru == false)
+                {
+                    Discipline discipline = new()
+                    {
+                        DisciplineName = list[2, i],
+                        Code = list[1, i],
+                        StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("2.Образовательный компонент"),
+                        Profile = profile,
+                        ProfileId = profile.Id,
+                        CreateDate = DateTime.Now,
+                    };
+                    discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
+                    profile.Disciplines?.Add(discipline);
+                }
+            }
+
+            for (int i = pactic + 1; i < interimCertificationForDiscipline; i++)
+            {
+                bool isDisciplinesPoViboru = false;
+                var sd = list[2, i].Split(" ")[0];
+                if (sd == "Дисциплины" || list[2, i].Split(" ")[0] == "дисциплины" || list[2, i].Split(" ")[0] == "Дисциплины")
+                {
+                    isDisciplinesPoViboru = true;
+                }
+                if (isDisciplinesPoViboru == false)
+                {
+                    Discipline discipline = new()
+                    {
+                        DisciplineName = list[2, i],
+                        Code = list[1, i],
+                        StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("2.2.Практика"),
+                        Profile = profile,
+                        ProfileId = profile.Id,
+                        CreateDate = DateTime.Now,
+                    };
+                    discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
+                    profile.Disciplines?.Add(discipline);
+                }
+            }
+
+            for (int i = interimCertificationForDiscipline + 1; i < finalCertification; i++)
+            {
+                Discipline discipline = new()
+                {
+                    DisciplineName = list[2, i],
+                    Code = list[1, i],
+                    Profile = profile,
+                    ProfileId = profile.Id,
+                    CreateDate = DateTime.Now,
+                };
+
+                discipline.StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("2.3.Промежуточная аттестация по дисциплинам (модулям) и практике");
+
+                discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
+                profile.Disciplines?.Add(discipline);
+            }
+
+            for (int i = finalCertification + 1; i < list.GetLength(1); i++)
+            {
+                Discipline discipline = new()
+                {
+                    DisciplineName = list[2, i],
+                    Code = list[1, i],
+                    Profile = profile,
+                    ProfileId = profile.Id,
+                    CreateDate = DateTime.Now,
+                };
+               
+                discipline.StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("3.Итоговая аттестация");
 
                 discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
                 profile.Disciplines?.Add(discipline);

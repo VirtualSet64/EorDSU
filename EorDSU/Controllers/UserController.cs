@@ -3,6 +3,7 @@ using EorDSU.ViewModels.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Data;
 
 namespace EorDSU.Controllers
 {
@@ -44,7 +45,10 @@ namespace EorDSU.Controllers
             if (ModelState.IsValid)
             {
                 User user = new() { UserName = model.Login, PersDepartmentId = model.PersDepartmentId };
+                List<string> roles = new() { model.Role };
+
                 var result = await _userManager.CreateAsync(user, model.Password);
+                await _userManager.AddToRolesAsync(user, roles);
                 if (result.Succeeded)
                     return Ok();
             }
