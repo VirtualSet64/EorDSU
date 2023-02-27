@@ -30,9 +30,9 @@ namespace EorDSU.Controllers
         public async Task<IActionResult> CreateFileModel(List<IFormFile> uploadedFile, string fileName, int fileType, int profileId, string? ecp)
         {
             var files = await _unitOfWork.FileModelRepository.CreateFileModel(uploadedFile, fileName, fileType, profileId, ecp);
-            if (files.Any())
-                return Ok(files);
-            return BadRequest("Ошибка добавления файла");            
+            if (files == null)
+                return BadRequest("Файл с таким названием уже существует");
+            return Ok();
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace EorDSU.Controllers
             var files = await _unitOfWork.FileModelRepository.EditFile(fileId, fileName, profileId, uploadedFile, ecp);
             if (files == null)
                 return BadRequest("Ошибка изменения файла");
-            return Ok(files);
+            return Ok();
         }
 
         /// <summary>

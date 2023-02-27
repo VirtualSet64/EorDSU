@@ -31,7 +31,7 @@ namespace EorDSU.Controllers
 
             if (rpd == null)
                 return BadRequest("Ошибка добавления файла");
-            return Ok(rpd);
+            return Ok();
         }
 
         /// <summary>

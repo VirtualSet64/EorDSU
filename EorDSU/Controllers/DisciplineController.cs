@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EorDSU.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class DisciplineController : Controller
@@ -28,9 +27,9 @@ namespace EorDSU.Controllers
         public IActionResult GetDisciplineByProfileId(int profileId)
         {
             ResponseForDiscipline responseForDiscipline = _unitOfWork.DisciplineRepository.GetDisciplinesByProfileId(profileId);
-            if (responseForDiscipline.Disciplines.Any())
-                return Ok(responseForDiscipline);
-            return BadRequest("Нет дисциплин для данного профиля");            
+            if (responseForDiscipline == null || responseForDiscipline.Disciplines == null)
+                return BadRequest("Нет дисциплин для данного профиля");
+            return Ok(responseForDiscipline);
         }
 
         /// <summary>
@@ -38,6 +37,7 @@ namespace EorDSU.Controllers
         /// </summary>
         /// <param name="discipline"></param>
         /// <returns></returns>
+        [Authorize]
         [Route("CreateDiscipline")]
         [HttpPost]
         public async Task<IActionResult> CreateDiscipline(Discipline discipline)
@@ -53,13 +53,14 @@ namespace EorDSU.Controllers
             discipline.CreateDate = DateTime.Now;
             await _unitOfWork.DisciplineRepository.Create(discipline);
             return Ok();
-        }        
+        }
 
         /// <summary>
         /// Изменение дисциплины
         /// </summary>
         /// <param name="discipline"></param>
         /// <returns></returns>
+        [Authorize]
         [Route("EditDiscipline")]
         [HttpPut]
         public async Task<IActionResult> EditDiscipline(Discipline discipline)
@@ -77,6 +78,7 @@ namespace EorDSU.Controllers
         /// </summary>
         /// <param name="disciplineId"></param>
         /// <returns></returns>
+        [Authorize]
         [Route("DeleteDiscipline")]
         [HttpDelete]
         public async Task<IActionResult> DeleteDiscipline(int disciplineId)
