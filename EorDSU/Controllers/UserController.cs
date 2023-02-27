@@ -48,7 +48,9 @@ namespace EorDSU.Controllers
                 List<string> roles = new() { model.Role };
 
                 var result = await _userManager.CreateAsync(user, model.Password);
-                await _userManager.AddToRolesAsync(user, roles);
+                if (roles != null || roles.Count != 0)
+                    await _userManager.AddToRolesAsync(user, roles);
+
                 if (result.Succeeded)
                     return Ok();
             }
