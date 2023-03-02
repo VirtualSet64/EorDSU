@@ -13,8 +13,8 @@
         public StatusDiscipline? StatusDiscipline { get; set; } = new StatusDiscipline();
         public string? Code { get; set; }
         public FileRPD? FileRPD { get; set; }
-        public bool IsDeleted { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime UpdateDate { get; set; }
+        public bool IsDeletionRequest { get; set; }
     }
 }

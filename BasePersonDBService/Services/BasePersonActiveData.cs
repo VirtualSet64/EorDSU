@@ -1,5 +1,6 @@
 ﻿using BasePersonDBService.DataContext;
 using BasePersonDBService.Interfaces;
+using BasePersonDBService.Models;
 using Models;
 
 namespace BasePersonDBService.Services
@@ -12,6 +13,11 @@ namespace BasePersonDBService.Services
             _bASEPERSONMDFContext = bASEPERSONMDFContext;
         }
 
+        public IQueryable<PersDepartment> GetPersDepartmentByDivisionId(int id)
+        {
+            return _bASEPERSONMDFContext.PersDepartments.Where(x => x.DivId == id && x.IsActive == 1 && x.IsKaf == 1 && x.IsMain == 0);
+        }
+
         public PersDepartment GetPersDepartmentById(int id)
         {
             return _bASEPERSONMDFContext.PersDepartments.FirstOrDefault(x => x.DepId == id);
@@ -19,7 +25,7 @@ namespace BasePersonDBService.Services
 
         public IQueryable<PersDepartment> GetPersDepartments()
         {
-            return _bASEPERSONMDFContext.PersDepartments.Where(x => x.IsActive == 1);
+            return _bASEPERSONMDFContext.PersDepartments.Where(x => x.IsActive == 1 && x.IsKaf == 1 && x.IsMain == 0);
         }
 
         public PersDivision GetPersDivisionById(int id)
@@ -29,7 +35,7 @@ namespace BasePersonDBService.Services
 
         public IQueryable<PersDivision> GetPersDivisions()
         {
-            return _bASEPERSONMDFContext.PersDivisions.Where(x => x.IsActive == 1);
+            return _bASEPERSONMDFContext.PersDivisions.Where(x => x.IsActive == 1 && x.IsFaculty == 1 && x.ForEor == 1);
         }
 
         public PersFilial GetPersFilialById(int id)
@@ -50,6 +56,11 @@ namespace BasePersonDBService.Services
         public IQueryable<Person> GetPersons()
         {
             return _bASEPERSONMDFContext.People;
+        }
+
+        public IQueryable<ViewZaprosForKaf> GetPrepods()
+        {
+            return _bASEPERSONMDFContext.ViewZaprosForKafs.Where(x => x.IsActive == 1 && x.Категория == "ППС");
         }
     }
 }

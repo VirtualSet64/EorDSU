@@ -13,7 +13,7 @@
         /// <summary>
         /// Срок обучения
         /// </summary>
-        public int? TermEdu { get; set; }
+        public string? TermEdu { get; set; }
         /// <summary>
         /// 
         /// </summary>
@@ -23,9 +23,9 @@
         /// </summary>
         public string? LinkToPriemResult { get; set; }
         /// <summary>
-        /// Ссылка на страницу с предметами
+        /// Ссылка на страницу с РПД
         /// </summary>
-        public string? LinkToPRD { get; set; }
+        public string? LinkToRPD { get; set; }
         /// <summary>
         /// Список дисциплин
         /// </summary>
@@ -54,7 +54,6 @@
         /// Id кафедры
         /// </summary>
         public int? PersDepartmentId { get; set; }
-        public bool IsDeleted { get; set; }
         /// <summary>
         /// Дата создания
         /// </summary>

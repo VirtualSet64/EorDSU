@@ -2,7 +2,7 @@
 using EorDSU.Common.Interfaces;
 using EorDSU.Models;
 using EorDSU.Repository.InterfaceRepository;
-using EorDSU.ResponseModel;
+using EorDSU.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace EorDSU.Repository
@@ -19,51 +19,51 @@ namespace EorDSU.Repository
             _appEnvironment = appEnvironment;
         }
 
-        public async Task<List<DataResponseForSvedenOOPDGU>> GetData()
+        public async Task<List<DataForTableResponse>> GetData()
         {
-            List<DataResponseForSvedenOOPDGU> dataResponseForSvedenOOPDGUs = new();
-            foreach (var item in await Get().ToListAsync())
+            List<DataForTableResponse> dataForTableResponse = new();
+            foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels).ToListAsync())
             {
-                FillingData(dataResponseForSvedenOOPDGUs, item);
+                FillingData(dataForTableResponse, item);
             }
-            return dataResponseForSvedenOOPDGUs;
+            return dataForTableResponse;
         }
 
-        public async Task<List<DataResponseForSvedenOOPDGU>> GetData(int cafedraId)
+        public async Task<List<DataForTableResponse>> GetData(int kafedraId)
         {
-            List<DataResponseForSvedenOOPDGU> dataResponseForSvedenOOPDGUs = new();
+            List<DataForTableResponse> dataForTableResponse = new();
 
-            foreach (var item in await Get().Where(x => x.PersDepartmentId == cafedraId).ToListAsync())
+            foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels).Where(x => x.PersDepartmentId == kafedraId).ToListAsync())
             {
-                FillingData(dataResponseForSvedenOOPDGUs, item);
+                FillingData(dataForTableResponse, item);
             }
-            return dataResponseForSvedenOOPDGUs;
+            return dataForTableResponse;
         }
 
-        public async Task<List<DataResponseForSvedenOOPDGU>> GetDataFacultyById(int facultyId)
+        public async Task<List<DataForTableResponse>> GetDataByFacultyId(int facultyId)
         {
-            List<DataResponseForSvedenOOPDGU> dataResponseForSvedenOOPDGUs = new();
+            List<DataForTableResponse> dataForTableResponse = new();
 
             var persDepartments = await _unitOfWork.BasePersonActiveData.GetPersDepartments().Where(x => x.DivId == facultyId).ToListAsync();
 
             foreach (var persDepartment in persDepartments)
             {
-                foreach (var item in await Get().Where(x => x.PersDepartmentId == persDepartment.DepId).ToListAsync())
+                foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels).Where(x => x.PersDepartmentId == persDepartment.DepId).ToListAsync())
                 {
-                    FillingData(dataResponseForSvedenOOPDGUs, item);
+                    FillingData(dataForTableResponse, item);
                 }
             }
-            return dataResponseForSvedenOOPDGUs;
+            return dataForTableResponse;
         }
 
-        private void FillingData(List<DataResponseForSvedenOOPDGU> dataResponseForSvedenOOPDGUs, Profile item)
+        private void FillingData(List<DataForTableResponse> dataForTableResponse, Profile item)
         {
-            dataResponseForSvedenOOPDGUs.Add(new()
+            dataForTableResponse.Add(new()
             {
                 Profile = item,
-                CaseCEdukind = _unitOfWork.DSUActiveData.GetCaseCEdukindById((int)item.CaseCEdukindId),
-                CaseSDepartment = _unitOfWork.DSUActiveData.GetCaseSDepartmentById((int)item.CaseSDepartmentId),
-                SrokDeystvGosAccred = Configuration["SrokDeystvGosAccred"],
+                CaseCEdukind = item.CaseCEdukindId == null ? null : _unitOfWork.DSUActiveData.GetCaseCEdukindById((int)item.CaseCEdukindId),
+                CaseSDepartment = item.CaseSDepartmentId == null ? null : _unitOfWork.DSUActiveData.GetCaseSDepartmentById((int)item.CaseSDepartmentId),
+                Practics = _unitOfWork.DisciplineRepository.GetDisciplinesByProfileId(item.Id).Disciplines?.Where(x => x.Code?.Contains("Б2") == true).ToList()
             });
         }
 
@@ -72,24 +72,25 @@ namespace EorDSU.Repository
             return GetWithIncludeById(x => x.Id == id, x => x.Disciplines, x => x.FileModels, x => x.LevelEdu);
         }
 
-        public async Task<ExcelParsingResponse> ParsedProfileForPreview(IFormFile uploadedFile)
+        public async Task<DataResponseForSvedenOOPDGU> ParsingProfileByFile(IFormFile uploadedFile)
         {
             string path = Configuration["FileFolder"] + "/" + uploadedFile.FileName;
             using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
                 await uploadedFile.CopyToAsync(fileStream);
 
-            ExcelParsingResponse profile = new()
+            DataResponseForSvedenOOPDGU profile = new()
             {
-                Profile = await _unitOfWork.ExcelParsingService.ParsingService(path)                
+                Profile = await _unitOfWork.ExcelParsingService.ParsingService(path)
             };
-            profile.CaseSDepartment = _unitOfWork.DSUActiveData.GetCaseSDepartmentById((int)profile.Profile.CaseSDepartmentId);
-            profile.CaseCEdukind = _unitOfWork.DSUActiveData.GetCaseCEdukindById((int)profile.Profile.CaseCEdukindId);
+            profile.CaseSDepartment = profile.Profile.CaseSDepartmentId == null ? null : _unitOfWork.DSUActiveData.GetCaseSDepartmentById((int)profile.Profile.CaseSDepartmentId);
+            profile.CaseCEdukind = profile.Profile.CaseCEdukindId == null ? null : _unitOfWork.DSUActiveData.GetCaseCEdukindById((int)profile.Profile.CaseCEdukindId);
             return profile;
         }
 
         public async Task<Profile> RemoveProfile(int id)
         {
-            var profile = GetWithIncludeById(x => x.Id == id, x => x.Disciplines, x => x.FileModels, c => c.LevelEdu);
+            var profile = GetWithIncludeById(x => x.Id == id, x => x.Disciplines, x => x.FileModels, x => x.LevelEdu);
+            profile.Disciplines?.ForEach(x => x.StatusDiscipline = null);
             await Remove(profile);
             return profile;
         }

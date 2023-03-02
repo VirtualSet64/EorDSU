@@ -1,4 +1,5 @@
 ﻿using EorDSU.Common;
+using EorDSU.Common.Interfaces;
 using EorDSU.Models;
 using EorDSU.Repository.InterfaceRepository;
 using Microsoft.EntityFrameworkCore;
@@ -9,40 +10,46 @@ namespace EorDSU.Repository
     {
         private readonly IWebHostEnvironment _appEnvironment;
         private readonly IConfiguration Configuration;
-        public FileModelRepository(DbContext dbContext, IWebHostEnvironment appEnvironment, IConfiguration configuration) : base(dbContext)
+        private readonly IUnitOfWork _unitOfWork;
+        public FileModelRepository(DbContext dbContext, IWebHostEnvironment appEnvironment, IConfiguration configuration, IUnitOfWork unitOfWork) : base(dbContext)
         {
             _appEnvironment = appEnvironment;
             Configuration = configuration;
+            _unitOfWork = unitOfWork;
         }
 
         /// <summary>
         /// Создание файлов
         /// </summary>
         /// <param name="uploads"></param>
+        /// <param name="fileNameList"></param>
         /// <param name="fileTypeId"></param>
         /// <param name="profileId"></param>
         /// <returns></returns>
-        public async Task<List<FileModel>?> CreateFileModel(IFormFileCollection uploads, int fileTypeId, int profileId)
+        public async Task<List<FileModel>?> CreateFileModel(List<IFormFile> uploadFiles, string fileName, int fileTypeId, int profileId, string? ecp)
         {
             List<FileModel> files = new();
-            foreach (var uploadedFile in uploads)
+            foreach (var uploadFile in uploadFiles)
             {
-                if (Get().Any(x => x.Name == uploadedFile.FileName))
+                if (Get().Any(x => x.Name == uploadFile.FileName))
                     return null;
 
-                string path = Configuration["FileFolder"] + "/" + uploadedFile.FileName;
+                string path = Configuration["FileFolder"] + "/" + uploadFile.FileName;
                 using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
-                    await uploadedFile.CopyToAsync(fileStream);
+                    await uploadFile.CopyToAsync(fileStream);
 
                 FileModel file = new()
                 {
-                    Name = uploadedFile.FileName,
-                    ProfileId = profileId,
-                    Type = (FileType)fileTypeId,
+                    Name = uploadFile.FileName,
+                    OutputFileName = fileName,
+                    ProfileId = profileId,                    
+                    Type = _unitOfWork.FileTypeRepository.FindById(fileTypeId),
+                    FileTypeId = fileTypeId,
+                    CodeECP = ecp,
                     CreateDate = DateTime.Now
-                };                
-                await Create(file);
+                };
 
+                await Create(file);
                 files.Add(file);
             }
             return files;
@@ -52,31 +59,30 @@ namespace EorDSU.Repository
         /// Изменение файлов
         /// </summary>
         /// <param name="uploads"></param>
+        /// <param name="fileNameList"></param>
         /// <param name="profileId"></param>
         /// <returns></returns>
-        public async Task<List<FileModel>?> EditFile(IFormFileCollection uploads, int profileId)
+        public async Task<FileModel?> EditFile(int fileId, string fileName, int profileId, IFormFile? upload, string? ecp)
         {
-            List<FileModel> files = new();
-            foreach (var uploadedFile in uploads)
+            FileModel file = FindById(fileId);
+            file.OutputFileName = fileName;
+            file.UpdateDate = DateTime.Now;
+            if (ecp != null)
+                file.CodeECP = ecp;
+            if (upload != null)
             {
-                if (Get().Any(x => x.Name == uploadedFile.FileName))
+                if (Get().Any(x => x.Name == upload.FileName))
                     return null;
 
-                string path = Configuration["FileFolder"] + uploadedFile.FileName;
+                string path = Configuration["FileFolder"] + upload.FileName;
                 using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
-                    await uploadedFile.CopyToAsync(fileStream);
+                    await upload.CopyToAsync(fileStream);
 
-                FileModel file = new()
-                {
-                    Name = uploadedFile.FileName,
-                    ProfileId = profileId,
-                    UpdateDate = DateTime.Now
-                };
-                await Update(file);
-
-                files.Add(file);
+                file.Name = upload.FileName;
+                file.ProfileId = profileId;
             }
-            return files;
+            await Update(file);
+            return file;
         }
     }
 }

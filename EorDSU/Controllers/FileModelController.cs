@@ -1,5 +1,4 @@
 ﻿using EorDSU.Common.Interfaces;
-using EorDSU.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,34 +20,37 @@ namespace EorDSU.Controllers
         /// Добавление файлов
         /// </summary>
         /// <param name="uploadedFile">Файл</param>
-        /// <param name="fileTypeId">Тип Файла</param>
+        /// <param name="fileName">Файл</param>
+        /// <param name="fileType">Тип Файла</param>
         /// <param name="profileId">Профиль</param>
+        /// <param name="ecp">Код ЭЦП</param>
         /// <returns></returns>
         [Route("CreateFileModel")]
         [HttpPost]
-        public async Task<IActionResult> CreateFileModel(IFormFileCollection uploads, int fileTypeId, int profileId)
+        public async Task<IActionResult> CreateFileModel(List<IFormFile> uploadedFile, string fileName, int fileType, int profileId, string? ecp)
         {
-            List<FileModel> files = await _unitOfWork.FileModelRepository.CreateFileModel(uploads, fileTypeId, profileId);
+            var files = await _unitOfWork.FileModelRepository.CreateFileModel(uploadedFile, fileName, fileType, profileId, ecp);
             if (files == null)
-                return BadRequest();
-            return Ok(files);
+                return BadRequest("Файл с таким названием уже существует");
+            return Ok();
         }
 
         /// <summary>
         /// Изменение файла
         /// </summary>
+        /// <param name="fileId"></param>
         /// <param name="uploadedFile"></param>
+        /// <param name="fileName"></param>
         /// <param name="profileId"></param>
         /// <returns></returns>
         [Route("EditFileModel")]
         [HttpPut]
-        public async Task<IActionResult> EditFile(IFormFileCollection uploads, int profileId)
+        public async Task<IActionResult> EditFile(int fileId, string fileName, int profileId, IFormFile? uploadedFile, string? ecp)
         {
-            if (profileId <= 0)
-                return BadRequest();
-
-            List<FileModel> files = await _unitOfWork.FileModelRepository.EditFile(uploads, profileId);
-            return Ok(files);
+            var files = await _unitOfWork.FileModelRepository.EditFile(fileId, fileName, profileId, uploadedFile, ecp);
+            if (files == null)
+                return BadRequest("Ошибка изменения файла");
+            return Ok();
         }
 
         /// <summary>

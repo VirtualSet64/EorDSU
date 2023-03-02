@@ -1,12 +1,10 @@
-﻿using EorDSU.Common;
-using EorDSU.Common.Interfaces;
+﻿using EorDSU.Common.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace EorDSU.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class DekanatDataController : Controller
@@ -30,7 +28,7 @@ namespace EorDSU.Controllers
         {
             int? facultyId = _unitOfWork.BasePersonActiveData.GetPersDepartmentById(kafedraId).DivId;
             if (facultyId == null)
-                return BadRequest();
+                return BadRequest("Не существует такой кафедры или связанного факультета");
             return Ok(await _unitOfWork.DSUActiveData.GetCaseSDepartmentByFacultyId(facultyId).ToListAsync());
         }
 
@@ -38,7 +36,7 @@ namespace EorDSU.Controllers
         [HttpGet]
         public async Task<IActionResult> GetCaseSEdukinds()
         {
-            return Ok(_unitOfWork.DSUActiveData.GetCaseCEdukinds());
+            return Ok(await _unitOfWork.DSUActiveData.GetCaseCEdukinds().ToListAsync());
         }
     }
 }

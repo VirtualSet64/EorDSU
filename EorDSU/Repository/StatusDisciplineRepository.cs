@@ -13,21 +13,33 @@ namespace EorDSU.Repository
 
         }
 
-        public IQueryable<StatusDiscipline> GetStatusDiscipline()
+        public List<StatusDiscipline> GetStatusDiscipline()
         {
-            return Get(x => x.IsDeleted == false);
+            return Get(x => x.IsDeletionRequest == false).ToList();
+        }
+
+        public List<StatusDiscipline> GetRemovableStatusDiscipline()
+        {
+            return Get().Include(x => x.Disciplines).Where(c => c.IsDeletionRequest == true).ToList();
         }
 
         public StatusDiscipline GetStatusDisciplineById(int id)
         {
-            return GetStatusDisciplineById(id);
+            return FindById(id);
         }
 
-        public async Task<StatusDiscipline> RemoveStatusDiscipline(int id)
+        public async Task<StatusDiscipline> RequestDeleteStatusDiscipline(int id)
         {
-            var statusDiscipline = GetStatusDisciplineById(id);
-            await Remove(statusDiscipline);
+            var statusDiscipline = FindById(id);
+            statusDiscipline.IsDeletionRequest = true;
+            await Update(statusDiscipline);
             return statusDiscipline;
+        }
+
+        public async Task RemoveStatusDiscipline(int id)
+        {
+            var statusDiscipline = Get().Include(x=> x.Disciplines).FirstOrDefault(c => c.Id == id);
+            await Remove(statusDiscipline);
         }
     }
 }

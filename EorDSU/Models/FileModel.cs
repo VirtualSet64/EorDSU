@@ -7,10 +7,15 @@
     {
         public int Id { get; set; }
         public string? Name { get; set; }        
+        public string? OutputFileName { get; set; }        
         public int? ProfileId { get; set; }
         public Profile? Profile { get; set; }
+        /// <summary>
+        /// Код ЭЦП
+        /// </summary>
+        public string? CodeECP { get; set; }
+        public int? FileTypeId { get; set; }
         public FileType? Type { get; set; }
-        public bool IsDeleted { get; set; }
         public DateTime CreateDate { get; set; }
         public DateTime UpdateDate { get; set; }
     }

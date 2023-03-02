@@ -3,6 +3,7 @@ using DSUContextDBService.DataContext;
 using EorDSU.Common;
 using EorDSU.DBService;
 using EorDSU.Services;
+using EorDSU.ViewModels.Account;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Sentry;
@@ -18,7 +19,17 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddCors();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("MyAllowCredentialsPolicy",
+        policy =>
+        {
+            policy.WithOrigins(builder.Configuration["LinkToFrontEnd"])
+                   .AllowAnyHeader()
+                   .AllowAnyMethod()
+                   .AllowCredentials();
+        });
+});
 
 builder.Services.AddDbContext<BASEPERSONMDFContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BasePerson"), providerOptions => providerOptions.EnableRetryOnFailure()));
@@ -37,6 +48,17 @@ builder.Services.AddIdentity<EorDSU.Models.User, IdentityRole>(
                    opts.Password.RequireDigit = false;
                })
                .AddEntityFrameworkStores<ApplicationContext>();
+
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    // Cookie settings
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SameSite = SameSiteMode.None;
+    //options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+
+    options.LoginPath = "/Account/Login";
+    options.SlidingExpiration = true;
+});
 
 builder.WebHost.ConfigureServices(configure => SentrySdk.Init(o =>
 {
@@ -63,9 +85,20 @@ using (var scope = app.Services.CreateScope())
     var rolesManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     if (userManager.Users.ToList().Count == 0)
     {
-        string adminLogin = builder.Configuration["AdminLogin"];
-        string password = builder.Configuration["AdminPassword"];
-        await RoleInitializer.InitializeAsync(adminLogin, password, userManager, rolesManager);
+        List<LoginViewModel> employees = new()
+        {
+            new LoginViewModel
+            {
+                Login = builder.Configuration["AdminLogin"],
+                Password = builder.Configuration["AdminPassword"]
+            },
+            new LoginViewModel
+            {
+                Login = builder.Configuration["UMULogin"],
+                Password = builder.Configuration["UMUPassword"],
+            }
+        };
+        await RoleInitializer.InitializeAsync(employees, userManager, rolesManager);
     }
 }
 
@@ -78,8 +111,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors(builder => builder.AllowAnyOrigin());
+app.UseCors("MyAllowCredentialsPolicy");
 
+app.UseDefaultFiles();
 app.UseStaticFiles();
 
 app.UseHttpsRedirection();

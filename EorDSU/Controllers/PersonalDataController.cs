@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace EorDSU.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class PersonalDataController : Controller
@@ -23,11 +22,18 @@ namespace EorDSU.Controllers
             return Ok(await _unitOfWork.BasePersonActiveData.GetPersDepartments().ToListAsync());
         }
 
-        [Route("GetKafedra")]
+        [Route("GetPersDepartmentById")]
         [HttpGet]
-        public IActionResult GetPersDepartments(int kafedraId)
+        public IActionResult GetPersDepartmentById(int kafedraId)
         {
             return Ok(_unitOfWork.BasePersonActiveData.GetPersDepartmentById(kafedraId));
+        }
+
+        [Route("GetPersDepartmentByDivisionId")]
+        [HttpGet]
+        public IActionResult GetPersDepartmentByDivisionId(int facultyId)
+        {
+            return Ok(_unitOfWork.BasePersonActiveData.GetPersDepartmentByDivisionId(facultyId));
         }
 
         [Route("GetAllFaculty")]
@@ -42,6 +48,15 @@ namespace EorDSU.Controllers
         public IActionResult GetPersDivision(int facultyId)
         {
             return Ok(_unitOfWork.BasePersonActiveData.GetPersDivisionById(facultyId));
+        }
+
+        [Authorize]
+        [Route("GetPrepods")]
+        [HttpGet]
+        public IActionResult GetPrepods()
+        {
+            var prepods = _unitOfWork.BasePersonActiveData.GetPrepods().ToList().DistinctBy(x => x.IdСотрудника);
+            return Ok(prepods);
         }
     }
 }

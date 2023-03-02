@@ -1,6 +1,6 @@
 ﻿using EorDSU.Common.Interfaces;
 using EorDSU.Models;
-using EorDSU.ResponseModel;
+using EorDSU.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -31,13 +31,13 @@ namespace EorDSU.Controllers
         /// <summary>
         /// Получение всех данных кафедры
         /// </summary>
-        /// <param name="cafedraId"></param>
+        /// <param name="kafedraId"></param>
         /// <returns></returns>
         [Route("GetDataById")]
         [HttpGet]
-        public async Task<IActionResult> GetData(int cafedraId)
+        public async Task<IActionResult> GetDataByKafedraId(int kafedraId)
         {
-            return Ok(await _unitOfWork.ProfileRepository.GetData(cafedraId));
+            return Ok(await _unitOfWork.ProfileRepository.GetData(kafedraId));
         }
 
         /// <summary>
@@ -47,9 +47,9 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("GetDataFacultyById")]
         [HttpGet]
-        public async Task<IActionResult> GetDataFacultyById(int facultyId)
+        public async Task<IActionResult> GetDataByFacultyId(int facultyId)
         {
-            return Ok(await _unitOfWork.ProfileRepository.GetDataFacultyById(facultyId));
+            return Ok(await _unitOfWork.ProfileRepository.GetDataByFacultyId(facultyId));
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace EorDSU.Controllers
         public async Task<IActionResult> CreateProfile(Profile profile)
         {
             if (profile == null)
-                return BadRequest();
+                return BadRequest("Ошибка передачи профиля");
 
             if (_unitOfWork.ProfileRepository.Get().Any(x => x.ProfileName == profile.ProfileName &&
                              x.TermEdu == profile.TermEdu &&
@@ -86,6 +86,7 @@ namespace EorDSU.Controllers
                 return BadRequest("Такой профиль уже существует");
 
             profile.CreateDate = DateTime.Now;
+            profile.Disciplines?.ForEach(x => x.StatusDiscipline = null);
             await _unitOfWork.ProfileRepository.Create(profile);
             return Ok();
         }
@@ -93,17 +94,17 @@ namespace EorDSU.Controllers
         /// <summary>
         /// Создание профиля
         /// </summary>
-        /// <param name="profile"></param>
+        /// <param name="uploadedFile"></param>
         /// <returns></returns>
         [Authorize]
-        [Route("CreateProfileByFile")]
+        [Route("ParsingProfileByFile")]
         [HttpPost]
-        public async Task<IActionResult> CreateProfileByFile(IFormFile uploadedFile)
+        public async Task<IActionResult> ParsingProfileByFile(IFormFile uploadedFile)
         {
             if (uploadedFile == null)
-                return BadRequest();
+                return BadRequest("Ошибка передачи файла");
 
-            ExcelParsingResponse profile = await _unitOfWork.ProfileRepository.ParsedProfileForPreview(uploadedFile);
+            DataResponseForSvedenOOPDGU profile = await _unitOfWork.ProfileRepository.ParsingProfileByFile(uploadedFile);
             return Ok(profile);
         }
 
@@ -118,7 +119,7 @@ namespace EorDSU.Controllers
         public async Task<IActionResult> EditProfile(Profile profile)
         {
             if (profile == null)
-                return BadRequest();
+                return BadRequest("Ошибка передачи профиля");
 
             profile.UpdateDate = DateTime.Now;
             await _unitOfWork.ProfileRepository.Update(profile);
@@ -135,9 +136,16 @@ namespace EorDSU.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteProfile(int profileId)
         {
-            if (await _unitOfWork.ProfileRepository.RemoveProfile(profileId) == null)
-                return BadRequest();
-            return Ok();
+            try
+            {
+                await _unitOfWork.ProfileRepository.RemoveProfile(profileId);
+                return Ok();
+            }
+            catch
+            {
+                return BadRequest("Профиль не найден");
+                throw;
+            }
         }
     }
 }

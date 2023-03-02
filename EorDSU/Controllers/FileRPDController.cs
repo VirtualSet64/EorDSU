@@ -1,6 +1,7 @@
 ﻿using EorDSU.Common.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Models;
 
 namespace EorDSU.Controllers
 {
@@ -21,39 +22,23 @@ namespace EorDSU.Controllers
         /// </summary>
         /// <param name="uploadedFile"></param>
         /// <param name="disciplineId"></param>
+        /// <param name="ecp">Код ЭЦП</param>
         /// <returns></returns>
         [Route("CreateRPD")]
         [HttpPost]
-        public async Task<IActionResult> CreateRPD(IFormFile uploadedFile, int disciplineId)
+        public async Task<IActionResult> CreateRPD(IFormFile uploadedFile, Person author, int disciplineId, string? ecp)
         {
-            var rpd = await _unitOfWork.FileRPDRepository.CreateFileRPD(uploadedFile, disciplineId);
+            var rpd = await _unitOfWork.FileRPDRepository.CreateFileRPD(uploadedFile, author, disciplineId, ecp);
 
             if (rpd == null)
-                return BadRequest();
-            return Ok(rpd);
-        }
-
-        /// <summary>
-        /// Изменение файла РПД
-        /// </summary>
-        /// <param name="uploadedFile"></param>
-        /// <param name="fileId"></param>
-        /// <param name="profileId"></param>
-        /// <returns></returns>
-        [Route("EditRPD")]
-        [HttpPut]
-        public async Task<IActionResult> EditRPD(IFormFile uploadedFile, int disciplineId)
-        {
-            if (disciplineId == 0)
-                return BadRequest();
-            var rpd = await _unitOfWork.FileRPDRepository.EditFileRPD(uploadedFile, disciplineId);
-            return Ok(rpd);
+                return BadRequest("Ошибка добавления файла");
+            return Ok();
         }
 
         /// <summary>
         /// Удаление файла РПД
         /// </summary>
-        /// <param name="fileId"></param>
+        /// <param name="fileRPDId"></param>
         /// <returns></returns>
         [Route("DeleteRPD")]
         [HttpDelete]

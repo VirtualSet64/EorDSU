@@ -1,13 +1,13 @@
 ﻿using DSUContextDBService.Models;
 using EorDSU.Models;
 
-namespace EorDSU.ResponseModel
+namespace EorDSU.ViewModels
 {
-    public class DataResponseForSvedenOOPDGU
+    public class ResponseForDiscipline
     {
+        public List<Discipline>? Disciplines { get; set; }
         public Profile? Profile { get; set; }
         public CaseSDepartment? CaseSDepartment { get; set; }
         public CaseCEdukind? CaseCEdukind { get; set; }
-        public string? SrokDeystvGosAccred { get; set; }
     }
 }

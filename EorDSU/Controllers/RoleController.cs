@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace EorDSU.Controllers
 {
@@ -11,11 +12,9 @@ namespace EorDSU.Controllers
     public class RoleController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly UserManager<User> _userManager;
-        public RoleController(RoleManager<IdentityRole> roleManager, UserManager<User> userManager)
+        public RoleController(RoleManager<IdentityRole> roleManager)
         {
             _roleManager = roleManager;
-            _userManager = userManager;
         }
 
         [Route("GetRoles")]
@@ -35,31 +34,7 @@ namespace EorDSU.Controllers
                 if (result.Succeeded)
                     return Ok();
             }
-            return BadRequest();
-        }
-
-        [Route("EditRole")]
-        [HttpPut]
-        public async Task<IActionResult> EditRole(string userId, List<string> roles)
-        {
-            // получаем пользователя
-            Models.User user = await _userManager.FindByIdAsync(userId);
-            if (user != null)
-            {
-                // получем список ролей пользователя
-                var userRoles = await _userManager.GetRolesAsync(user);
-                // получаем список ролей, которые были добавлены
-                var addedRoles = roles.Except(userRoles);
-                // получаем роли, которые были удалены
-                var removedRoles = userRoles.Except(roles);
-
-                await _userManager.AddToRolesAsync(user, addedRoles);
-
-                await _userManager.RemoveFromRolesAsync(user, removedRoles);
-
-                return Ok();
-            }
-            return NotFound();
+            return BadRequest("Некорректное имя роли");
         }
 
         [Route("DeleteRole")]
@@ -68,7 +43,7 @@ namespace EorDSU.Controllers
         {
             IdentityRole role = await _roleManager.FindByIdAsync(id);
             if (role == null)
-                return BadRequest();
+                return BadRequest("Роль не найдена");
 
             await _roleManager.DeleteAsync(role);
             return Ok();

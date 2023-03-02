@@ -1,5 +1,5 @@
 ﻿using EorDSU.Models;
-using EorDSU.ViewModels;
+using EorDSU.ViewModels.Account;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,10 +10,12 @@ namespace EorDSU.Controllers
     public class AccountController : Controller
     {
         private readonly SignInManager<User> _signInManager;
+        private readonly UserManager<User> _userManager;
 
-        public AccountController(SignInManager<User> signInManager)
+        public AccountController(SignInManager<User> signInManager, UserManager<User> userManager)
         {
             _signInManager = signInManager;
+            _userManager = userManager;
         }
 
         [Route("Logout")]
@@ -32,9 +34,26 @@ namespace EorDSU.Controllers
             {
                 var result = await _signInManager.PasswordSignInAsync(model.Login, model.Password, false, false);
                 if (result.Succeeded)
-                    return Ok();
+                {
+                    var user = _userManager.Users.FirstOrDefault(x => x.UserName == model.Login);
+                    if (user != null)
+                    {
+                        var userIncludeRoles = new UserIncludeRolesViewModel
+                        {
+                            UserName = user?.UserName,
+                            PersDepartmentId = user.PersDepartmentId,
+                        };
+                        var roles = await _userManager.GetRolesAsync(user);
+                        if (roles != null && roles.Any())
+                            userIncludeRoles.Role = roles.First();
+
+                        return Ok(userIncludeRoles);
+                    }
+                    else
+                        return BadRequest("Пользователь с таким логином не найден");
+                }
                 else
-                    ModelState.AddModelError("", "Неправильный логин и (или) пароль");
+                    return BadRequest("Неправильный логин и (или) пароль");
             }
             return BadRequest();
         }

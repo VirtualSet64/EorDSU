@@ -81,7 +81,7 @@ namespace EorDSU.Common
         {
             get
             {
-                IDisciplineRepository disciplineRepository = new DisciplineRepository(_context);
+                IDisciplineRepository disciplineRepository = new DisciplineRepository(_context, this);
                 return disciplineRepository;
             }
         }
@@ -90,8 +90,17 @@ namespace EorDSU.Common
         {
             get
             {
-                IFileModelRepository fileModelRepository = new FileModelRepository(_context, _appEnvironment, Configuration);
+                IFileModelRepository fileModelRepository = new FileModelRepository(_context, _appEnvironment, Configuration, this);
                 return fileModelRepository;
+            }
+        }
+
+        IFileTypeRepository IUnitOfWork.FileTypeRepository
+        {
+            get
+            {
+                IFileTypeRepository fileTypeRepository = new FileTypeRepository(_context);
+                return fileTypeRepository;
             }
         }
 
@@ -110,6 +119,24 @@ namespace EorDSU.Common
             {
                 IStatusDisciplineRepository statusDisciplineRepository = new StatusDisciplineRepository(_context);
                 return statusDisciplineRepository;
+            }
+        }
+
+        ILevelEduRepository IUnitOfWork.LevelEduRepository
+        {
+            get
+            {
+                ILevelEduRepository levelEduRepository = new LevelEduRepository(_context);
+                return levelEduRepository;
+            }
+        }
+
+        IUmuAndFacultyRepository IUnitOfWork.UmuAndFacultyRepository
+        {
+            get
+            {
+                IUmuAndFacultyRepository umuAndFacultyRepository = new UmuAndFacultyRepository(_context);
+                return umuAndFacultyRepository;
             }
         }
     }
