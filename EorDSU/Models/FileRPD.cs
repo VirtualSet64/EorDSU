@@ -1,9 +1,13 @@
-﻿namespace EorDSU.Models
+﻿using Models;
+
+namespace EorDSU.Models
 {
     public class FileRPD
     {
         public int Id { get; set; }
         public string? Name { get; set; }
+        public int? PersonId { get; set; }
+        public Person? Person { get; set; }
         public int? DisciplineId { get; set; }
         public Discipline? Discipline { get; set; }
         /// <summary>

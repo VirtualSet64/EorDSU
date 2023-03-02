@@ -45,12 +45,13 @@ namespace EorDSU.Controllers
             if (ModelState.IsValid)
             {
                 User user = new() { UserName = model.Login, PersDepartmentId = model.PersDepartmentId };
-                List<string> roles = new() { model.Role };
-
+                
                 var result = await _userManager.CreateAsync(user, model.Password);
-                if (roles != null || roles.Count != 0)
+                if (model.Role != null)
+                {
+                    List<string> roles = new() { model.Role };
                     await _userManager.AddToRolesAsync(user, roles);
-
+                }
                 if (result.Succeeded)
                     return Ok();
             }
@@ -71,6 +72,23 @@ namespace EorDSU.Controllers
                     user.PasswordHash = _passwordHasher.HashPassword(user, model.Password);
                     if (model.PersDepartmentId != null)
                         user.PersDepartmentId = (int)model.PersDepartmentId;
+                                        
+                    if (model.Role != null)
+                    {
+                        List<string> roles = new() { model.Role };
+                        // получем список ролей пользователя
+                        var userRoles = await _userManager.GetRolesAsync(user);
+                        // получаем список ролей, которые были добавлены
+                        var addedRoles = roles.Except(userRoles);
+                        // получаем роли, которые были удалены
+                        var removedRoles = userRoles.Except(roles);
+
+                        await _userManager.AddToRolesAsync(user, addedRoles);
+
+                        await _userManager.RemoveFromRolesAsync(user, removedRoles);
+
+                        return Ok();
+                    }
 
                     var result = await _userManager.UpdateAsync(user);
                     if (result.Succeeded)

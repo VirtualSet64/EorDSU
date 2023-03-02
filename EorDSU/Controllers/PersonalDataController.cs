@@ -49,5 +49,14 @@ namespace EorDSU.Controllers
         {
             return Ok(_unitOfWork.BasePersonActiveData.GetPersDivisionById(facultyId));
         }
+
+        [Route("GetPrepods")]
+        [HttpGet]
+        public IActionResult GetPrepods()
+        {
+            var prepods = _unitOfWork.BasePersonActiveData.GetPrepods().ToList().DistinctBy(x => x.IdСотрудника).Take(10);
+            //var prepodsDistinct = prepods.DistinctBy(x => x.IdСотрудника);
+            return Ok(prepods);
+        }
     }
 }

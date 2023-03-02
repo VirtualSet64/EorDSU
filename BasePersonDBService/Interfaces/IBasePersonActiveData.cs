@@ -1,4 +1,5 @@
-﻿using Models;
+﻿using BasePersonDBService.Models;
+using Models;
 
 namespace BasePersonDBService.Interfaces
 {
@@ -13,5 +14,6 @@ namespace BasePersonDBService.Interfaces
         public IQueryable<PersDepartment> GetPersDepartmentByDivisionId(int id);
         public IQueryable<Person> GetPersons();
         public Person GetPersonById(int id);
+        public IQueryable<ViewZaprosForKaf> GetPrepods();
     }
 }

@@ -1,4 +1,5 @@
 ﻿using EorDSU.Common;
+using EorDSU.Common.Interfaces;
 using EorDSU.Models;
 using EorDSU.Repository.InterfaceRepository;
 using Microsoft.EntityFrameworkCore;
@@ -9,10 +10,12 @@ namespace EorDSU.Repository
     {
         private readonly IWebHostEnvironment _appEnvironment;
         private readonly IConfiguration Configuration;
-        public FileModelRepository(DbContext dbContext, IWebHostEnvironment appEnvironment, IConfiguration configuration) : base(dbContext)
+        private readonly IUnitOfWork _unitOfWork;
+        public FileModelRepository(DbContext dbContext, IWebHostEnvironment appEnvironment, IConfiguration configuration, IUnitOfWork unitOfWork) : base(dbContext)
         {
             _appEnvironment = appEnvironment;
             Configuration = configuration;
+            _unitOfWork = unitOfWork;
         }
 
         /// <summary>
@@ -39,8 +42,9 @@ namespace EorDSU.Repository
                 {
                     Name = uploadFile.FileName,
                     OutputFileName = fileName,
-                    ProfileId = profileId,
-                    Type = (FileType)fileTypeId,
+                    ProfileId = profileId,                    
+                    Type = _unitOfWork.FileTypeRepository.FindById(fileTypeId),
+                    FileTypeId = fileTypeId,
                     CodeECP = ecp,
                     CreateDate = DateTime.Now
                 };

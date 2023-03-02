@@ -9,10 +9,12 @@ namespace EorDSU.DBService
     {
         public DbSet<Discipline> Disciplines { get; set; } = null!;
         public DbSet<Profile> Profiles { get; set; } = null!;
+        public DbSet<FileType> FileTypes { get; set; } = null!;
         public DbSet<FileModel> FileModels { get; set; } = null!;
         public DbSet<FileRPD> FileRPDs { get; set; } = null!;
         public DbSet<LevelEdu> LevelEdues { get; set; } = null!;
         public DbSet<StatusDiscipline> StatusDisciplines { get; set; } = null!;
+        public DbSet<UmuAndFaculty> UmuAndFaculties { get; set; } = null!;
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)

@@ -8,6 +8,7 @@ namespace EorDSU.Repository.InterfaceRepository
         public List<StatusDiscipline> GetStatusDiscipline();
         public List<StatusDiscipline> GetRemovableStatusDiscipline();
         public StatusDiscipline GetStatusDisciplineById(int id);
-        public Task<StatusDiscipline> RemoveStatusDiscipline(int id);
+        public Task<StatusDiscipline> RequestDeleteStatusDiscipline(int id);
+        public Task RemoveStatusDiscipline(int id);
     }
 }

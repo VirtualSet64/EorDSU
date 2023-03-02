@@ -86,6 +86,7 @@ namespace EorDSU.Controllers
                 return BadRequest("Такой профиль уже существует");
 
             profile.CreateDate = DateTime.Now;
+            profile.Disciplines?.ForEach(x => x.StatusDiscipline = null);
             await _unitOfWork.ProfileRepository.Create(profile);
             return Ok();
         }

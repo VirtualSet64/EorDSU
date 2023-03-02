@@ -3,6 +3,7 @@ using DSUContextDBService.DataContext;
 using EorDSU.Common;
 using EorDSU.DBService;
 using EorDSU.Services;
+using EorDSU.ViewModels.Account;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Sentry;
@@ -53,7 +54,7 @@ builder.Services.ConfigureApplicationCookie(options =>
     // Cookie settings
     options.Cookie.HttpOnly = true;
     options.Cookie.SameSite = SameSiteMode.None;
-    //options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+    //options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
 
     options.LoginPath = "/Account/Login";
     options.SlidingExpiration = true;
@@ -84,9 +85,20 @@ using (var scope = app.Services.CreateScope())
     var rolesManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     if (userManager.Users.ToList().Count == 0)
     {
-        string adminLogin = builder.Configuration["AdminLogin"];
-        string password = builder.Configuration["AdminPassword"];
-        await RoleInitializer.InitializeAsync(adminLogin, password, userManager, rolesManager);
+        List<LoginViewModel> employees = new()
+        {
+            new LoginViewModel
+            {
+                Login = builder.Configuration["AdminLogin"],
+                Password = builder.Configuration["AdminPassword"]
+            },
+            new LoginViewModel
+            {
+                Login = builder.Configuration["UMULogin"],
+                Password = builder.Configuration["UMUPassword"],
+            }
+        };
+        await RoleInitializer.InitializeAsync(employees, userManager, rolesManager);
     }
 }
 

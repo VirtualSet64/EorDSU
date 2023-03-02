@@ -1,7 +1,6 @@
 ﻿using EorDSU.Common.Interfaces;
 using EorDSU.Models;
 using EorDSU.Services.Interface;
-using System.Collections.Generic;
 using Excel = Microsoft.Office.Interop.Excel;
 
 namespace EorDSU.Service
@@ -505,9 +504,8 @@ namespace EorDSU.Service
                     Profile = profile,
                     ProfileId = profile.Id,
                     CreateDate = DateTime.Now,
+                    StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("2.3.Промежуточная аттестация по дисциплинам (модулям) и практике")
                 };
-
-                discipline.StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("2.3.Промежуточная аттестация по дисциплинам (модулям) и практике");
 
                 discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
                 profile.Disciplines?.Add(discipline);
@@ -522,9 +520,8 @@ namespace EorDSU.Service
                     Profile = profile,
                     ProfileId = profile.Id,
                     CreateDate = DateTime.Now,
+                    StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("3.Итоговая аттестация")
                 };
-               
-                discipline.StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("3.Итоговая аттестация");
 
                 discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
                 profile.Disciplines?.Add(discipline);

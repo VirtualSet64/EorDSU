@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BasePersonDBService.Models;
+using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace BasePersonDBService.DataContext
@@ -18,6 +19,7 @@ namespace BasePersonDBService.DataContext
         public virtual DbSet<PersDivision> PersDivisions { get; set; } = null!;
         public virtual DbSet<PersFilial> PersFilials { get; set; } = null!;
         public virtual DbSet<Person> People { get; set; } = null!;
+        public virtual DbSet<ViewZaprosForKaf> ViewZaprosForKafs { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -245,6 +247,150 @@ namespace BasePersonDBService.DataContext
                 entity.Property(e => e.UserLogin)
                     .HasMaxLength(50)
                     .HasColumnName("user_login");
+            });
+
+            modelBuilder.Entity<ViewZaprosForKaf>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("View_ZaprosForKaf");
+
+                entity.Property(e => e.DatePriem)
+                    .HasColumnType("datetime")
+                    .HasColumnName("date_priem");
+
+                entity.Property(e => e.DepId).HasColumnName("dep_id");
+
+                entity.Property(e => e.DivId).HasColumnName("div_id");
+
+                entity.Property(e => e.EduDocName)
+                    .HasMaxLength(50)
+                    .HasColumnName("edu_doc_name");
+
+                entity.Property(e => e.EduDocNumber)
+                    .HasMaxLength(10)
+                    .HasColumnName("edu_doc_number");
+
+                entity.Property(e => e.EduDocSer)
+                    .HasMaxLength(10)
+                    .HasColumnName("edu_doc_ser");
+
+                entity.Property(e => e.EduEnd).HasColumnName("edu_end");
+
+                entity.Property(e => e.FilId).HasColumnName("fil_id");
+
+                entity.Property(e => e.IKafPersonId).HasColumnName("i_kaf_personID");
+
+                entity.Property(e => e.IdСотрудника).HasColumnName("ID_сотрудника");
+
+                entity.Property(e => e.Inn)
+                    .HasMaxLength(20)
+                    .HasColumnName("inn");
+
+                entity.Property(e => e.InstitutionName)
+                    .HasMaxLength(1024)
+                    .HasColumnName("institution_name");
+
+                entity.Property(e => e.IsActive).HasColumnName("is_active");
+
+                entity.Property(e => e.IsFaculty).HasColumnName("is_faculty");
+
+                entity.Property(e => e.IsKaf).HasColumnName("is_kaf");
+
+                entity.Property(e => e.IsTemp).HasColumnName("is_temp");
+
+                entity.Property(e => e.Kateg)
+                    .HasMaxLength(50)
+                    .HasColumnName("kateg");
+
+                entity.Property(e => e.Kdol)
+                    .HasMaxLength(10)
+                    .HasColumnName("kdol");
+
+                entity.Property(e => e.KdolNew)
+                    .HasMaxLength(10)
+                    .HasColumnName("kdolNew");
+
+                entity.Property(e => e.Photo)
+                    .HasMaxLength(50)
+                    .HasColumnName("photo");
+
+                entity.Property(e => e.PosId).HasColumnName("pos_id");
+
+                entity.Property(e => e.PosKomment)
+                    .HasMaxLength(100)
+                    .HasColumnName("pos_komment");
+
+                entity.Property(e => e.Qualification)
+                    .HasMaxLength(128)
+                    .HasColumnName("qualification");
+
+                entity.Property(e => e.Rating).HasColumnName("rating");
+
+                entity.Property(e => e.Speciality)
+                    .HasMaxLength(256)
+                    .HasColumnName("speciality");
+
+                entity.Property(e => e.StrSvid)
+                    .HasMaxLength(20)
+                    .HasColumnName("str_svid");
+
+                entity.Property(e => e.TransId).HasColumnName("trans_id");
+
+                entity.Property(e => e.Главная).HasMaxLength(3);
+
+                entity.Property(e => e.ДатаНачала)
+                    .HasColumnType("date")
+                    .HasColumnName("Дата_начала");
+
+                entity.Property(e => e.ДатаОкончания)
+                    .HasColumnType("date")
+                    .HasColumnName("Дата_окончания");
+
+                entity.Property(e => e.ДатаРождения)
+                    .HasColumnType("date")
+                    .HasColumnName("Дата_рождения");
+
+                entity.Property(e => e.Должность).HasMaxLength(185);
+
+                entity.Property(e => e.Категория).HasMaxLength(100);
+
+                entity.Property(e => e.Кафедра).HasMaxLength(256);
+
+                entity.Property(e => e.Национальность).HasMaxLength(50);
+
+                entity.Property(e => e.Образование).HasMaxLength(100);
+
+                entity.Property(e => e.ОтпускName)
+                    .HasMaxLength(15)
+                    .HasColumnName("Отпуск_name");
+
+                entity.Property(e => e.Пол).HasMaxLength(3);
+
+                entity.Property(e => e.Ставка).HasColumnType("numeric(15, 2)");
+
+                entity.Property(e => e.ТипДолжности)
+                    .HasMaxLength(50)
+                    .HasColumnName("Тип_должности");
+
+                entity.Property(e => e.УчЗвание)
+                    .HasMaxLength(100)
+                    .IsUnicode(false)
+                    .HasColumnName("Уч_звание");
+
+                entity.Property(e => e.УчСтепень)
+                    .HasMaxLength(101)
+                    .HasColumnName("Уч_степень");
+
+                entity.Property(e => e.ФИО)
+                    .HasMaxLength(152)
+                    .HasColumnName("Ф_И_О");
+
+                entity.Property(e => e.Факультет).HasMaxLength(256);
+
+                entity.Property(e => e.Филиал).HasMaxLength(100);
+
+                entity.Property(e => e.Финансирование).HasMaxLength(50);
             });
 
             OnModelCreatingPartial(modelBuilder);

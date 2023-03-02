@@ -1,6 +1,7 @@
 ﻿using EorDSU.Common.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Models;
 
 namespace EorDSU.Controllers
 {
@@ -25,9 +26,9 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("CreateRPD")]
         [HttpPost]
-        public async Task<IActionResult> CreateRPD(IFormFile uploadedFile, int disciplineId, string? ecp)
+        public async Task<IActionResult> CreateRPD(IFormFile uploadedFile, Person author, int disciplineId, string? ecp)
         {
-            var rpd = await _unitOfWork.FileRPDRepository.CreateFileRPD(uploadedFile, disciplineId, ecp);
+            var rpd = await _unitOfWork.FileRPDRepository.CreateFileRPD(uploadedFile, author, disciplineId, ecp);
 
             if (rpd == null)
                 return BadRequest("Ошибка добавления файла");

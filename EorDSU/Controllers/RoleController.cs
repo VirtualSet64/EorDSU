@@ -12,11 +12,9 @@ namespace EorDSU.Controllers
     public class RoleController : Controller
     {
         private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly UserManager<User> _userManager;
-        public RoleController(RoleManager<IdentityRole> roleManager, UserManager<User> userManager)
+        public RoleController(RoleManager<IdentityRole> roleManager)
         {
             _roleManager = roleManager;
-            _userManager = userManager;
         }
 
         [Route("GetRoles")]
@@ -37,31 +35,6 @@ namespace EorDSU.Controllers
                     return Ok();
             }
             return BadRequest("Некорректное имя роли");
-        }
-
-        [Route("EditRole")]
-        [HttpPut]
-        public async Task<IActionResult> EditRole(string userId, string role)
-        {
-            // получаем пользователя
-            User user = await _userManager.FindByIdAsync(userId);
-            List<string> roles = new() { role };
-            if (user != null)
-            {
-                // получем список ролей пользователя
-                var userRoles = await _userManager.GetRolesAsync(user);
-                // получаем список ролей, которые были добавлены
-                var addedRoles = roles.Except(userRoles);
-                // получаем роли, которые были удалены
-                var removedRoles = userRoles.Except(roles);
-
-                await _userManager.AddToRolesAsync(user, addedRoles);
-
-                await _userManager.RemoveFromRolesAsync(user, removedRoles);
-
-                return Ok();
-            }
-            return NotFound("Такой пользователь не найден");
         }
 
         [Route("DeleteRole")]

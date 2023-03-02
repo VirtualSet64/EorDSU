@@ -29,6 +29,20 @@ namespace EorDSU.Repository
             return responseForDiscipline;
         }
 
+        public async Task<List<Discipline>> GetRemovableDiscipline(int facultyId)
+        {
+            var sd = await _unitOfWork.ProfileRepository.GetDataByFacultyId(facultyId);
+
+            var disciplines = Get().Where(c => c.IsDeletionRequest).ToList();
+            List<Discipline> removableDisciplines = new();
+            foreach (var item in sd)
+            {
+                var r = disciplines.Where(x => item.Profile.Id == x.ProfileId);
+                removableDisciplines.AddRange(r);
+            }
+            return removableDisciplines;
+        }
+
         public Discipline GetDisciplinesById(int id)
         {
             return GetWithIncludeById(x => x.Id == id, x => x.StatusDiscipline, x => x.FileRPD);
@@ -38,6 +52,14 @@ namespace EorDSU.Repository
         {
             var discipline = GetWithIncludeById(x => x.Id == id, x => x.FileRPD, x => x.StatusDiscipline, x => x.Profile);
             await Remove(discipline);
+            return discipline;
+        }
+
+        public async Task<Discipline> RequestDeleteDiscipline(int id)
+        {
+            var discipline = FindById(id);
+            discipline.IsDeletionRequest = true;
+            await Update(discipline);
             return discipline;
         }
     }

@@ -3,6 +3,7 @@ using EorDSU.Models;
 using EorDSU.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace EorDSU.Controllers
 {
@@ -30,6 +31,27 @@ namespace EorDSU.Controllers
             if (responseForDiscipline == null || responseForDiscipline.Disciplines == null)
                 return BadRequest("Нет дисциплин для данного профиля");
             return Ok(responseForDiscipline);
+        }
+
+        /// <summary>
+        /// Получение списка дисциплин доступных для удаления
+        /// </summary>
+        /// <returns></returns>
+        [Authorize(Roles = "umu, admin")]
+        [Route("GetRemovableDisciplines")]
+        [HttpGet]
+        public async Task<IActionResult> GetRemovableDisciplines(string userId)
+        {
+            List<Discipline> disciplines = new();
+            var faculties = await _unitOfWork.UmuAndFacultyRepository.Get().Where(x => x.UserId == userId).ToListAsync();
+            foreach (var item in faculties)
+            {
+                disciplines.AddRange(await _unitOfWork.DisciplineRepository.GetRemovableDiscipline(item.FacultyId));
+            }
+
+            if (disciplines != null && disciplines.Any())
+                return Ok(disciplines);
+            return BadRequest("Нет дисциплин доступных для удаления");
         }
 
         /// <summary>
@@ -78,13 +100,27 @@ namespace EorDSU.Controllers
         /// </summary>
         /// <param name="disciplineId"></param>
         /// <returns></returns>
-        [Authorize]
+        [Authorize(Roles = "umu, admin")]
         [Route("DeleteDiscipline")]
         [HttpDelete]
         public async Task<IActionResult> DeleteDiscipline(int disciplineId)
         {
             if (await _unitOfWork.DisciplineRepository.RemoveDiscipline(disciplineId) == null)
                 return BadRequest("Такой дисциплины не существует");
+            return Ok();
+        }
+
+        /// <summary>
+        /// Удаление дисциплины
+        /// </summary>
+        /// <param name="disciplineId"></param>
+        /// <returns></returns>
+        [Authorize]
+        [Route("RequestDeleteDiscipline")]
+        [HttpDelete]
+        public IActionResult RequestDeleteDiscipline(int disciplineId)
+        {
+            _unitOfWork.DisciplineRepository.RequestDeleteDiscipline(disciplineId);
             return Ok();
         }
     }

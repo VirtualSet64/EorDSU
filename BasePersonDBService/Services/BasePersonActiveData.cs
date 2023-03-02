@@ -1,5 +1,6 @@
 ﻿using BasePersonDBService.DataContext;
 using BasePersonDBService.Interfaces;
+using BasePersonDBService.Models;
 using Models;
 
 namespace BasePersonDBService.Services
@@ -55,6 +56,11 @@ namespace BasePersonDBService.Services
         public IQueryable<Person> GetPersons()
         {
             return _bASEPERSONMDFContext.People;
+        }
+
+        public IQueryable<ViewZaprosForKaf> GetPrepods()
+        {
+            return _bASEPERSONMDFContext.ViewZaprosForKafs.Where(x => x.IsActive == 1 && x.Категория == "ППС");
         }
     }
 }

@@ -15,12 +15,12 @@ namespace EorDSU.Repository
 
         public List<StatusDiscipline> GetStatusDiscipline()
         {
-            return Get(x => x.IsDeleted == false).ToList();
+            return Get(x => x.IsDeletionRequest == false).ToList();
         }
 
         public List<StatusDiscipline> GetRemovableStatusDiscipline()
         {
-            return Get(x => x.Disciplines.Any() == false).ToList();
+            return Get().Include(x => x.Disciplines).Where(c => c.IsDeletionRequest == true).ToList();
         }
 
         public StatusDiscipline GetStatusDisciplineById(int id)
@@ -28,11 +28,18 @@ namespace EorDSU.Repository
             return FindById(id);
         }
 
-        public async Task<StatusDiscipline> RemoveStatusDiscipline(int id)
+        public async Task<StatusDiscipline> RequestDeleteStatusDiscipline(int id)
         {
             var statusDiscipline = FindById(id);
-            await Remove(statusDiscipline);
+            statusDiscipline.IsDeletionRequest = true;
+            await Update(statusDiscipline);
             return statusDiscipline;
+        }
+
+        public async Task RemoveStatusDiscipline(int id)
+        {
+            var statusDiscipline = Get().Include(x=> x.Disciplines).FirstOrDefault(c => c.Id == id);
+            await Remove(statusDiscipline);
         }
     }
 }

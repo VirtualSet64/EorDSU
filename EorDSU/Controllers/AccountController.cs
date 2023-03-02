@@ -44,7 +44,7 @@ namespace EorDSU.Controllers
                             PersDepartmentId = user.PersDepartmentId,
                         };
                         var roles = await _userManager.GetRolesAsync(user);
-                        if (roles != null || !roles.Any())
+                        if (roles != null && roles.Any())
                             userIncludeRoles.Role = roles.First();
 
                         return Ok(userIncludeRoles);
