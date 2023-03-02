@@ -6,7 +6,7 @@ namespace EorDSU.Repository.InterfaceRepository
 {
     public interface IDisciplineRepository : IGenericRepository<Discipline>
     {
-        public ResponseForDiscipline GetDisciplinesByProfileId(int profileId);
+        public DataForTableResponse GetDisciplinesByProfileId(int profileId);
         public Task<List<Discipline>> GetRemovableDiscipline(int facultyId);
         public Discipline GetDisciplinesById(int id);
         public Task<Discipline> RemoveDiscipline(int id);

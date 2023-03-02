@@ -63,7 +63,7 @@ namespace EorDSU.Repository
                 Profile = item,
                 CaseCEdukind = item.CaseCEdukindId == null ? null : _unitOfWork.DSUActiveData.GetCaseCEdukindById((int)item.CaseCEdukindId),
                 CaseSDepartment = item.CaseSDepartmentId == null ? null : _unitOfWork.DSUActiveData.GetCaseSDepartmentById((int)item.CaseSDepartmentId),
-                Practics = _unitOfWork.DisciplineRepository.GetDisciplinesByProfileId(item.Id).Disciplines?.Where(x => x.Code?.Contains("Б2") == true).ToList()
+                Disciplines = _unitOfWork.DisciplineRepository.GetDisciplinesByProfileId(item.Id).Disciplines?.Where(x => x.Code?.Contains("Б2") == true).ToList()
             });
         }
 

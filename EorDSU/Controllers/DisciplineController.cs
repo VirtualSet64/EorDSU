@@ -27,7 +27,7 @@ namespace EorDSU.Controllers
         [HttpGet]
         public IActionResult GetDisciplineByProfileId(int profileId)
         {
-            ResponseForDiscipline responseForDiscipline = _unitOfWork.DisciplineRepository.GetDisciplinesByProfileId(profileId);
+            DataForTableResponse responseForDiscipline = _unitOfWork.DisciplineRepository.GetDisciplinesByProfileId(profileId);
             if (responseForDiscipline == null || responseForDiscipline.Disciplines == null)
                 return BadRequest("Нет дисциплин для данного профиля");
             return Ok(responseForDiscipline);

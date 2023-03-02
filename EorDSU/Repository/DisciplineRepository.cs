@@ -15,11 +15,11 @@ namespace EorDSU.Repository
             _unitOfWork = unitOfWork;        
         }
 
-        public ResponseForDiscipline GetDisciplinesByProfileId(int profileId)
+        public DataForTableResponse GetDisciplinesByProfileId(int profileId)
         {
             var profile = Get().Include(x => x.Profile).Include(x => x.FileRPD).FirstOrDefault(x => x.ProfileId == profileId)?.Profile;
             List<Discipline> disciplines = GetWithInclude(x => x.ProfileId == profileId, x => x.StatusDiscipline, x => x.FileRPD).ToList();
-            ResponseForDiscipline responseForDiscipline = new()
+            DataForTableResponse responseForDiscipline = new()
             {
                 Disciplines = disciplines,
                 Profile = profile,
