@@ -219,8 +219,7 @@ namespace EorDSU.Service
                         Code = list[1, i],
                         StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("Обязательная часть"),
                         Profile = profile,
-                        ProfileId = profile.Id,
-                        CreateDate = DateTime.Now,
+                        ProfileId = profile.Id
                     };
                     discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
                     profile.Disciplines?.Add(discipline);
@@ -242,8 +241,7 @@ namespace EorDSU.Service
                         Code = list[1, i],
                         StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("Часть, формируемая участниками образовательных отношений"),
                         Profile = profile,
-                        ProfileId = profile.Id,
-                        CreateDate = DateTime.Now,
+                        ProfileId = profile.Id
                     };
                     discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
                     profile.Disciplines?.Add(discipline);
@@ -260,8 +258,7 @@ namespace EorDSU.Service
                         Code = list[1, i],
                         StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("К.М.Комплексные модули"),
                         Profile = profile,
-                        ProfileId = profile.Id,
-                        CreateDate = DateTime.Now,
+                        ProfileId = profile.Id
                     };
                     discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
                     profile.Disciplines?.Add(discipline);
@@ -275,8 +272,7 @@ namespace EorDSU.Service
                     Code = list[1, i],
                     StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("Блок 2.Практика. Обязательная часть"),
                     Profile = profile,
-                    ProfileId = profile.Id,
-                    CreateDate = DateTime.Now,
+                    ProfileId = profile.Id
                 };
                 discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
                 profile.Disciplines?.Add(discipline);
@@ -290,8 +286,7 @@ namespace EorDSU.Service
                     Code = list[1, i],
                     StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("Блок 2.Практика. Часть, формируемая участниками образовательных отношений"),
                     Profile = profile,
-                    ProfileId = profile.Id,
-                    CreateDate = DateTime.Now,
+                    ProfileId = profile.Id
                 };
                 discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
                 profile.Disciplines?.Add(discipline);
@@ -305,8 +300,7 @@ namespace EorDSU.Service
                     Code = list[1, i],
                     StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("Блок 3.Государственная итоговая аттестация."),
                     Profile = profile,
-                    ProfileId = profile.Id,
-                    CreateDate = DateTime.Now,
+                    ProfileId = profile.Id
                 };
                 discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
                 profile.Disciplines?.Add(discipline);
@@ -319,8 +313,7 @@ namespace EorDSU.Service
                     DisciplineName = list[2, i],
                     Code = list[1, i],
                     Profile = profile,
-                    ProfileId = profile.Id,
-                    CreateDate = DateTime.Now,
+                    ProfileId = profile.Id
                 };
 
                 var sda = list[0, giaCount + 1].Trim();
@@ -390,8 +383,7 @@ namespace EorDSU.Service
                         Code = list[1, i],
                         StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("1.1.Научная деятельность, направленная на подготовку диссертации к защите"),
                         Profile = profile,
-                        ProfileId = profile.Id,
-                        CreateDate = DateTime.Now,
+                        ProfileId = profile.Id
                     };
                     discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
                     profile.Disciplines?.Add(discipline);
@@ -414,8 +406,7 @@ namespace EorDSU.Service
                         Code = list[1, i],
                         StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("1.2.Подготовка публикаций и(или) заявок на патенты"),
                         Profile = profile,
-                        ProfileId = profile.Id,
-                        CreateDate = DateTime.Now,
+                        ProfileId = profile.Id
                     };
                     discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
                     profile.Disciplines?.Add(discipline);
@@ -438,8 +429,7 @@ namespace EorDSU.Service
                         Code = list[1, i],
                         StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("1.3.Промежуточная аттестация по этапам выполнения научного исследования"),
                         Profile = profile,
-                        ProfileId = profile.Id,
-                        CreateDate = DateTime.Now,
+                        ProfileId = profile.Id
                     };
                     discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
                     profile.Disciplines?.Add(discipline);
@@ -463,8 +453,7 @@ namespace EorDSU.Service
                         Code = list[1, i],
                         StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("2.Образовательный компонент"),
                         Profile = profile,
-                        ProfileId = profile.Id,
-                        CreateDate = DateTime.Now,
+                        ProfileId = profile.Id
                     };
                     discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
                     profile.Disciplines?.Add(discipline);
@@ -487,8 +476,7 @@ namespace EorDSU.Service
                         Code = list[1, i],
                         StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("2.2.Практика"),
                         Profile = profile,
-                        ProfileId = profile.Id,
-                        CreateDate = DateTime.Now,
+                        ProfileId = profile.Id
                     };
                     discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
                     profile.Disciplines?.Add(discipline);
@@ -503,7 +491,6 @@ namespace EorDSU.Service
                     Code = list[1, i],
                     Profile = profile,
                     ProfileId = profile.Id,
-                    CreateDate = DateTime.Now,
                     StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("2.3.Промежуточная аттестация по дисциплинам (модулям) и практике")
                 };
 
@@ -519,7 +506,6 @@ namespace EorDSU.Service
                     Code = list[1, i],
                     Profile = profile,
                     ProfileId = profile.Id,
-                    CreateDate = DateTime.Now,
                     StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("3.Итоговая аттестация")
                 };
 

@@ -29,11 +29,11 @@
         /// <summary>
         /// Список дисциплин
         /// </summary>
-        public List<Discipline>? Disciplines { get; set; } = new List<Discipline>();
+        public List<Discipline> Disciplines { get; set; } = new List<Discipline>();
         /// <summary>
         /// Список файлов
         /// </summary>
-        public List<FileModel>? FileModels { get; set; } = new List<FileModel>();
+        public List<FileModel> FileModels { get; set; } = new List<FileModel>();
         /// <summary>
         /// Id уровня образования
         /// </summary>
@@ -57,7 +57,7 @@
         /// <summary>
         /// Дата создания
         /// </summary>
-        public DateTime CreateDate { get; set; }
+        public DateTime CreateDate { get; set; } = DateTime.Now;
         /// <summary>
         /// Дата последнего обновления
         /// </summary>

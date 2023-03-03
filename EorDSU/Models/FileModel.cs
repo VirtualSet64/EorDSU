@@ -16,7 +16,7 @@
         public string? CodeECP { get; set; }
         public int? FileTypeId { get; set; }
         public FileType? Type { get; set; }
-        public DateTime CreateDate { get; set; }
+        public DateTime CreateDate { get; set; } = DateTime.Now;
         public DateTime UpdateDate { get; set; }
     }
 }

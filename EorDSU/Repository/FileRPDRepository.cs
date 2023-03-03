@@ -30,8 +30,7 @@ namespace EorDSU.Repository
                 Name = uploadedFile.FileName,
                 DisciplineId = disciplineId,
                 PersonId = authorId,
-                CodeECP = ecp,
-                CreateDate = DateTime.Now
+                CodeECP = ecp
             };
             await Create(file);
             return file;

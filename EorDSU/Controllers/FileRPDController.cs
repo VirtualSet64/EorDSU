@@ -21,6 +21,7 @@ namespace EorDSU.Controllers
         /// Создание РПД
         /// </summary>
         /// <param name="uploadedFile"></param>
+        /// <param name="authorId"></param>
         /// <param name="disciplineId"></param>
         /// <param name="ecp">Код ЭЦП</param>
         /// <returns></returns>

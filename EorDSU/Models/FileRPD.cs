@@ -2,6 +2,9 @@
 
 namespace EorDSU.Models
 {
+    /// <summary>
+    /// Файлы РПД
+    /// </summary>
     public class FileRPD
     {
         public int Id { get; set; }
@@ -14,7 +17,7 @@ namespace EorDSU.Models
         /// Код ЭЦП
         /// </summary>
         public string? CodeECP { get; set; }
-        public DateTime CreateDate { get; set; }
+        public DateTime CreateDate { get; set; } = DateTime.Now;
         public DateTime UpdateDate { get; set; }
     }
 }

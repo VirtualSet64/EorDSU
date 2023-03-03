@@ -45,8 +45,7 @@ namespace EorDSU.Repository
                     ProfileId = profileId,                    
                     Type = _unitOfWork.FileTypeRepository.FindById(fileTypeId),
                     FileTypeId = fileTypeId,
-                    CodeECP = ecp,
-                    CreateDate = DateTime.Now
+                    CodeECP = ecp
                 };
 
                 await Create(file);

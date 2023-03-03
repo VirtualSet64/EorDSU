@@ -72,7 +72,6 @@ namespace EorDSU.Controllers
                                                            x.ProfileId == discipline.ProfileId))
                 return BadRequest("Такая дисциплина существует");
 
-            discipline.CreateDate = DateTime.Now;
             await _unitOfWork.DisciplineRepository.Create(discipline);
             return Ok();
         }

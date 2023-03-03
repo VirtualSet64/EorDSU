@@ -7,7 +7,6 @@ namespace EorDSU.Models
     /// </summary>
     public class LevelEdu
     {
-        [Key]
         public int Id { get; set; }
         public string? Name { get; set; }
         public bool IsDeleted { get; set; }
@@ -15,9 +14,6 @@ namespace EorDSU.Models
         public LevelEdu(string name)
         {
             Name = name;
-        }
-        public LevelEdu()
-        {
         }
     }
 }

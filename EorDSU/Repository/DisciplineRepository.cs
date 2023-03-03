@@ -37,8 +37,7 @@ namespace EorDSU.Repository
             List<Discipline> removableDisciplines = new();
             foreach (var item in sd)
             {
-                var r = disciplines.Where(x => item.Profile.Id == x.ProfileId);
-                removableDisciplines.AddRange(r);
+                removableDisciplines.AddRange(disciplines.Where(x => item.Profile?.Id == x.ProfileId));
             }
             return removableDisciplines;
         }
