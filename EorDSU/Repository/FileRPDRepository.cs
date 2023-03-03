@@ -16,7 +16,7 @@ namespace EorDSU.Repository
             Configuration = configuration;
         }
 
-        public async Task<FileRPD?> CreateFileRPD(IFormFile uploadedFile, Person author, int disciplineId, string? ecp)
+        public async Task<FileRPD?> CreateFileRPD(IFormFile uploadedFile, int authorId, int disciplineId, string? ecp)
         {
             if (Get().Any(x => x.Name == uploadedFile.FileName))
                 return null;
@@ -29,8 +29,7 @@ namespace EorDSU.Repository
             {
                 Name = uploadedFile.FileName,
                 DisciplineId = disciplineId,
-                PersonId = author.PersonId,
-                Person = author,
+                PersonId = authorId,
                 CodeECP = ecp,
                 CreateDate = DateTime.Now
             };

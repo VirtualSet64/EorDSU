@@ -26,9 +26,9 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("CreateRPD")]
         [HttpPost]
-        public async Task<IActionResult> CreateRPD(IFormFile uploadedFile, Person author, int disciplineId, string? ecp)
+        public async Task<IActionResult> CreateRPD(IFormFile uploadedFile, int authorId, int disciplineId, string? ecp)
         {
-            var rpd = await _unitOfWork.FileRPDRepository.CreateFileRPD(uploadedFile, author, disciplineId, ecp);
+            var rpd = await _unitOfWork.FileRPDRepository.CreateFileRPD(uploadedFile, authorId, disciplineId, ecp);
 
             if (rpd == null)
                 return BadRequest("Ошибка добавления файла");
