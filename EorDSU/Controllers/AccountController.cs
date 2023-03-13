@@ -40,6 +40,7 @@ namespace EorDSU.Controllers
                     {
                         var userIncludeRoles = new UserIncludeRolesViewModel
                         {
+                            UserId = user.Id,
                             UserName = user?.UserName,
                             PersDepartmentId = user.PersDepartmentId,
                         };
