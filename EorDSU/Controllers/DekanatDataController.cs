@@ -1,7 +1,5 @@
 ﻿using BasePersonDBService.Interfaces;
 using DSUContextDBService.Interfaces;
-using EorDSU.Common.Interfaces;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

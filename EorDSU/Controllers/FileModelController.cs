@@ -1,4 +1,7 @@
-﻿using EorDSU.Repository.InterfaceRepository;
+﻿using DomainServices.DtoModels;
+using DomainServices.Models;
+using EorDSU.Services;
+using Ifrastructure.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,10 +13,12 @@ namespace EorDSU.Controllers
     public class FileModelController : Controller
     {
         private readonly IFileModelRepository _fileModelRepository;
+        private readonly AddFileOnServer _addFilesOnServer;
 
-        public FileModelController(IFileModelRepository fileModelRepository)
+        public FileModelController(IFileModelRepository fileModelRepository, AddFileOnServer addFilesOnServer)
         {
             _fileModelRepository = fileModelRepository;
+            _addFilesOnServer = addFilesOnServer;
         }
 
         /// <summary>
@@ -27,10 +32,21 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("CreateFileModel")]
         [HttpPost]
-        public async Task<IActionResult> CreateFileModel(List<IFormFile> uploadedFile, string fileName, int fileType, int profileId, string? ecp)
+        public async Task<IActionResult> CreateFileModel(List<UploadFileForFileModel> uploadedFile)
         {
-            var files = await _fileModelRepository.CreateFileModel(uploadedFile, fileName, fileType, profileId, ecp);
-            if (files == null)
+            List<FileModel> files = new();
+            foreach (var uploadFile in uploadedFile)
+            {
+                if (!_fileModelRepository.Get().Any(x => x.Name == uploadFile.FileName))
+                {
+                    if (uploadFile.UploadedFile != null)
+                        await _addFilesOnServer.CreateFile(uploadFile.UploadedFile);
+
+                    files.Add(await _fileModelRepository.CreateFileModel(uploadFile));
+                }
+            }
+
+            if (files == null || files.Count == 0)
                 return BadRequest("Файл с таким названием уже существует");
             return Ok();
         }
@@ -45,11 +61,27 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("EditFileModel")]
         [HttpPut]
-        public async Task<IActionResult> EditFile(int fileId, string fileName, int profileId, IFormFile? uploadedFile, string? ecp)
+        public async Task<IActionResult> EditFile(UploadFileForFileModel uploadFile)
         {
-            var files = await _fileModelRepository.EditFile(fileId, fileName, profileId, uploadedFile, ecp);
-            if (files == null)
+            FileModel file = _fileModelRepository.FindById((int)uploadFile.FileId);
+            if (file == null)
                 return BadRequest("Ошибка изменения файла");
+
+            file.OutputFileName = uploadFile.FileName;
+            file.UpdateDate = DateTime.Now;
+            if (uploadFile.UploadedFile != null)
+            {
+                if (!_fileModelRepository.Get().Any(x => x.Name == uploadFile.UploadedFile.FileName))
+                {
+                    file.Name = uploadFile.UploadedFile.FileName;
+                    file.ProfileId = uploadFile.ProfileId;
+                    await _addFilesOnServer.CreateFile(uploadFile.UploadedFile);                    
+                }
+            }
+            if (uploadFile.Ecp != null)
+                file.CodeECP = uploadFile.Ecp;
+
+            await _fileModelRepository.Update(file);
             return Ok();
         }
 

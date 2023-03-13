@@ -1,11 +1,10 @@
-﻿using DSUContextDBService.Interfaces;
-using EorDSU.Models;
-using EorDSU.Repository;
-using EorDSU.Repository.InterfaceRepository;
-using EorDSU.ViewModels;
+﻿using DomainServices.Models;
+using Ifrastructure.Repository.InterfaceRepository;
+using DomainServices.DtoModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using EorDSU.Services.Interfaces;
+using EorDSU.Services;
 
 namespace EorDSU.Controllers
 {
@@ -15,11 +14,13 @@ namespace EorDSU.Controllers
     {
         private readonly IProfileRepository _profileRepository;
         private readonly IDisciplineRepository _disciplineRepository;
+        private readonly IAddFileOnServer _addFileOnServer;
 
-        public ProfilesController(IProfileRepository profileRepository, IDisciplineRepository disciplineRepository)
+        public ProfilesController(IProfileRepository profileRepository, IDisciplineRepository disciplineRepository, IAddFileOnServer addFileOnServer)
         {
             _profileRepository = profileRepository;
             _disciplineRepository = disciplineRepository;
+            _addFileOnServer = addFileOnServer;
         }
 
         /// <summary>
@@ -114,7 +115,9 @@ namespace EorDSU.Controllers
             if (uploadedFile == null)
                 return BadRequest("Ошибка передачи файла");
 
-            DataResponseForSvedenOOPDGU profile = await _profileRepository.ParsingProfileByFile(uploadedFile);
+            string path = await _addFileOnServer.CreateFile(uploadedFile);
+
+            DataResponseForSvedenOOPDGU profile = await _profileRepository.ParsingProfileByFile(path);
             return Ok(profile);
         }
 

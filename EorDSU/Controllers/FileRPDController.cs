@@ -1,4 +1,6 @@
-﻿using EorDSU.Repository.InterfaceRepository;
+﻿using DomainServices.DtoModels;
+using EorDSU.Services.Interfaces;
+using Ifrastructure.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,10 +12,12 @@ namespace EorDSU.Controllers
     public class FileRPDController : Controller
     {
         private readonly IFileRPDRepository _fileRPDRepository;
+        private readonly IAddFileOnServer _addFileOnServer;
 
-        public FileRPDController(IFileRPDRepository fileRPDRepository)
+        public FileRPDController(IFileRPDRepository fileRPDRepository, IAddFileOnServer addFileOnServer)
         {
             _fileRPDRepository = fileRPDRepository;
+            _addFileOnServer = addFileOnServer;
         }
 
         /// <summary>
@@ -26,12 +30,14 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("CreateRPD")]
         [HttpPost]
-        public async Task<IActionResult> CreateRPD(IFormFile uploadedFile, int authorId, int disciplineId, string? ecp)
+        public async Task<IActionResult> CreateRPD(UploadFileRPD uploadedFile)
         {
-            var rpd = await _fileRPDRepository.CreateFileRPD(uploadedFile, authorId, disciplineId, ecp);
+            if (_fileRPDRepository.Get().Any(x => x.Name == uploadedFile.UploadedFile.FileName))
+                return BadRequest("Файл с таким названием уже существует");
 
-            if (rpd == null)
-                return BadRequest("Ошибка добавления файла");
+            await _addFileOnServer.CreateFile(uploadedFile.UploadedFile);
+            await _fileRPDRepository.CreateFileRPD(uploadedFile);
+
             return Ok();
         }
 

@@ -1,5 +1,4 @@
-﻿using EorDSU.Common.Interfaces;
-using EorDSU.Repository.InterfaceRepository;
+﻿using Ifrastructure.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

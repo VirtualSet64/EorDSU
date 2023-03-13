@@ -1,6 +1,6 @@
-﻿using EorDSU.Models;
-using EorDSU.Repository.InterfaceRepository;
-using EorDSU.ViewModels;
+﻿using DomainServices.Models;
+using Ifrastructure.Repository.InterfaceRepository;
+using DomainServices.DtoModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
