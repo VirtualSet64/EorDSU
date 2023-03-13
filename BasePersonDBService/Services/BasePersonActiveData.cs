@@ -23,6 +23,11 @@ namespace BasePersonDBService.Services
             return _bASEPERSONMDFContext.PersDepartments.FirstOrDefault(x => x.DepId == id);
         }
 
+        public PersDepartment GetPersDepartmentByName(string name)
+        {
+            return _bASEPERSONMDFContext.PersDepartments.FirstOrDefault(x => x.DepName == name);
+        }
+
         public IQueryable<PersDepartment> GetPersDepartments()
         {
             return _bASEPERSONMDFContext.PersDepartments.Where(x => x.IsActive == 1 && x.IsKaf == 1 && x.IsMain == 0);

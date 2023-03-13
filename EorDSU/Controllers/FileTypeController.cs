@@ -1,5 +1,5 @@
-﻿using EorDSU.Common.Interfaces;
-using EorDSU.Models;
+﻿using DomainServices.Models;
+using Ifrastructure.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,25 +10,25 @@ namespace EorDSU.Controllers
     [Route("[controller]")]
     public class FileTypeController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IFileTypeRepository _fileTypeRepository;
 
-        public FileTypeController(IUnitOfWork unitOfWork)
+        public FileTypeController(IFileTypeRepository fileTypeRepository)
         {
-            _unitOfWork = unitOfWork;
+            _fileTypeRepository = fileTypeRepository;
         }
 
         [Route("GetFileTypes")]
         [HttpGet]
         public IActionResult GetFileTypes()
         {
-            return Ok(_unitOfWork.FileTypeRepository.Get());
+            return Ok(_fileTypeRepository.Get());
         }
 
         [Route("CreateFileType")]
         [HttpPost]
         public async Task<IActionResult> CreateFileType(FileType fileType)
         {
-            await _unitOfWork.FileTypeRepository.Create(fileType);
+            await _fileTypeRepository.Create(fileType);
             return Ok();
         }
 
@@ -36,7 +36,7 @@ namespace EorDSU.Controllers
         [HttpPut]
         public async Task<IActionResult> EditFileType(FileType fileType)
         {
-            await _unitOfWork.FileTypeRepository.Update(fileType);
+            await _fileTypeRepository.Update(fileType);
             return Ok();
         }
 
@@ -44,7 +44,7 @@ namespace EorDSU.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteFileType(int fileTypeId)
         {
-            await _unitOfWork.FileTypeRepository.Remove(fileTypeId);
+            await _fileTypeRepository.Remove(fileTypeId);
             return Ok();
         }
     }

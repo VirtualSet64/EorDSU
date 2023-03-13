@@ -1,7 +1,8 @@
-﻿using EorDSU.Common.Interfaces;
+﻿using DomainServices.DtoModels;
+using EorDSU.Services.Interfaces;
+using Ifrastructure.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Models;
 
 namespace EorDSU.Controllers
 {
@@ -10,28 +11,33 @@ namespace EorDSU.Controllers
     [Route("[controller]")]
     public class FileRPDController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IFileRPDRepository _fileRPDRepository;
+        private readonly IAddFileOnServer _addFileOnServer;
 
-        public FileRPDController(IUnitOfWork unitOfWork)
+        public FileRPDController(IFileRPDRepository fileRPDRepository, IAddFileOnServer addFileOnServer)
         {
-            _unitOfWork = unitOfWork;
+            _fileRPDRepository = fileRPDRepository;
+            _addFileOnServer = addFileOnServer;
         }
 
         /// <summary>
         /// Создание РПД
         /// </summary>
         /// <param name="uploadedFile"></param>
+        /// <param name="authorId"></param>
         /// <param name="disciplineId"></param>
         /// <param name="ecp">Код ЭЦП</param>
         /// <returns></returns>
         [Route("CreateRPD")]
         [HttpPost]
-        public async Task<IActionResult> CreateRPD(IFormFile uploadedFile, Person author, int disciplineId, string? ecp)
+        public async Task<IActionResult> CreateRPD(UploadFileRPD uploadedFile)
         {
-            var rpd = await _unitOfWork.FileRPDRepository.CreateFileRPD(uploadedFile, author, disciplineId, ecp);
+            if (_fileRPDRepository.Get().Any(x => x.Name == uploadedFile.UploadedFile.FileName))
+                return BadRequest("Файл с таким названием уже существует");
 
-            if (rpd == null)
-                return BadRequest("Ошибка добавления файла");
+            await _addFileOnServer.CreateFile(uploadedFile.UploadedFile);
+            await _fileRPDRepository.CreateFileRPD(uploadedFile);
+
             return Ok();
         }
 
@@ -44,7 +50,7 @@ namespace EorDSU.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteRPD(int fileRPDId)
         {
-            await _unitOfWork.FileRPDRepository.Remove(fileRPDId);
+            await _fileRPDRepository.Remove(fileRPDId);
             return Ok();
         }
     }

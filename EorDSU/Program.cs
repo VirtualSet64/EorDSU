@@ -1,12 +1,14 @@
 using BasePersonDBService.DataContext;
 using DSUContextDBService.DataContext;
-using EorDSU.Common;
-using EorDSU.DBService;
-using EorDSU.Services;
-using EorDSU.ViewModels.Account;
+using DomainServices.DtoModels.Account;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Sentry;
+using DomainServices.DBService;
+using Ifrastructure.Common;
+using EorDSU.Services.Interfaces;
+using EorDSU.Services;
+using EorDSU.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +40,7 @@ builder.Services.AddDbContext<DSUContext>(options =>
 builder.Services.AddDbContext<ApplicationContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("EOR"), providerOptions => providerOptions.EnableRetryOnFailure()));
 
-builder.Services.AddIdentity<EorDSU.Models.User, IdentityRole>(
+builder.Services.AddIdentity<DomainServices.Models.User, IdentityRole>(
                opts =>
                {
                    opts.Password.RequiredLength = 2;
@@ -54,7 +56,6 @@ builder.Services.ConfigureApplicationCookie(options =>
     // Cookie settings
     options.Cookie.HttpOnly = true;
     options.Cookie.SameSite = SameSiteMode.None;
-    //options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
 
     options.LoginPath = "/Account/Login";
     options.SlidingExpiration = true;
@@ -81,7 +82,7 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<EorDSU.Models.User>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<DomainServices.Models.User>>();
     var rolesManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     if (userManager.Users.ToList().Count == 0)
     {

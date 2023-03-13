@@ -1,13 +1,40 @@
-﻿using EorDSU.Common.Interfaces;
+﻿using BasePersonDBService.Interfaces;
+using BasePersonDBService.Services;
+using DSUContextDBService.Interfaces;
+using DSUContextDBService.Services;
+using Ifrastructure.Repository;
+using Ifrastructure.Repository.InterfaceRepository;
+using Ifrastructure.Interface;
+using Ifrastructure.Service;
+using Ifrastructure.Services.Interface;
+using Microsoft.Extensions.DependencyInjection;
+using IfrastructureEorDSU.Repository;
+using EorDSU.Services.Interfaces;
+using EorDSU.Services;
 
-namespace EorDSU.Common
+namespace Ifrastructure.Common
 {
     public static class BaseService
     {
         public static void AddDBService(this IServiceCollection services)
         {
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-            services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            services.AddScoped<IDSUActiveData, DSUActiveData>();
+            services.AddScoped<IBasePersonActiveData, BasePersonActiveData>();
+
+            services.AddScoped<IExcelParsingService, ExcelParsingService>();
+            services.AddScoped<ISearchEntityService, SearchEntityService>();
+            services.AddScoped<IAddFileOnServer, AddFileOnServer>();
+
+            #region Repositories
+            services.AddScoped<IProfileRepository, ProfileRepository>();
+            services.AddScoped<IDisciplineRepository, DisciplineRepository>();
+            services.AddScoped<IFileModelRepository, FileModelRepository>();
+            services.AddScoped<IDisciplineRepository, DisciplineRepository>();
+            services.AddScoped<IFileTypeRepository, FileTypeRepository>();
+            services.AddScoped<IStatusDisciplineRepository, StatusDisciplineRepository>();
+            services.AddScoped<ILevelEduRepository, LevelEduRepository>();
+            services.AddScoped<IUmuAndFacultyRepository, UmuAndFacultyRepository>();
+            #endregion
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using EorDSU.Common.Interfaces;
+﻿using Ifrastructure.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,18 +9,18 @@ namespace EorDSU.Controllers
     [Route("[controller]")]
     public class LevelEduController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly ILevelEduRepository _levelEduRepository;
 
-        public LevelEduController(IUnitOfWork unitOfWork)
+        public LevelEduController(ILevelEduRepository levelEduRepository)
         {
-            _unitOfWork = unitOfWork;
+            _levelEduRepository = levelEduRepository;
         }
 
         [Route("GetLevelEdu")]
         [HttpGet]
         public IActionResult GetLevelEdu()
         {
-            return Ok(_unitOfWork.LevelEduRepository.Get());
+            return Ok(_levelEduRepository.Get());
         }
     }
 }
