@@ -1,5 +1,5 @@
-﻿using EorDSU.Common.Interfaces;
-using EorDSU.Models;
+﻿using EorDSU.Models;
+using EorDSU.Repository.InterfaceRepository;
 using EorDSU.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,11 +11,13 @@ namespace EorDSU.Controllers
     [Route("[controller]")]
     public class DisciplineController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IDisciplineRepository _disciplineRepository;
+        private readonly IUmuAndFacultyRepository _umuAndFacultyRepository;
 
-        public DisciplineController(IUnitOfWork unitOfWork)
+        public DisciplineController(IDisciplineRepository disciplineRepository, IUmuAndFacultyRepository umuAndFacultyRepository)
         {
-            _unitOfWork = unitOfWork;
+            _disciplineRepository = disciplineRepository;
+            _umuAndFacultyRepository = umuAndFacultyRepository;
         }
 
         /// <summary>
@@ -27,7 +29,7 @@ namespace EorDSU.Controllers
         [HttpGet]
         public IActionResult GetDisciplineByProfileId(int profileId)
         {
-            DataForTableResponse responseForDiscipline = _unitOfWork.DisciplineRepository.GetDisciplinesByProfileId(profileId);
+            DataForTableResponse responseForDiscipline = _disciplineRepository.GetDisciplinesByProfileId(profileId);
             if (responseForDiscipline == null || responseForDiscipline.Disciplines == null)
                 return BadRequest("Нет дисциплин для данного профиля");
             return Ok(responseForDiscipline);
@@ -43,10 +45,10 @@ namespace EorDSU.Controllers
         public async Task<IActionResult> GetRemovableDisciplines(string userId)
         {
             List<Discipline> disciplines = new();
-            var faculties = await _unitOfWork.UmuAndFacultyRepository.Get().Where(x => x.UserId == userId).ToListAsync();
+            var faculties = await _umuAndFacultyRepository.Get().Where(x => x.UserId == userId).ToListAsync();
             foreach (var item in faculties)
             {
-                disciplines.AddRange(await _unitOfWork.DisciplineRepository.GetRemovableDiscipline(item.FacultyId));
+                disciplines.AddRange(await _disciplineRepository.GetRemovableDiscipline(item.FacultyId));
             }
 
             if (disciplines != null && disciplines.Any())
@@ -67,12 +69,12 @@ namespace EorDSU.Controllers
             if (discipline == null)
                 return BadRequest();
 
-            if (_unitOfWork.DisciplineRepository.Get().Any(x => x.DisciplineName == discipline.DisciplineName &&
+            if (_disciplineRepository.Get().Any(x => x.DisciplineName == discipline.DisciplineName &&
                                                            x.StatusDisciplineId == discipline.StatusDisciplineId &&
                                                            x.ProfileId == discipline.ProfileId))
                 return BadRequest("Такая дисциплина существует");
 
-            await _unitOfWork.DisciplineRepository.Create(discipline);
+            await _disciplineRepository.Create(discipline);
             return Ok();
         }
 
@@ -90,7 +92,7 @@ namespace EorDSU.Controllers
                 return BadRequest("Ошибка передачи дисциплины");
 
             discipline.UpdateDate = DateTime.Now;
-            await _unitOfWork.DisciplineRepository.Update(discipline);
+            await _disciplineRepository.Update(discipline);
             return Ok();
         }
 
@@ -104,7 +106,7 @@ namespace EorDSU.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteDiscipline(int disciplineId)
         {
-            if (await _unitOfWork.DisciplineRepository.RemoveDiscipline(disciplineId) == null)
+            if (await _disciplineRepository.RemoveDiscipline(disciplineId) == null)
                 return BadRequest("Такой дисциплины не существует");
             return Ok();
         }
@@ -117,9 +119,9 @@ namespace EorDSU.Controllers
         [Authorize]
         [Route("RequestDeleteDiscipline")]
         [HttpDelete]
-        public IActionResult RequestDeleteDiscipline(int disciplineId)
+        public async Task<IActionResult> RequestDeleteDiscipline(int disciplineId)
         {
-            _unitOfWork.DisciplineRepository.RequestDeleteDiscipline(disciplineId);
+            await _disciplineRepository.RequestDeleteDiscipline(disciplineId);
             return Ok();
         }
     }

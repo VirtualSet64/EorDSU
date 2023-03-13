@@ -1,4 +1,4 @@
-﻿using EorDSU.Common.Interfaces;
+﻿using EorDSU.Interface;
 using EorDSU.Models;
 using EorDSU.Services.Interface;
 using Excel = Microsoft.Office.Interop.Excel;
@@ -7,11 +7,11 @@ namespace EorDSU.Service
 {
     public class ExcelParsingService : IExcelParsingService
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly ISearchEntityService _searchEntity;
 
-        public ExcelParsingService(IUnitOfWork unitOfWork)
+        public ExcelParsingService(ISearchEntityService searchEntity)
         {
-            _unitOfWork = unitOfWork;
+            _searchEntity = searchEntity;
         }
 
         public async Task<Profile> ParsingService(string path)
@@ -69,11 +69,11 @@ namespace EorDSU.Service
         private async Task TitulPageForCollegeAsync(string[,] list, Profile profile)
         {
             string code = list[0, 13];
-            profile.LevelEdu = await _unitOfWork.SearchEntity.SearchLevelEdu("основное общее образование");
+            profile.LevelEdu = await _searchEntity.SearchLevelEdu("основное общее образование");
             profile.LevelEduId = profile.LevelEdu.Id;
-            profile.CaseCEdukindId = await _unitOfWork.SearchEntity.SearchEdukind(list[6, 26]);
-            profile.CaseSDepartmentId = await _unitOfWork.SearchEntity.SearchCaseSDepartment(list[6, 13].Split(" ")[^1])
-                                     ?? await _unitOfWork.SearchEntity.SearchCaseSDepartment(list[6, 13].Split(code)[^1].Trim());
+            profile.CaseCEdukindId = await _searchEntity.SearchEdukind(list[6, 26]);
+            profile.CaseSDepartmentId = await _searchEntity.SearchCaseSDepartment(list[6, 13].Split(" ")[^1])
+                                     ?? await _searchEntity.SearchCaseSDepartment(list[6, 13].Split(code)[^1].Trim());
             profile.ProfileName = list[20, 28];
             profile.TermEdu = list[28, 26];
         }
@@ -86,20 +86,20 @@ namespace EorDSU.Service
         /// <returns></returns>
         private async Task TitulPageForVuz(string[,] list, Profile profile)
         {
-            profile.CaseCEdukindId = await _unitOfWork.SearchEntity.SearchEdukind(list[2, 41].Split(" ")[^1]);
+            profile.CaseCEdukindId = await _searchEntity.SearchEdukind(list[2, 41].Split(" ")[^1]);
 
             switch (list[7, 24].Split(" ")[^1])
             {
                 case "Специалистов":
-                    profile.LevelEdu = await _unitOfWork.SearchEntity.SearchLevelEdu("специалитет");
+                    profile.LevelEdu = await _searchEntity.SearchLevelEdu("специалитет");
                     profile.LevelEduId = profile.LevelEdu.Id;
                     break;
                 case "магистратуры":
-                    profile.LevelEdu = await _unitOfWork.SearchEntity.SearchLevelEdu("магистратура");
+                    profile.LevelEdu = await _searchEntity.SearchLevelEdu("магистратура");
                     profile.LevelEduId = profile.LevelEdu.Id;
                     break;
                 case "бакалавриата":
-                    profile.LevelEdu = await _unitOfWork.SearchEntity.SearchLevelEdu("бакалавриат");
+                    profile.LevelEdu = await _searchEntity.SearchLevelEdu("бакалавриат");
                     profile.LevelEduId = profile.LevelEdu.Id;
                     break;
             }
@@ -108,13 +108,13 @@ namespace EorDSU.Service
 
             profile.ProfileName = list[3, 29];
             profile.TermEdu = list[2, 42].Split(" ")[^1][0].ToString();
-            profile.CaseSDepartmentId = await _unitOfWork.SearchEntity.SearchCaseSDepartment(list[3, 28].Split(" ")[^1])
-                ?? await _unitOfWork.SearchEntity.SearchCaseSDepartment(list[3, 28].Split(code)[^1].Trim()); ;
+            profile.CaseSDepartmentId = await _searchEntity.SearchCaseSDepartment(list[3, 28].Split(" ")[^1])
+                ?? await _searchEntity.SearchCaseSDepartment(list[3, 28].Split(code)[^1].Trim()); ;
 
             if (profile.CaseSDepartmentId == null)
             {
                 string v = list[3, 28].Split(code)[^1].Trim() + $" ({profile.LevelEdu?.Name})";
-                profile.CaseSDepartmentId = await _unitOfWork.SearchEntity.SearchCaseSDepartment(v);
+                profile.CaseSDepartmentId = await _searchEntity.SearchCaseSDepartment(v);
             }
 
             profile.Year = int.Parse(list[22, 39]);
@@ -128,9 +128,9 @@ namespace EorDSU.Service
         /// <returns></returns>
         private async Task TitulPageForPostGraduate(string[,] list, Profile profile)
         {
-            profile.CaseCEdukindId = await _unitOfWork.SearchEntity.SearchEdukind(list[2, 40].Split(":")[1].Trim());
+            profile.CaseCEdukindId = await _searchEntity.SearchEdukind(list[2, 40].Split(":")[1].Trim());
 
-            profile.LevelEdu = await _unitOfWork.SearchEntity.SearchLevelEdu("аспирантура");
+            profile.LevelEdu = await _searchEntity.SearchLevelEdu("аспирантура");
             profile.LevelEduId = profile.LevelEdu.Id;
 
             profile.ProfileName = list[3, 28];
@@ -217,7 +217,7 @@ namespace EorDSU.Service
                     {
                         DisciplineName = list[2, i],
                         Code = list[1, i],
-                        StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("Обязательная часть"),
+                        StatusDiscipline = await _searchEntity.SearchStatusDiscipline("Обязательная часть"),
                         Profile = profile,
                         ProfileId = profile.Id
                     };
@@ -239,7 +239,7 @@ namespace EorDSU.Service
                     {
                         DisciplineName = list[2, i],
                         Code = list[1, i],
-                        StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("Часть, формируемая участниками образовательных отношений"),
+                        StatusDiscipline = await _searchEntity.SearchStatusDiscipline("Часть, формируемая участниками образовательных отношений"),
                         Profile = profile,
                         ProfileId = profile.Id
                     };
@@ -256,7 +256,7 @@ namespace EorDSU.Service
                     {
                         DisciplineName = list[2, i],
                         Code = list[1, i],
-                        StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("К.М.Комплексные модули"),
+                        StatusDiscipline = await _searchEntity.SearchStatusDiscipline("К.М.Комплексные модули"),
                         Profile = profile,
                         ProfileId = profile.Id
                     };
@@ -270,7 +270,7 @@ namespace EorDSU.Service
                 {
                     DisciplineName = list[2, i],
                     Code = list[1, i],
-                    StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("Блок 2.Практика. Обязательная часть"),
+                    StatusDiscipline = await _searchEntity.SearchStatusDiscipline("Блок 2.Практика. Обязательная часть"),
                     Profile = profile,
                     ProfileId = profile.Id
                 };
@@ -284,7 +284,7 @@ namespace EorDSU.Service
                 {
                     DisciplineName = list[2, i],
                     Code = list[1, i],
-                    StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("Блок 2.Практика. Часть, формируемая участниками образовательных отношений"),
+                    StatusDiscipline = await _searchEntity.SearchStatusDiscipline("Блок 2.Практика. Часть, формируемая участниками образовательных отношений"),
                     Profile = profile,
                     ProfileId = profile.Id
                 };
@@ -298,7 +298,7 @@ namespace EorDSU.Service
                 {
                     DisciplineName = list[2, i],
                     Code = list[1, i],
-                    StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("Блок 3.Государственная итоговая аттестация."),
+                    StatusDiscipline = await _searchEntity.SearchStatusDiscipline("Блок 3.Государственная итоговая аттестация."),
                     Profile = profile,
                     ProfileId = profile.Id
                 };
@@ -319,9 +319,9 @@ namespace EorDSU.Service
                 var sda = list[0, giaCount + 1].Trim();
 
                 if (sda.Length < 2)
-                    discipline.StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline($"ФТД.Факультативы".Trim());
+                    discipline.StatusDiscipline = await _searchEntity.SearchStatusDiscipline($"ФТД.Факультативы".Trim());
                 else
-                    discipline.StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline($"ФТД.Факультативы. {list[0, giaCount + 1]}".Trim());
+                    discipline.StatusDiscipline = await _searchEntity.SearchStatusDiscipline($"ФТД.Факультативы. {list[0, giaCount + 1]}".Trim());
 
                 discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
                 profile.Disciplines?.Add(discipline);
@@ -381,7 +381,7 @@ namespace EorDSU.Service
                     {
                         DisciplineName = list[2, i],
                         Code = list[1, i],
-                        StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("1.1.Научная деятельность, направленная на подготовку диссертации к защите"),
+                        StatusDiscipline = await _searchEntity.SearchStatusDiscipline("1.1.Научная деятельность, направленная на подготовку диссертации к защите"),
                         Profile = profile,
                         ProfileId = profile.Id
                     };
@@ -404,7 +404,7 @@ namespace EorDSU.Service
                     {
                         DisciplineName = list[2, i],
                         Code = list[1, i],
-                        StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("1.2.Подготовка публикаций и(или) заявок на патенты"),
+                        StatusDiscipline = await _searchEntity.SearchStatusDiscipline("1.2.Подготовка публикаций и(или) заявок на патенты"),
                         Profile = profile,
                         ProfileId = profile.Id
                     };
@@ -427,7 +427,7 @@ namespace EorDSU.Service
                     {
                         DisciplineName = list[2, i],
                         Code = list[1, i],
-                        StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("1.3.Промежуточная аттестация по этапам выполнения научного исследования"),
+                        StatusDiscipline = await _searchEntity.SearchStatusDiscipline("1.3.Промежуточная аттестация по этапам выполнения научного исследования"),
                         Profile = profile,
                         ProfileId = profile.Id
                     };
@@ -451,7 +451,7 @@ namespace EorDSU.Service
                     {
                         DisciplineName = list[2, i],
                         Code = list[1, i],
-                        StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("2.Образовательный компонент"),
+                        StatusDiscipline = await _searchEntity.SearchStatusDiscipline("2.Образовательный компонент"),
                         Profile = profile,
                         ProfileId = profile.Id
                     };
@@ -474,7 +474,7 @@ namespace EorDSU.Service
                     {
                         DisciplineName = list[2, i],
                         Code = list[1, i],
-                        StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("2.2.Практика"),
+                        StatusDiscipline = await _searchEntity.SearchStatusDiscipline("2.2.Практика"),
                         Profile = profile,
                         ProfileId = profile.Id
                     };
@@ -491,7 +491,7 @@ namespace EorDSU.Service
                     Code = list[1, i],
                     Profile = profile,
                     ProfileId = profile.Id,
-                    StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("2.3.Промежуточная аттестация по дисциплинам (модулям) и практике")
+                    StatusDiscipline = await _searchEntity.SearchStatusDiscipline("2.3.Промежуточная аттестация по дисциплинам (модулям) и практике")
                 };
 
                 discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
@@ -506,7 +506,7 @@ namespace EorDSU.Service
                     Code = list[1, i],
                     Profile = profile,
                     ProfileId = profile.Id,
-                    StatusDiscipline = await _unitOfWork.SearchEntity.SearchStatusDiscipline("3.Итоговая аттестация")
+                    StatusDiscipline = await _searchEntity.SearchStatusDiscipline("3.Итоговая аттестация")
                 };
 
                 discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;

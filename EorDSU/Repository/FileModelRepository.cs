@@ -1,5 +1,5 @@
 ﻿using EorDSU.Common;
-using EorDSU.Common.Interfaces;
+using EorDSU.DBService;
 using EorDSU.Models;
 using EorDSU.Repository.InterfaceRepository;
 using Microsoft.EntityFrameworkCore;
@@ -10,21 +10,22 @@ namespace EorDSU.Repository
     {
         private readonly IWebHostEnvironment _appEnvironment;
         private readonly IConfiguration Configuration;
-        private readonly IUnitOfWork _unitOfWork;
-        public FileModelRepository(DbContext dbContext, IWebHostEnvironment appEnvironment, IConfiguration configuration, IUnitOfWork unitOfWork) : base(dbContext)
+        private readonly IFileTypeRepository _fileTypeRepository;
+        public FileModelRepository(ApplicationContext dbContext, IWebHostEnvironment appEnvironment, IConfiguration configuration, IFileTypeRepository fileTypeRepository) : base(dbContext)
         {
             _appEnvironment = appEnvironment;
             Configuration = configuration;
-            _unitOfWork = unitOfWork;
+            _fileTypeRepository = fileTypeRepository;
         }
 
         /// <summary>
         /// Создание файлов
         /// </summary>
-        /// <param name="uploads"></param>
-        /// <param name="fileNameList"></param>
+        /// <param name="uploadFiles"></param>
+        /// <param name="fileName"></param>
         /// <param name="fileTypeId"></param>
         /// <param name="profileId"></param>
+        /// <param name="ecp"></param>
         /// <returns></returns>
         public async Task<List<FileModel>?> CreateFileModel(List<IFormFile> uploadFiles, string fileName, int fileTypeId, int profileId, string? ecp)
         {
@@ -43,7 +44,7 @@ namespace EorDSU.Repository
                     Name = uploadFile.FileName,
                     OutputFileName = fileName,
                     ProfileId = profileId,                    
-                    Type = _unitOfWork.FileTypeRepository.FindById(fileTypeId),
+                    Type = _fileTypeRepository.FindById(fileTypeId),
                     FileTypeId = fileTypeId,
                     CodeECP = ecp
                 };
@@ -57,9 +58,11 @@ namespace EorDSU.Repository
         /// <summary>
         /// Изменение файлов
         /// </summary>
-        /// <param name="uploads"></param>
-        /// <param name="fileNameList"></param>
+        /// <param name="fileId"></param>
+        /// <param name="fileName"></param>
         /// <param name="profileId"></param>
+        /// <param name="upload"></param>
+        /// <param name="ecp"></param>
         /// <returns></returns>
         public async Task<FileModel?> EditFile(int fileId, string fileName, int profileId, IFormFile? upload, string? ecp)
         {

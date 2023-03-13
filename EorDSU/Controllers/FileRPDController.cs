@@ -1,7 +1,6 @@
-﻿using EorDSU.Common.Interfaces;
+﻿using EorDSU.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Models;
 
 namespace EorDSU.Controllers
 {
@@ -10,11 +9,11 @@ namespace EorDSU.Controllers
     [Route("[controller]")]
     public class FileRPDController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IFileRPDRepository _fileRPDRepository;
 
-        public FileRPDController(IUnitOfWork unitOfWork)
+        public FileRPDController(IFileRPDRepository fileRPDRepository)
         {
-            _unitOfWork = unitOfWork;
+            _fileRPDRepository = fileRPDRepository;
         }
 
         /// <summary>
@@ -29,7 +28,7 @@ namespace EorDSU.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateRPD(IFormFile uploadedFile, int authorId, int disciplineId, string? ecp)
         {
-            var rpd = await _unitOfWork.FileRPDRepository.CreateFileRPD(uploadedFile, authorId, disciplineId, ecp);
+            var rpd = await _fileRPDRepository.CreateFileRPD(uploadedFile, authorId, disciplineId, ecp);
 
             if (rpd == null)
                 return BadRequest("Ошибка добавления файла");
@@ -45,7 +44,7 @@ namespace EorDSU.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteRPD(int fileRPDId)
         {
-            await _unitOfWork.FileRPDRepository.Remove(fileRPDId);
+            await _fileRPDRepository.Remove(fileRPDId);
             return Ok();
         }
     }

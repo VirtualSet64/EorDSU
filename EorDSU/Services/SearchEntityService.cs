@@ -1,24 +1,26 @@
-﻿using EorDSU.Common.Interfaces;
-using EorDSU.DBService;
+﻿using DSUContextDBService.Interfaces;
 using EorDSU.Interface;
 using EorDSU.Models;
+using EorDSU.Repository.InterfaceRepository;
 using Microsoft.EntityFrameworkCore;
 
 namespace EorDSU.Service
 {
-    public class SearchEntityService : ISearchEntity
+    public class SearchEntityService : ISearchEntityService
     {
-        private readonly ApplicationContext _applicationContext;
-        private readonly IUnitOfWork _unitOfWork;
-        public SearchEntityService(ApplicationContext applicationContext, IUnitOfWork unitOfWork)
+        private readonly IStatusDisciplineRepository _statusDisciplineRepository;
+        private readonly ILevelEduRepository _levelEduRepository;
+        private readonly IDSUActiveData _dSUActiveData;
+        public SearchEntityService(IStatusDisciplineRepository statusDisciplineRepository, ILevelEduRepository levelEduRepository, IDSUActiveData dSUActiveData)
         {
-            _applicationContext = applicationContext;
-            _unitOfWork = unitOfWork;
+            _statusDisciplineRepository = statusDisciplineRepository;
+            _levelEduRepository = levelEduRepository;
+            _dSUActiveData = dSUActiveData;
         }
 
         public async Task<short?> SearchEdukind(string text)
         {
-            var item = await _unitOfWork.DSUActiveData.GetCaseCEdukinds().FirstOrDefaultAsync(c => c.Edukind == text);
+            var item = await _dSUActiveData.GetCaseCEdukinds().FirstOrDefaultAsync(c => c.Edukind == text);
             if (item != null)
                 return item.EdukindId;
             return null;
@@ -26,28 +28,19 @@ namespace EorDSU.Service
 
         public async Task<int?> SearchCaseSDepartment(string text)
         {
-            var item = await _unitOfWork.DSUActiveData.GetCaseSDepartments().FirstOrDefaultAsync(c => c.DeptName == text);
+            var item = await _dSUActiveData.GetCaseSDepartments().FirstOrDefaultAsync(c => c.DeptName == text);
             if (item != null)
                 return item.DepartmentId;
             return null;
         }
 
-        public async Task<int?> SearchPersDepartment(string text)
-        {
-            var item = await _unitOfWork.BasePersonActiveData.GetPersDepartments().FirstOrDefaultAsync(c => c.DepName == text);
-            if (item != null)
-                return item.DepId;
-            return null;
-        }
-
         public async Task<LevelEdu> SearchLevelEdu(string text)
         {
-            var levelEdu = await _applicationContext.LevelEdues.FirstOrDefaultAsync(c => c.Name == text);
+            var levelEdu = await _levelEduRepository.Get().FirstOrDefaultAsync(c => c.Name == text);
             if (levelEdu == null)
             {
                 levelEdu = new LevelEdu(text);
-                _applicationContext.LevelEdues.Add(levelEdu);
-                _applicationContext.SaveChanges();
+                await _levelEduRepository.Create(levelEdu);
             }
 
             return levelEdu;
@@ -55,12 +48,11 @@ namespace EorDSU.Service
 
         public async Task<StatusDiscipline> SearchStatusDiscipline(string text)
         {
-            var statusDiscipline = await _applicationContext.StatusDisciplines.FirstOrDefaultAsync(c => c.Name == text);
+            var statusDiscipline = await _statusDisciplineRepository.Get().FirstOrDefaultAsync(c => c.Name == text);
             if (statusDiscipline == null)
             {
                 statusDiscipline = new StatusDiscipline(text);
-                _applicationContext.StatusDisciplines.Add(statusDiscipline);
-                _applicationContext.SaveChanges();
+                await _statusDisciplineRepository.Create(statusDiscipline);
             }
 
             return statusDiscipline;

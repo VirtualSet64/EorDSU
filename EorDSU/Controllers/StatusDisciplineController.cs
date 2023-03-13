@@ -1,5 +1,6 @@
 ﻿using EorDSU.Common.Interfaces;
 using EorDSU.Models;
+using EorDSU.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,11 +11,11 @@ namespace EorDSU.Controllers
     [Route("[controller]")]
     public class StatusDisciplineController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IStatusDisciplineRepository _statusDisciplineRepository;
 
-        public StatusDisciplineController(IUnitOfWork unitOfWork)
+        public StatusDisciplineController(IStatusDisciplineRepository statusDisciplineRepository)
         {
-            _unitOfWork = unitOfWork;
+            _statusDisciplineRepository = statusDisciplineRepository;
         }
 
         /// <summary>
@@ -25,7 +26,7 @@ namespace EorDSU.Controllers
         [HttpGet]
         public IActionResult GetStatusDiscipline()
         {
-            List<StatusDiscipline> statusDisciplines = _unitOfWork.StatusDisciplineRepository.GetStatusDiscipline();
+            List<StatusDiscipline> statusDisciplines = _statusDisciplineRepository.GetStatusDiscipline();
             if (statusDisciplines.Any())
                 return Ok(statusDisciplines);
             return BadRequest("Нет созданных статусов дисциплин");
@@ -35,12 +36,12 @@ namespace EorDSU.Controllers
         /// Получение списка статусов дисциплин доступных для удаления
         /// </summary>
         /// <returns></returns>
-        [Authorize(Roles ="umu, admin")]
+        [Authorize(Roles = "umu, admin")]
         [Route("GetRemovableStatusDiscipline")]
         [HttpGet]
         public IActionResult GetRemovableStatusDiscipline()
         {
-            List<StatusDiscipline> statusDisciplines = _unitOfWork.StatusDisciplineRepository.GetRemovableStatusDiscipline();
+            List<StatusDiscipline> statusDisciplines = _statusDisciplineRepository.GetRemovableStatusDiscipline();
             if (statusDisciplines.Any())
                 return Ok(statusDisciplines);
             return BadRequest("Нет статусов дисциплин доступных для удаления");
@@ -55,7 +56,7 @@ namespace EorDSU.Controllers
         [HttpGet]
         public IActionResult GetStatusDisciplineById(int statusDisciplineId)
         {
-            var statusDiscipline = _unitOfWork.StatusDisciplineRepository.GetStatusDisciplineById(statusDisciplineId);
+            var statusDiscipline = _statusDisciplineRepository.FindById(statusDisciplineId);
             if (statusDiscipline == null)
                 return BadRequest("Статус дисциплины не найден");
             return Ok(statusDiscipline);
@@ -73,8 +74,8 @@ namespace EorDSU.Controllers
             if (statusDiscipline == null)
                 return BadRequest("Ошибка при передаче статуса дисциплины");
 
-            await _unitOfWork.StatusDisciplineRepository.Create(statusDiscipline);
-            return Ok(); 
+            await _statusDisciplineRepository.Create(statusDiscipline);
+            return Ok();
         }
 
         /// <summary>
@@ -89,26 +90,26 @@ namespace EorDSU.Controllers
             if (statusDiscipline == null)
                 return BadRequest("Ошибка при передаче статуса дисциплины");
 
-            await _unitOfWork.StatusDisciplineRepository.Update(statusDiscipline);
+            await _statusDisciplineRepository.Update(statusDiscipline);
             return Ok();
         }
-
-        [Authorize(Roles = "umu, admin")]
+                
         /// <summary>
         /// Удаление статуса дисциплины
         /// </summary>
         /// <param name="statusDisciplineId"></param>
         /// <returns></returns>
+        [Authorize(Roles = "umu, admin")]
         [Route("DeleteStatusDiscipline")]
         [HttpDelete]
         public async Task<IActionResult> DeleteStatusDiscipline(int statusDisciplineId)
         {
-            await _unitOfWork.StatusDisciplineRepository.RemoveStatusDiscipline(statusDisciplineId);
+            await _statusDisciplineRepository.RemoveStatusDiscipline(statusDisciplineId);
             return Ok();
         }
 
         /// <summary>
-        /// Удаление статуса дисциплины
+        /// Запрос на удаление статуса дисциплины
         /// </summary>
         /// <param name="statusDisciplineId"></param>
         /// <returns></returns>
@@ -116,7 +117,7 @@ namespace EorDSU.Controllers
         [HttpDelete]
         public async Task<IActionResult> RequestDeleteStatusDiscipline(int statusDisciplineId)
         {
-            await _unitOfWork.StatusDisciplineRepository.RequestDeleteStatusDiscipline(statusDisciplineId);
+            await _statusDisciplineRepository.RequestDeleteStatusDiscipline(statusDisciplineId);
             return Ok();
         }
     }

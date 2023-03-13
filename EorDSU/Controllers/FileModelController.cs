@@ -1,4 +1,4 @@
-﻿using EorDSU.Common.Interfaces;
+﻿using EorDSU.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,11 +9,11 @@ namespace EorDSU.Controllers
     [Route("[controller]")]
     public class FileModelController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IFileModelRepository _fileModelRepository;
 
-        public FileModelController(IUnitOfWork unitOfWork)
+        public FileModelController(IFileModelRepository fileModelRepository)
         {
-            _unitOfWork = unitOfWork;
+            _fileModelRepository = fileModelRepository;
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace EorDSU.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateFileModel(List<IFormFile> uploadedFile, string fileName, int fileType, int profileId, string? ecp)
         {
-            var files = await _unitOfWork.FileModelRepository.CreateFileModel(uploadedFile, fileName, fileType, profileId, ecp);
+            var files = await _fileModelRepository.CreateFileModel(uploadedFile, fileName, fileType, profileId, ecp);
             if (files == null)
                 return BadRequest("Файл с таким названием уже существует");
             return Ok();
@@ -47,7 +47,7 @@ namespace EorDSU.Controllers
         [HttpPut]
         public async Task<IActionResult> EditFile(int fileId, string fileName, int profileId, IFormFile? uploadedFile, string? ecp)
         {
-            var files = await _unitOfWork.FileModelRepository.EditFile(fileId, fileName, profileId, uploadedFile, ecp);
+            var files = await _fileModelRepository.EditFile(fileId, fileName, profileId, uploadedFile, ecp);
             if (files == null)
                 return BadRequest("Ошибка изменения файла");
             return Ok();
@@ -62,7 +62,7 @@ namespace EorDSU.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteFile(int fileId)
         {
-            await _unitOfWork.FileModelRepository.Remove(fileId);
+            await _fileModelRepository.Remove(fileId);
             return Ok();
         }
     }

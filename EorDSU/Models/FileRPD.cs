@@ -9,8 +9,10 @@ namespace EorDSU.Models
     {
         public int Id { get; set; }
         public string? Name { get; set; }
+        /// <summary>
+        /// Автор РПД
+        /// </summary>
         public int? PersonId { get; set; }
-        public Person? Person { get; set; }
         public int? DisciplineId { get; set; }
         public Discipline? Discipline { get; set; }
         /// <summary>

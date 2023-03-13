@@ -1,5 +1,6 @@
 ﻿using EorDSU.Common;
 using EorDSU.Common.Interfaces;
+using EorDSU.DBService;
 using EorDSU.Models;
 using EorDSU.Repository.InterfaceRepository;
 using Microsoft.EntityFrameworkCore;
@@ -8,9 +9,8 @@ namespace EorDSU.Repository
 {
     public class StatusDisciplineRepository : GenericRepository<StatusDiscipline>, IStatusDisciplineRepository
     {
-        public StatusDisciplineRepository(DbContext dbContext) : base(dbContext)
+        public StatusDisciplineRepository(ApplicationContext dbContext) : base(dbContext)
         {
-
         }
 
         public List<StatusDiscipline> GetStatusDiscipline()
@@ -21,11 +21,6 @@ namespace EorDSU.Repository
         public List<StatusDiscipline> GetRemovableStatusDiscipline()
         {
             return Get().Include(x => x.Disciplines).Where(c => c.IsDeletionRequest == true).ToList();
-        }
-
-        public StatusDiscipline GetStatusDisciplineById(int id)
-        {
-            return FindById(id);
         }
 
         public async Task<StatusDiscipline> RequestDeleteStatusDiscipline(int id)

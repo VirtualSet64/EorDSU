@@ -1,4 +1,5 @@
 ﻿using EorDSU.Common;
+using EorDSU.DBService;
 using EorDSU.Models;
 using EorDSU.Repository.InterfaceRepository;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +11,7 @@ namespace EorDSU.Repository
     {
         private readonly IWebHostEnvironment _appEnvironment;
         private readonly IConfiguration Configuration;
-        public FileRPDRepository(DbContext dbContext, IWebHostEnvironment appEnvironment, IConfiguration configuration) : base(dbContext)
+        public FileRPDRepository(ApplicationContext dbContext, IWebHostEnvironment appEnvironment, IConfiguration configuration) : base(dbContext)
         {
             _appEnvironment = appEnvironment;
             Configuration = configuration;
