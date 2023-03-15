@@ -1,4 +1,4 @@
-﻿using DomainServices.Models;
+﻿using DomainServices.Entities;
 using DSUContextDBService.Models;
 
 namespace DomainServices.DtoModels

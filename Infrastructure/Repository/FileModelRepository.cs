@@ -1,11 +1,7 @@
 ﻿using Ifrastructure.Common;
-using DomainServices.Models;
+using DomainServices.Entities;
 using Ifrastructure.Repository.InterfaceRepository;
-using Microsoft.EntityFrameworkCore;
 using DomainServices.DBService;
-using Microsoft.Extensions.Configuration;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Hosting;
 using DomainServices.DtoModels;
 
 namespace Ifrastructure.Repository
@@ -22,10 +18,6 @@ namespace Ifrastructure.Repository
         /// Создание файлов
         /// </summary>
         /// <param name="uploadFile"></param>
-        /// <param name="fileName"></param>
-        /// <param name="fileTypeId"></param>
-        /// <param name="profileId"></param>
-        /// <param name="ecp"></param>
         /// <returns></returns>
         public async Task<FileModel?> CreateFileModel(UploadFileForFileModel uploadFile)
         {

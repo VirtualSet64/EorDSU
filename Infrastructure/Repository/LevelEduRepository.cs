@@ -1,7 +1,6 @@
 ﻿using Ifrastructure.Common;
-using DomainServices.Models;
+using DomainServices.Entities;
 using Ifrastructure.Repository.InterfaceRepository;
-using Microsoft.EntityFrameworkCore;
 using DomainServices.DBService;
 
 namespace Ifrastructure.Repository

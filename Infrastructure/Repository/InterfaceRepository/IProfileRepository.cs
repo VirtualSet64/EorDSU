@@ -1,7 +1,6 @@
 ﻿using Ifrastructure.Common.Interfaces;
-using DomainServices.Models;
+using DomainServices.Entities;
 using DomainServices.DtoModels;
-using Microsoft.AspNetCore.Http;
 
 namespace Ifrastructure.Repository.InterfaceRepository
 {

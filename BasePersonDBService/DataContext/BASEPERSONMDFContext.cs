@@ -1,6 +1,5 @@
 ﻿using BasePersonDBService.Models;
 using Microsoft.EntityFrameworkCore;
-using Models;
 
 namespace BasePersonDBService.DataContext
 {

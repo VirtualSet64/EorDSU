@@ -1,5 +1,5 @@
 ﻿using Ifrastructure.Interface;
-using DomainServices.Models;
+using DomainServices.Entities;
 using Ifrastructure.Services.Interface;
 using Excel = Microsoft.Office.Interop.Excel;
 

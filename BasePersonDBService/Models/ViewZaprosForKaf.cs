@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace BasePersonDBService.Models
+﻿namespace BasePersonDBService.Models
 {
     public partial class ViewZaprosForKaf
     {

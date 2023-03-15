@@ -24,18 +24,18 @@ namespace EorDSU.Controllers
         /// Создание РПД
         /// </summary>
         /// <param name="uploadedFile"></param>
-        /// <param name="authorId"></param>
-        /// <param name="disciplineId"></param>
-        /// <param name="ecp">Код ЭЦП</param>
         /// <returns></returns>
         [Route("CreateRPD")]
         [HttpPost]
         public async Task<IActionResult> CreateRPD(UploadFileRPD uploadedFile)
         {
-            if (_fileRPDRepository.Get().Any(x => x.Name == uploadedFile.UploadedFile.FileName))
-                return BadRequest("Файл с таким названием уже существует");
+            if (uploadedFile.UploadedFile != null)
+            {
+                if (_fileRPDRepository.Get().Any(x => x.Name == uploadedFile.UploadedFile.FileName))
+                    return BadRequest("Файл с таким названием уже существует");
 
-            await _addFileOnServer.CreateFile(uploadedFile.UploadedFile);
+                await _addFileOnServer.CreateFile(uploadedFile.UploadedFile);
+            }
             await _fileRPDRepository.CreateFileRPD(uploadedFile);
 
             return Ok();

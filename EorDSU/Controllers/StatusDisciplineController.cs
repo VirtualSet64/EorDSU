@@ -1,5 +1,4 @@
-﻿using Ifrastructure.Common.Interfaces;
-using DomainServices.Models;
+﻿using DomainServices.Entities;
 using Ifrastructure.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -39,9 +38,9 @@ namespace EorDSU.Controllers
         [Authorize(Roles = "umu, admin")]
         [Route("GetRemovableStatusDiscipline")]
         [HttpGet]
-        public IActionResult GetRemovableStatusDiscipline()
+        public async Task<IActionResult> GetRemovableStatusDiscipline()
         {
-            List<StatusDiscipline> statusDisciplines = _statusDisciplineRepository.GetRemovableStatusDiscipline();
+            List<StatusDiscipline> statusDisciplines = await _statusDisciplineRepository.GetRemovableStatusDiscipline();
             if (statusDisciplines.Any())
                 return Ok(statusDisciplines);
             return BadRequest("Нет статусов дисциплин доступных для удаления");

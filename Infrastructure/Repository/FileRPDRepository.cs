@@ -1,9 +1,7 @@
 ﻿using Ifrastructure.Common;
-using DomainServices.Models;
+using DomainServices.Entities;
 using Ifrastructure.Repository.InterfaceRepository;
-using Microsoft.Extensions.Configuration;
 using DomainServices.DBService;
-using Microsoft.AspNetCore.Http;
 using DomainServices.DtoModels;
 
 namespace Ifrastructure.Repository
@@ -14,6 +12,11 @@ namespace Ifrastructure.Repository
         {
         }
 
+        /// <summary>
+        /// Создание файла РПД
+        /// </summary>
+        /// <param name="uploadedFile"></param>
+        /// <returns></returns>
         public async Task<FileRPD?> CreateFileRPD(UploadFileRPD uploadedFile)
         {
             var file = new FileRPD()

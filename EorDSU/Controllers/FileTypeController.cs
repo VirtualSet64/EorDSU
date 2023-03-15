@@ -1,4 +1,4 @@
-﻿using DomainServices.Models;
+﻿using DomainServices.Entities;
 using Ifrastructure.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

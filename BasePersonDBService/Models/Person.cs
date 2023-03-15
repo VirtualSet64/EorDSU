@@ -1,4 +1,4 @@
-﻿namespace Models
+﻿namespace BasePersonDBService.Models
 {
     public partial class Person
     {
