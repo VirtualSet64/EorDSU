@@ -1,5 +1,5 @@
 ﻿using Ifrastructure.Common.Interfaces;
-using DomainServices.Models;
+using DomainServices.Entities;
 using DomainServices.DtoModels;
 
 namespace Ifrastructure.Repository.InterfaceRepository

@@ -1,5 +1,5 @@
 ﻿using DSUContextDBService.Models;
-using DomainServices.Models;
+using DomainServices.Entities;
 
 namespace DomainServices.DtoModels
 {

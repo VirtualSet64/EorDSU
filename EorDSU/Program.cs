@@ -40,7 +40,7 @@ builder.Services.AddDbContext<DSUContext>(options =>
 builder.Services.AddDbContext<ApplicationContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("EOR"), providerOptions => providerOptions.EnableRetryOnFailure()));
 
-builder.Services.AddIdentity<DomainServices.Models.User, IdentityRole>(
+builder.Services.AddIdentity<DomainServices.Entities.User, IdentityRole>(
                opts =>
                {
                    opts.Password.RequiredLength = 2;
@@ -82,7 +82,7 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<DomainServices.Models.User>>();
+    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<DomainServices.Entities.User>>();
     var rolesManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
     if (userManager.Users.ToList().Count == 0)
     {

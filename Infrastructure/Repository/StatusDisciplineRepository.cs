@@ -1,5 +1,5 @@
 ﻿using Ifrastructure.Common;
-using DomainServices.Models;
+using DomainServices.Entities;
 using Ifrastructure.Repository.InterfaceRepository;
 using Microsoft.EntityFrameworkCore;
 using DomainServices.DBService;
@@ -17,9 +17,9 @@ namespace Ifrastructure.Repository
             return Get(x => x.IsDeletionRequest == false).ToList();
         }
 
-        public List<StatusDiscipline> GetRemovableStatusDiscipline()
+        public async Task<List<StatusDiscipline>> GetRemovableStatusDiscipline()
         {
-            return Get().Include(x => x.Disciplines).Where(c => c.IsDeletionRequest == true).ToList();
+            return await Get().Include(x => x.Disciplines).Where(c => c.IsDeletionRequest == true).ToListAsync();
         }
 
         public async Task<StatusDiscipline> RequestDeleteStatusDiscipline(int id)
@@ -32,8 +32,9 @@ namespace Ifrastructure.Repository
 
         public async Task RemoveStatusDiscipline(int id)
         {
-            var statusDiscipline = Get().Include(x=> x.Disciplines).FirstOrDefault(c => c.Id == id);
-            await Remove(statusDiscipline);
+            var statusDiscipline = Get().Include(x => x.Disciplines).FirstOrDefault(c => c.Id == id);
+            if (statusDiscipline != null)
+                await Remove(statusDiscipline);
         }
     }
 }

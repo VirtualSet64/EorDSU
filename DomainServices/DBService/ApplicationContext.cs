@@ -1,7 +1,7 @@
-﻿using DomainServices.Models;
+﻿using DomainServices.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using FileModel = DomainServices.Models.FileModel;
+using FileModel = DomainServices.Entities.FileModel;
 
 namespace DomainServices.DBService
 {

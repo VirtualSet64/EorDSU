@@ -1,9 +1,8 @@
-﻿using DomainServices.Models;
+﻿using DomainServices.Entities;
 using DomainServices.DtoModels.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System.Data;
 
 namespace EorDSU.Controllers
 {

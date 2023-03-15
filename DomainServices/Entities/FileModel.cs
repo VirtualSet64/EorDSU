@@ -1,4 +1,4 @@
-﻿namespace DomainServices.Models
+﻿namespace DomainServices.Entities
 {
     /// <summary>
     /// Файлы

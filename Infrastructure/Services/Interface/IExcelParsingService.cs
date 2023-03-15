@@ -1,4 +1,4 @@
-﻿using DomainServices.Models;
+﻿using DomainServices.Entities;
 
 namespace Ifrastructure.Services.Interface
 {

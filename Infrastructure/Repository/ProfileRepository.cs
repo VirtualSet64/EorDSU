@@ -1,14 +1,12 @@
 ﻿using BasePersonDBService.Interfaces;
 using DSUContextDBService.Interfaces;
 using Ifrastructure.Common;
-using DomainServices.Models;
+using DomainServices.Entities;
 using Ifrastructure.Repository.InterfaceRepository;
 using Ifrastructure.Services.Interface;
 using DomainServices.DtoModels;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using DomainServices.DBService;
-using Microsoft.AspNetCore.Http;
 
 namespace IfrastructureEorDSU.Repository
 {

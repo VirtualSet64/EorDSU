@@ -7,7 +7,6 @@ using Ifrastructure.Repository.InterfaceRepository;
 using Ifrastructure.Interface;
 using Ifrastructure.Service;
 using Ifrastructure.Services.Interface;
-using Microsoft.Extensions.DependencyInjection;
 using IfrastructureEorDSU.Repository;
 using EorDSU.Services.Interfaces;
 using EorDSU.Services;

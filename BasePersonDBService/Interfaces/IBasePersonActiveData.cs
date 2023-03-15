@@ -1,5 +1,4 @@
 ﻿using BasePersonDBService.Models;
-using Models;
 
 namespace BasePersonDBService.Interfaces
 {

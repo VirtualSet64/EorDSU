@@ -1,10 +1,9 @@
-﻿using DomainServices.Models;
+﻿using DomainServices.Entities;
 using Ifrastructure.Repository.InterfaceRepository;
 using DomainServices.DtoModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using EorDSU.Services.Interfaces;
-using EorDSU.Services;
 
 namespace EorDSU.Controllers
 {

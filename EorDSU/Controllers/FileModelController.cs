@@ -1,6 +1,6 @@
 ﻿using DomainServices.DtoModels;
-using DomainServices.Models;
-using EorDSU.Services;
+using DomainServices.Entities;
+using EorDSU.Services.Interfaces;
 using Ifrastructure.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -13,9 +13,9 @@ namespace EorDSU.Controllers
     public class FileModelController : Controller
     {
         private readonly IFileModelRepository _fileModelRepository;
-        private readonly AddFileOnServer _addFilesOnServer;
+        private readonly IAddFileOnServer _addFilesOnServer;
 
-        public FileModelController(IFileModelRepository fileModelRepository, AddFileOnServer addFilesOnServer)
+        public FileModelController(IFileModelRepository fileModelRepository, IAddFileOnServer addFilesOnServer)
         {
             _fileModelRepository = fileModelRepository;
             _addFilesOnServer = addFilesOnServer;
@@ -24,11 +24,7 @@ namespace EorDSU.Controllers
         /// <summary>
         /// Добавление файлов
         /// </summary>
-        /// <param name="uploadedFile">Файл</param>
-        /// <param name="fileName">Файл</param>
-        /// <param name="fileType">Тип Файла</param>
-        /// <param name="profileId">Профиль</param>
-        /// <param name="ecp">Код ЭЦП</param>
+        /// <param name="uploadedFile"></param>
         /// <returns></returns>
         [Route("CreateFileModel")]
         [HttpPost]
@@ -54,10 +50,7 @@ namespace EorDSU.Controllers
         /// <summary>
         /// Изменение файла
         /// </summary>
-        /// <param name="fileId"></param>
-        /// <param name="uploadedFile"></param>
-        /// <param name="fileName"></param>
-        /// <param name="profileId"></param>
+        /// <param name="uploadFile"></param>
         /// <returns></returns>
         [Route("EditFileModel")]
         [HttpPut]
