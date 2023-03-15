@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 /EorDSU/Files
 /EorDSU/LogFile
+/EorDSU/Infrastructure/LogFile
