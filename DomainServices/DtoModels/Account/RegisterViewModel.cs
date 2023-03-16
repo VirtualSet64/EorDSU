@@ -19,5 +19,7 @@ namespace DomainServices.DtoModels.Account
 
         [Display(Name = "Роль")]
         public string? Role { get; set; }
+        [Display(Name = "Роль")]
+        public List<int>? Faculties { get; set; }
     }
 }

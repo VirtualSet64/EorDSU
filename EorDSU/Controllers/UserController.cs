@@ -44,12 +44,25 @@ namespace EorDSU.Controllers
             if (ModelState.IsValid)
             {
                 User user = new() { UserName = model.Login, PersDepartmentId = model.PersDepartmentId };
-                
+
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (model.Role != null)
                 {
                     List<string> roles = new() { model.Role };
                     await _userManager.AddToRolesAsync(user, roles);
+                }
+                if (model.Faculties != null && model.Faculties.Count != 0)
+                {
+                    var faculties = new List<UmuAndFaculty>();
+                    foreach (var item in model.Faculties)
+                    {
+                        faculties.Add(new UmuAndFaculty()
+                        {
+                            FacultyId = item,
+                            UserId = user.Id,
+                        });
+                    }
+                    await _userManager.UpdateAsync(user);
                 }
                 if (result.Succeeded)
                     return Ok();
@@ -71,7 +84,7 @@ namespace EorDSU.Controllers
                     user.PasswordHash = _passwordHasher.HashPassword(user, model.Password);
                     if (model.PersDepartmentId != null)
                         user.PersDepartmentId = (int)model.PersDepartmentId;
-                                        
+
                     if (model.Role != null)
                     {
                         List<string> roles = new() { model.Role };
