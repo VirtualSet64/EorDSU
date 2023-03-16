@@ -101,7 +101,15 @@ namespace EorDSU.Controllers
 
                         return Ok();
                     }
-
+                    var faculties = new List<UmuAndFaculty>();
+                    foreach (var item in model.Faculties)
+                    {
+                        faculties.Add(new UmuAndFaculty()
+                        {
+                            FacultyId = item,
+                            UserId = user.Id,
+                        });
+                    }
                     var result = await _userManager.UpdateAsync(user);
                     if (result.Succeeded)
                         return Ok();
