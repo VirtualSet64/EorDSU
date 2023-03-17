@@ -3,6 +3,7 @@ using DomainServices.DtoModels.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Ifrastructure.Repository.InterfaceRepository;
 
 namespace EorDSU.Controllers
 {
@@ -12,10 +13,12 @@ namespace EorDSU.Controllers
     public class UserController : Controller
     {
         private readonly UserManager<User> _userManager;
+        private readonly IUmuAndFacultyRepository _umuAndFacultyRepository;
 
-        public UserController(UserManager<User> userManager)
+        public UserController(UserManager<User> userManager, IUmuAndFacultyRepository umuAndFacultyRepository)
         {
             _userManager = userManager;
+            _umuAndFacultyRepository = umuAndFacultyRepository;
         }
 
         [Route("GetUsers")]
@@ -62,7 +65,7 @@ namespace EorDSU.Controllers
                             UserId = user.Id,
                         });
                     }
-                    await _userManager.UpdateAsync(user);
+                    await _umuAndFacultyRepository.CreateRange(faculties);
                 }
                 if (result.Succeeded)
                     return Ok();
@@ -111,6 +114,7 @@ namespace EorDSU.Controllers
                         });
                     }
                     var result = await _userManager.UpdateAsync(user);
+                    await _umuAndFacultyRepository.CreateRange(faculties);
                     if (result.Succeeded)
                         return Ok();
                 }
