@@ -28,22 +28,23 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("CreateFileModel")]
         [HttpPost]
-        public async Task<IActionResult> CreateFileModel(List<UploadFileForFileModel> uploadedFile)
+        public async Task<IActionResult> CreateFileModel(IFormFile formFile, int fileId, string fileName, int fileType, int profileId, string? ecp)
         {
-            List<FileModel> files = new();
-            foreach (var uploadFile in uploadedFile)
+            FileModel uploadFile = new()
             {
-                if (!_fileModelRepository.Get().Any(x => x.Name == uploadFile.FileName))
-                {
-                    if (uploadFile.UploadedFile != null)
-                        await _addFilesOnServer.CreateFile(uploadFile.UploadedFile);
+                Id = fileId,
+                Name = formFile.FileName,
+                OutputFileName = fileName,
+                FileTypeId = fileType,
+                ProfileId = profileId,
+                CodeECP = ecp,                
+            };
+            if (!_fileModelRepository.Get().Any(x => x.OutputFileName == fileName || x.Name == formFile.Name))
+            {
+                await _addFilesOnServer.CreateFile(formFile);
 
-                    files.Add(await _fileModelRepository.CreateFileModel(uploadFile));
-                }
+                await _fileModelRepository.Create(uploadFile);
             }
-
-            if (files == null || files.Count == 0)
-                return BadRequest("Файл с таким названием уже существует");
             return Ok();
         }
 
@@ -54,25 +55,26 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("EditFileModel")]
         [HttpPut]
-        public async Task<IActionResult> EditFile(UploadFileForFileModel uploadFile)
+        public async Task<IActionResult> EditFile(int fileId, int fileType, int profileId, string fileName, string? ecp, IFormFile? formFile)
         {
-            FileModel file = _fileModelRepository.FindById((int)uploadFile.FileId);
+            FileModel file = _fileModelRepository.FindById(fileId);
             if (file == null)
-                return BadRequest("Ошибка изменения файла");
+                return BadRequest("Файл не найден");
 
-            file.OutputFileName = uploadFile.FileName;
+            file.OutputFileName = fileName;
             file.UpdateDate = DateTime.Now;
-            if (uploadFile.UploadedFile != null)
+            file.CodeECP = ecp ?? file.CodeECP;
+            if (formFile != null)
             {
-                if (!_fileModelRepository.Get().Any(x => x.Name == uploadFile.UploadedFile.FileName))
+                if (!_fileModelRepository.Get().Any(x => x.Name == formFile.FileName))
                 {
-                    file.Name = uploadFile.UploadedFile.FileName;
-                    file.ProfileId = uploadFile.ProfileId;
-                    await _addFilesOnServer.CreateFile(uploadFile.UploadedFile);                    
+                    file.Name = formFile.FileName;
+                    file.FileTypeId = fileType;
+                    file.ProfileId = profileId;
+                    await _addFilesOnServer.CreateFile(formFile);
                 }
+                return BadRequest("Файл с таким названием уже существует");
             }
-            if (uploadFile.Ecp != null)
-                file.CodeECP = uploadFile.Ecp;
 
             await _fileModelRepository.Update(file);
             return Ok();

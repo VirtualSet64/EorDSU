@@ -1,4 +1,5 @@
 ﻿using DomainServices.DtoModels;
+using DomainServices.Entities;
 using EorDSU.Services.Interfaces;
 using Ifrastructure.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
@@ -27,16 +28,21 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("CreateRPD")]
         [HttpPost]
-        public async Task<IActionResult> CreateRPD(UploadFileRPD uploadedFile)
+        public async Task<IActionResult> CreateRPD(IFormFile uploadedFile, int authorId, int disciplineId, string ecp)
         {
-            if (uploadedFile.UploadedFile != null)
+            FileRPD fileRPD = new()
             {
-                if (_fileRPDRepository.Get().Any(x => x.Name == uploadedFile.UploadedFile.FileName))
-                    return BadRequest("Файл с таким названием уже существует");
+                DisciplineId = disciplineId,
+                CodeECP = ecp,
+                Name = uploadedFile.Name,
+                PersonId = authorId
+            };
+            if (_fileRPDRepository.Get().Any(x => x.Name == uploadedFile.FileName))
+                return BadRequest("Файл с таким названием уже существует");
 
-                await _addFileOnServer.CreateFile(uploadedFile.UploadedFile);
-            }
-            await _fileRPDRepository.CreateFileRPD(uploadedFile);
+            await _addFileOnServer.CreateFile(uploadedFile);
+
+            await _fileRPDRepository.Create(fileRPD);
 
             return Ok();
         }

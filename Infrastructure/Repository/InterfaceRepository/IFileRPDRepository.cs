@@ -6,6 +6,5 @@ namespace Ifrastructure.Repository.InterfaceRepository
 {
     public interface IFileRPDRepository : IGenericRepository<FileRPD>
     {
-        public Task<FileRPD?> CreateFileRPD(UploadFileRPD uploadedFile);
     }
 }
