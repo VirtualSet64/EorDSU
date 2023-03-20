@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Ifrastructure.Repository.InterfaceRepository;
+using DomainServices.DtoModels;
+using BasePersonDBService.Interfaces;
 
 namespace EorDSU.Controllers
 {
@@ -14,29 +16,48 @@ namespace EorDSU.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly IUmuAndFacultyRepository _umuAndFacultyRepository;
+        private readonly IBasePersonActiveData _basePersonActiveData;
 
-        public UserController(UserManager<User> userManager, IUmuAndFacultyRepository umuAndFacultyRepository)
+        public UserController(UserManager<User> userManager, IUmuAndFacultyRepository umuAndFacultyRepository, IBasePersonActiveData basePersonActiveData)
         {
             _userManager = userManager;
             _umuAndFacultyRepository = umuAndFacultyRepository;
+            _basePersonActiveData = basePersonActiveData;
         }
 
         [Route("GetUsers")]
         [HttpGet]
         public IActionResult GetUsers()
         {
-            return Ok(_userManager.Users.ToList());
+            List<FullInfoUserDto> dtoUsers = new();
+            foreach (var item in _userManager.Users.ToList())
+            {
+                dtoUsers.Add(new FullInfoUserDto()
+                {
+                    User = item,
+                    Department = _basePersonActiveData.GetPersDepartmentById(item.PersDepartmentId),
+                    Faculties = _umuAndFacultyRepository.Get().Where(x => x.UserId == item.Id)
+                                                              .Select(c => _basePersonActiveData.GetPersDivisionById(c.FacultyId)).ToList()
+                });
+            }
+            return Ok(dtoUsers);
         }
 
-        [Route("GetUser")]
+        [Route("GetUserById")]
         [HttpGet]
-        public async Task<IActionResult> GetUser(string id)
+        public async Task<IActionResult> GetUserById(string id)
         {
             User user = await _userManager.FindByIdAsync(id);
             if (user == null)
-                return NotFound();
+                return BadRequest("Такой пользователь не найден");
 
-            EditViewModel model = new() { Id = user.Id, Login = user.UserName };
+            FullInfoUserDto model = new()
+            {
+                User = user,
+                Department = _basePersonActiveData.GetPersDepartmentById(user.PersDepartmentId),
+                Faculties = _umuAndFacultyRepository.Get().Where(x => x.UserId == user.Id)
+                                                              .Select(c => _basePersonActiveData.GetPersDivisionById(c.FacultyId)).ToList()
+            };
             return Ok(model);
         }
 

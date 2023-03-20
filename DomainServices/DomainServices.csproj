@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BasePersonDBService\BasePersonDBService.csproj" />
     <ProjectReference Include="..\DSUContextDBService\DSUContextDBService.csproj" />
   </ItemGroup>
 
