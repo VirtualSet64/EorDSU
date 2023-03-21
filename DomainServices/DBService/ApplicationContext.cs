@@ -45,6 +45,11 @@ namespace DomainServices.DBService
                 .WithMany(t => t.Disciplines)
                 .OnDelete(DeleteBehavior.ClientCascade);
 
+            modelBuilder.Entity<UmuAndFaculty>()
+                .HasOne(p => p.User)
+                .WithMany(t => t.Faculty)
+                .OnDelete(DeleteBehavior.ClientCascade);
+
             base.OnModelCreating(modelBuilder);
         }
     }

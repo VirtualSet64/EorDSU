@@ -24,11 +24,16 @@ namespace EorDSU.Controllers
         /// <summary>
         /// Добавление файлов
         /// </summary>
-        /// <param name="uploadedFile"></param>
+        /// <param name="formFile"></param>
+        /// <param name="fileId"></param>
+        /// <param name="fileName"></param>
+        /// <param name="fileType"></param>
+        /// <param name="profileId"></param>
+        /// <param name="ecp"></param>
         /// <returns></returns>
         [Route("CreateFileModel")]
         [HttpPost]
-        public async Task<IActionResult> CreateFileModel(IFormFile formFile, int fileId, string fileName, int fileType, int profileId, string? ecp)
+        public async Task<IActionResult> CreateFileModel(IFormFile formFile, int fileId, string fileName, int fileType, int profileId, string ecp)
         {
             FileModel uploadFile = new()
             {
@@ -37,43 +42,46 @@ namespace EorDSU.Controllers
                 OutputFileName = fileName,
                 FileTypeId = fileType,
                 ProfileId = profileId,
-                CodeECP = ecp,                
+                CodeECP = ecp,
             };
-            if (!_fileModelRepository.Get().Any(x => x.OutputFileName == fileName || x.Name == formFile.Name))
+            if (!_fileModelRepository.Get().Any(x => x.Name == formFile.Name))
             {
                 await _addFilesOnServer.CreateFile(formFile);
-
                 await _fileModelRepository.Create(uploadFile);
+                return Ok();
             }
-            return Ok();
+            return BadRequest("Файл с таким названием уже существует");
         }
 
         /// <summary>
         /// Изменение файла
         /// </summary>
-        /// <param name="uploadFile"></param>
+        /// <param name="fileId"></param>
+        /// <param name="fileName"></param>
+        /// <param name="ecp"></param>
+        /// <param name="formFile"></param>
         /// <returns></returns>
         [Route("EditFileModel")]
         [HttpPut]
-        public async Task<IActionResult> EditFile(int fileId, int fileType, int profileId, string fileName, string? ecp, IFormFile? formFile)
+        public async Task<IActionResult> EditFile(int fileId, string fileName, string? ecp, IFormFile? formFile)
         {
             FileModel file = _fileModelRepository.FindById(fileId);
             if (file == null)
                 return BadRequest("Файл не найден");
 
             file.OutputFileName = fileName;
-            file.UpdateDate = DateTime.Now;
-            file.CodeECP = ecp ?? file.CodeECP;
+            file.UpdateDate = DateTime.Now;           
+
             if (formFile != null)
             {
                 if (!_fileModelRepository.Get().Any(x => x.Name == formFile.FileName))
                 {
                     file.Name = formFile.FileName;
-                    file.FileTypeId = fileType;
-                    file.ProfileId = profileId;
+                    file.CodeECP = ecp;
                     await _addFilesOnServer.CreateFile(formFile);
                 }
-                return BadRequest("Файл с таким названием уже существует");
+                else
+                    return BadRequest("Файл с таким названием уже существует");
             }
 
             await _fileModelRepository.Update(file);

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Ifrastructure.Repository.InterfaceRepository;
 using DomainServices.DtoModels;
 using BasePersonDBService.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace EorDSU.Controllers
 {
@@ -147,9 +148,11 @@ namespace EorDSU.Controllers
         [HttpDelete]
         public async Task<ActionResult> DeleteUser(string id)
         {
-            User user = await _userManager.FindByIdAsync(id);
-            if (user != null)
-                await _userManager.DeleteAsync(user);
+            User user = _userManager.Users.Include(x => x.Faculty).FirstOrDefault(c => c.Id == id);
+            if (user == null)
+                return BadRequest("Пользователь не найден");
+
+            await _userManager.DeleteAsync(user);
             return Ok();
         }
     }

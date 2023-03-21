@@ -26,10 +26,10 @@ namespace Ifrastructure.Common
 
             #region Repositories
             services.AddScoped<IProfileRepository, ProfileRepository>();
-            services.AddScoped<IDisciplineRepository, DisciplineRepository>();
             services.AddScoped<IFileModelRepository, FileModelRepository>();
-            services.AddScoped<IDisciplineRepository, DisciplineRepository>();
+            services.AddScoped<IFileRPDRepository, FileRPDRepository>();
             services.AddScoped<IFileTypeRepository, FileTypeRepository>();
+            services.AddScoped<IDisciplineRepository, DisciplineRepository>();            
             services.AddScoped<IStatusDisciplineRepository, StatusDisciplineRepository>();
             services.AddScoped<ILevelEduRepository, LevelEduRepository>();
             services.AddScoped<IUmuAndFacultyRepository, UmuAndFacultyRepository>();
