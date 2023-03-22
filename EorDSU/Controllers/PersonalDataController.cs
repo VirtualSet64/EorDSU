@@ -1,4 +1,5 @@
 ﻿using BasePersonDBService.Interfaces;
+using DomainServices.DtoModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -55,8 +56,14 @@ namespace EorDSU.Controllers
         [HttpGet]
         public IActionResult GetPrepods()
         {
-            var prepods = _basePersonActiveData.GetPrepods().ToList().DistinctBy(x => x.IdСотрудника);
-            return Ok(prepods);
+            //var prepods = _basePersonActiveData.GetPrepods().ToList().DistinctBy(x => x.IdСотрудника);
+            var author = _basePersonActiveData.GetPrepods().ToList().DistinctBy(x => x.IdСотрудника).Select(x => new Author()
+            {
+                Id = x.IdСотрудника,
+                Fio = x.ФИО,
+                Kafedra = x.Кафедра
+            });
+            return Ok(author);
         }
     }
 }

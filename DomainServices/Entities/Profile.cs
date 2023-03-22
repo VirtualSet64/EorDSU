@@ -15,7 +15,7 @@
         /// </summary>
         public string? TermEdu { get; set; }
         /// <summary>
-        /// 
+        /// Год обучения
         /// </summary>
         public int? Year { get; set; }
         /// <summary>
@@ -26,6 +26,18 @@
         /// Ссылка на страницу с РПД
         /// </summary>
         public string? LinkToRPD { get; set; }
+        /// <summary>
+        /// Срок действия государственной аккредитации
+        /// </summary>
+        public string? ValidityPeriodOfStateAccreditasion { get; set; }
+        /// <summary>
+        /// Язык обучения
+        /// </summary>
+        public string? EducationLanguage { get; set; }
+        /// <summary>
+        /// Ссылка на дистанционное обучения
+        /// </summary>
+        public string? LinkToDistanceEducation { get; set; }
         /// <summary>
         /// Список дисциплин
         /// </summary>
