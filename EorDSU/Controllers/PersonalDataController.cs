@@ -52,11 +52,10 @@ namespace EorDSU.Controllers
         }
 
         [Authorize]
-        [Route("GetPrepods")]
+        [Route("GetAuthors")]
         [HttpGet]
-        public IActionResult GetPrepods()
+        public IActionResult GetAuthors()
         {
-            //var prepods = _basePersonActiveData.GetPrepods().ToList().DistinctBy(x => x.IdСотрудника);
             var author = _basePersonActiveData.GetPrepods().ToList().DistinctBy(x => x.IdСотрудника).Select(x => new Author()
             {
                 Id = x.IdСотрудника,

@@ -9,6 +9,7 @@ using Ifrastructure.Common;
 using EorDSU.Services.Interfaces;
 using EorDSU.Services;
 using EorDSU.Common;
+using EorDSU.eor;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +34,8 @@ builder.Services.AddCors(options =>
         });
 });
 
+builder.Services.AddDbContext<EORContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("BaseEor"), providerOptions => providerOptions.EnableRetryOnFailure()));
 builder.Services.AddDbContext<BASEPERSONMDFContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BasePerson"), providerOptions => providerOptions.EnableRetryOnFailure()));
 builder.Services.AddDbContext<DSUContext>(options =>

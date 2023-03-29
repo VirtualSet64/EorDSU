@@ -28,12 +28,11 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("CreateRPD")]
         [HttpPost]
-        public async Task<IActionResult> CreateRPD(IFormFile uploadedFile, int authorId, int disciplineId, string ecp)
+        public async Task<IActionResult> CreateRPD(IFormFile uploadedFile, int authorId, int disciplineId)
         {
             FileRPD fileRPD = new()
             {
                 DisciplineId = disciplineId,
-                CodeECP = ecp,
                 Name = uploadedFile.Name,
                 PersonId = authorId
             };
