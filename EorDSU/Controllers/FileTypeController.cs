@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace EorDSU.Controllers
 {
-    [Authorize(Roles ="admin")]
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class FileTypeController : Controller
@@ -24,6 +24,7 @@ namespace EorDSU.Controllers
             return Ok(_fileTypeRepository.Get());
         }
 
+        [Authorize(Roles = "admin")]
         [Route("CreateFileType")]
         [HttpPost]
         public async Task<IActionResult> CreateFileType(FileType fileType)
@@ -32,6 +33,7 @@ namespace EorDSU.Controllers
             return Ok();
         }
 
+        [Authorize(Roles = "admin")]
         [Route("EditFileType")]
         [HttpPut]
         public async Task<IActionResult> EditFileType(FileType fileType)
@@ -40,6 +42,7 @@ namespace EorDSU.Controllers
             return Ok();
         }
 
+        [Authorize(Roles = "admin")]
         [Route("DeleteFileType")]
         [HttpDelete]
         public async Task<IActionResult> DeleteFileType(int fileTypeId)
