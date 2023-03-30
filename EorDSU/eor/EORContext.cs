@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 
-namespace EorDSU.eor
+namespace SvedenOop.eor
 {
     public partial class EORContext : DbContext
     {

@@ -3,9 +3,9 @@ using Ifrastructure.Repository.InterfaceRepository;
 using DomainServices.DtoModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using EorDSU.Services.Interfaces;
+using SvedenOop.Services.Interfaces;
 
-namespace EorDSU.Controllers
+namespace SvedenOop.Controllers
 {
     [ApiController]
     [Route("[controller]")]

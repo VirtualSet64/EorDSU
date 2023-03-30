@@ -5,11 +5,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Sentry;
 using DomainServices.DBService;
-using Ifrastructure.Common;
-using EorDSU.Services.Interfaces;
-using EorDSU.Services;
-using EorDSU.Common;
-using EorDSU.eor;
+using SvedenOop.Common;
+using SvedenOop.eor;
 
 var builder = WebApplication.CreateBuilder(args);
 

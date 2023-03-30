@@ -8,7 +8,7 @@ using DomainServices.DtoModels;
 using Microsoft.EntityFrameworkCore;
 using DomainServices.DBService;
 
-namespace IfrastructureEorDSU.Repository
+namespace IfrastructureSvedenOop.Repository
 {
     public class ProfileRepository : GenericRepository<Profile>, IProfileRepository
     {

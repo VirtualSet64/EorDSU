@@ -8,7 +8,7 @@ using DomainServices.DtoModels;
 using BasePersonDBService.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace EorDSU.Controllers
+namespace SvedenOop.Controllers
 {
     [Authorize(Roles = "admin")]
     [ApiController]

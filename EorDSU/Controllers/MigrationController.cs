@@ -2,8 +2,8 @@
 using DomainServices.Entities;
 using DSUContextDBService.Interfaces;
 using DSUContextDBService.Models;
-using EorDSU.eor;
-using EorDSU.Services.Interfaces;
+using SvedenOop.eor;
+using SvedenOop.Services.Interfaces;
 using Ifrastructure.Interface;
 using Ifrastructure.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -14,7 +14,7 @@ using Newtonsoft.Json.Linq;
 using Sentry.Protocol;
 using Profile = DomainServices.Entities.Profile;
 
-namespace EorDSU.Controllers
+namespace SvedenOop.Controllers
 {
     [ApiController]
     [Route("[controller]")]

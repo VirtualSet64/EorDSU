@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace EorDSU.eor
+namespace SvedenOop.eor
 {
     public partial class Discipline
     {

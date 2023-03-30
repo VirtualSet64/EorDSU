@@ -1,4 +1,4 @@
-﻿namespace EorDSU.Services.Interfaces
+﻿namespace SvedenOop.Services.Interfaces
 {
     public interface IAddFileOnServer
     {
