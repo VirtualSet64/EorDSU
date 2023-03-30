@@ -7,6 +7,7 @@ using Ifrastructure.Repository.InterfaceRepository;
 using DomainServices.DtoModels;
 using BasePersonDBService.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using System.Data;
 
 namespace EorDSU.Controllers
 {
@@ -28,17 +29,19 @@ namespace EorDSU.Controllers
 
         [Route("GetUsers")]
         [HttpGet]
-        public IActionResult GetUsers()
+        public async Task<IActionResult> GetUsers()
         {
             List<FullInfoUserDto> dtoUsers = new();
             foreach (var item in _userManager.Users.ToList())
             {
+                var roles = await _userManager.GetRolesAsync(item);
                 dtoUsers.Add(new FullInfoUserDto()
                 {
                     User = item,
                     Department = _basePersonActiveData.GetPersDepartmentById(item.PersDepartmentId),
                     Faculties = _umuAndFacultyRepository.Get().Where(x => x.UserId == item.Id)
-                                                              .Select(c => _basePersonActiveData.GetPersDivisionById(c.FacultyId)).ToList()
+                                                              .Select(c => _basePersonActiveData.GetPersDivisionById(c.FacultyId)).ToList(),
+                    Role = roles.First()
                 });
             }
             return Ok(dtoUsers);
@@ -51,13 +54,14 @@ namespace EorDSU.Controllers
             User user = await _userManager.FindByIdAsync(id);
             if (user == null)
                 return BadRequest("Такой пользователь не найден");
-
+            var roles = await _userManager.GetRolesAsync(user);
             FullInfoUserDto model = new()
             {
                 User = user,
                 Department = _basePersonActiveData.GetPersDepartmentById(user.PersDepartmentId),
                 Faculties = _umuAndFacultyRepository.Get().Where(x => x.UserId == user.Id)
-                                                              .Select(c => _basePersonActiveData.GetPersDivisionById(c.FacultyId)).ToList()
+                                                              .Select(c => _basePersonActiveData.GetPersDivisionById(c.FacultyId)).ToList(),
+                Role = roles.First()
             };
             return Ok(model);
         }
@@ -123,8 +127,6 @@ namespace EorDSU.Controllers
                         await _userManager.AddToRolesAsync(user, addedRoles);
 
                         await _userManager.RemoveFromRolesAsync(user, removedRoles);
-
-                        return Ok();
                     }
                     var faculties = new List<UmuAndFaculty>();
                     foreach (var item in model.Faculties)
