@@ -1,11 +1,11 @@
 ﻿using DomainServices.DtoModels;
 using DomainServices.Entities;
-using EorDSU.Services.Interfaces;
+using SvedenOop.Services.Interfaces;
 using Ifrastructure.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EorDSU.Controllers
+namespace SvedenOop.Controllers
 {
     [Authorize]
     [ApiController]
@@ -28,12 +28,11 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("CreateRPD")]
         [HttpPost]
-        public async Task<IActionResult> CreateRPD(IFormFile uploadedFile, int authorId, int disciplineId, string ecp)
+        public async Task<IActionResult> CreateRPD(IFormFile uploadedFile, int authorId, int disciplineId)
         {
             FileRPD fileRPD = new()
             {
                 DisciplineId = disciplineId,
-                CodeECP = ecp,
                 Name = uploadedFile.Name,
                 PersonId = authorId
             };

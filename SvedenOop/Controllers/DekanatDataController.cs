@@ -3,7 +3,7 @@ using DSUContextDBService.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace EorDSU.Controllers
+namespace SvedenOop.Controllers
 {
     [ApiController]
     [Route("[controller]")]

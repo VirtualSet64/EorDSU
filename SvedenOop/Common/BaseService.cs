@@ -7,11 +7,11 @@ using Ifrastructure.Repository.InterfaceRepository;
 using Ifrastructure.Interface;
 using Ifrastructure.Service;
 using Ifrastructure.Services.Interface;
-using IfrastructureEorDSU.Repository;
-using EorDSU.Services.Interfaces;
-using EorDSU.Services;
+using IfrastructureSvedenOop.Repository;
+using SvedenOop.Services.Interfaces;
+using SvedenOop.Services;
 
-namespace Ifrastructure.Common
+namespace SvedenOop.Common
 {
     public static class BaseService
     {

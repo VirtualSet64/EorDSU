@@ -9,7 +9,7 @@ using BasePersonDBService.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 
-namespace EorDSU.Controllers
+namespace SvedenOop.Controllers
 {
     [Authorize(Roles = "admin")]
     [ApiController]

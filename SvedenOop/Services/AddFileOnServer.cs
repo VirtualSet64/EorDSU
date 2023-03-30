@@ -1,6 +1,6 @@
-﻿using EorDSU.Services.Interfaces;
+﻿using SvedenOop.Services.Interfaces;
 
-namespace EorDSU.Services
+namespace SvedenOop.Services
 {
     public class AddFileOnServer : IAddFileOnServer
     {

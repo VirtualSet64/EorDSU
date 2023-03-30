@@ -2,7 +2,7 @@
 using Sentry;
 using System.Net;
 
-namespace EorDSU.Common
+namespace SvedenOop.Common
 {
     public static class ExceptionMiddliwareExtension
     {

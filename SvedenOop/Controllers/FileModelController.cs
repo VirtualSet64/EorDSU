@@ -1,11 +1,11 @@
 ﻿using DomainServices.DtoModels;
 using DomainServices.Entities;
-using EorDSU.Services.Interfaces;
+using SvedenOop.Services.Interfaces;
 using Ifrastructure.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EorDSU.Controllers
+namespace SvedenOop.Controllers
 {
     [Authorize]
     [ApiController]
@@ -33,7 +33,7 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("CreateFileModel")]
         [HttpPost]
-        public async Task<IActionResult> CreateFileModel(IFormFile formFile, int fileId, string fileName, int fileType, int profileId, string ecp)
+        public async Task<IActionResult> CreateFileModel(IFormFile formFile, int fileId, string fileName, int fileType, int profileId)
         {
             FileModel uploadFile = new()
             {
@@ -42,7 +42,6 @@ namespace EorDSU.Controllers
                 OutputFileName = fileName,
                 FileTypeId = fileType,
                 ProfileId = profileId,
-                CodeECP = ecp,
             };
             if (!_fileModelRepository.Get().Any(x => x.Name == formFile.Name))
             {
@@ -58,12 +57,11 @@ namespace EorDSU.Controllers
         /// </summary>
         /// <param name="fileId"></param>
         /// <param name="fileName"></param>
-        /// <param name="ecp"></param>
         /// <param name="formFile"></param>
         /// <returns></returns>
         [Route("EditFileModel")]
         [HttpPut]
-        public async Task<IActionResult> EditFile(int fileId, string fileName, string? ecp, IFormFile? formFile)
+        public async Task<IActionResult> EditFile(int fileId, string fileName, IFormFile? formFile)
         {
             FileModel file = _fileModelRepository.FindById(fileId);
             if (file == null)
@@ -77,7 +75,7 @@ namespace EorDSU.Controllers
                 if (!_fileModelRepository.Get().Any(x => x.Name == formFile.FileName))
                 {
                     file.Name = formFile.FileName;
-                    file.CodeECP = ecp;
+                    file.CodeECP = Guid.NewGuid().ToString().ToUpper();
                     await _addFilesOnServer.CreateFile(formFile);
                 }
                 else

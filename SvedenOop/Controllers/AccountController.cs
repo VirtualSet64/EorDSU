@@ -6,7 +6,7 @@ using DomainServices.DtoModels;
 using BasePersonDBService.Interfaces;
 using Ifrastructure.Repository.InterfaceRepository;
 
-namespace EorDSU.Controllers
+namespace SvedenOop.Controllers
 {
     [ApiController]
     [Route("[controller]")]
