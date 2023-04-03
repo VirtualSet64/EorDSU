@@ -4,6 +4,7 @@ using DomainServices.DtoModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SvedenOop.Services.Interfaces;
+using Ifrastructure.Repository;
 
 namespace SvedenOop.Controllers
 {
@@ -15,11 +16,11 @@ namespace SvedenOop.Controllers
         private readonly IDisciplineRepository _disciplineRepository;
         private readonly IAddFileOnServer _addFileOnServer;
 
-        public ProfilesController(IProfileRepository profileRepository, IDisciplineRepository disciplineRepository, IAddFileOnServer addFileOnServer)
+        public ProfilesController(IProfileRepository profileRepository, IAddFileOnServer addFileOnServer, IDisciplineRepository disciplineRepository)
         {
             _profileRepository = profileRepository;
-            _disciplineRepository = disciplineRepository;
             _addFileOnServer = addFileOnServer;
+            _disciplineRepository = disciplineRepository;
         }
 
         /// <summary>
@@ -31,7 +32,7 @@ namespace SvedenOop.Controllers
         public async Task<IActionResult> GetData()
         {
             var profileDto = await _profileRepository.GetData();
-            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.GetDisciplinesByProfileId(x.Profile.Id).Disciplines?.Where(x => x.Code?.Contains("Б2") == true).ToList());
+            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
             return Ok(profileDto);
         }
 
@@ -45,7 +46,7 @@ namespace SvedenOop.Controllers
         public async Task<IActionResult> GetDataByKafedraId(int kafedraId)
         {
             var profileDto = await _profileRepository.GetDataByKafedraId(kafedraId);
-            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.GetDisciplinesByProfileId(x.Profile.Id).Disciplines?.Where(x => x.Code?.Contains("Б2") == true).ToList());
+            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
             return Ok(profileDto);
         }
 
@@ -59,7 +60,7 @@ namespace SvedenOop.Controllers
         public async Task<IActionResult> GetDataByFacultyId(int facultyId)
         {
             var profileDto = await _profileRepository.GetDataByFacultyId(facultyId);
-            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.GetDisciplinesByProfileId(x.Profile.Id).Disciplines?.Where(x => x.Code?.Contains("Б2") == true).ToList());
+            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
             return Ok(profileDto);
         }
 

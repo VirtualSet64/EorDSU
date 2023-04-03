@@ -1,4 +1,7 @@
-﻿namespace DSUContextDBService.Models
+﻿using System;
+using System.Collections.Generic;
+
+namespace DSUContextDBService.Models
 {
     public partial class CaseSDepartment
     {
@@ -8,7 +11,6 @@
         public string? Abr { get; set; }
         public string? Code { get; set; }
         public string? Qualification { get; set; }
-        public string? Godequalif { get; set; }
         public bool Deleted { get; set; }
     }
 }

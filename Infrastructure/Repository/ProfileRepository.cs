@@ -12,14 +12,12 @@ namespace IfrastructureSvedenOop.Repository
 {
     public class ProfileRepository : GenericRepository<Profile>, IProfileRepository
     {
-        private readonly IBasePersonActiveData _basePersonActiveData;
         private readonly IDSUActiveData _dSUActiveData;
         private readonly IExcelParsingService _excelParsingService;
 
-        public ProfileRepository(ApplicationContext dbContext, IBasePersonActiveData basePersonActiveData, IDSUActiveData dSUActiveData, IExcelParsingService excelParsingService)
+        public ProfileRepository(ApplicationContext dbContext, IDSUActiveData dSUActiveData, IExcelParsingService excelParsingService)
             : base(dbContext)
         {
-            _basePersonActiveData = basePersonActiveData;
             _dSUActiveData = dSUActiveData;
             _excelParsingService = excelParsingService;
         }
@@ -27,7 +25,7 @@ namespace IfrastructureSvedenOop.Repository
         public async Task<List<DataForTableResponse>> GetData()
         {
             List<DataForTableResponse> dataForTableResponse = new();
-            foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.Disciplines).ToListAsync())
+            foreach (var item in GetWithInclude(x => x.LevelEdu, x => x.FileModels))
             {
                 FillingData(dataForTableResponse, item);
             }
@@ -38,7 +36,7 @@ namespace IfrastructureSvedenOop.Repository
         {
             List<DataForTableResponse> dataForTableResponse = new();
 
-            foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.Disciplines).Where(x => x.PersDepartmentId == kafedraId).ToListAsync())
+            foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels).Where(x => x.PersDepartmentId == kafedraId).ToListAsync())
             {
                 FillingData(dataForTableResponse, item);
             }
@@ -49,11 +47,11 @@ namespace IfrastructureSvedenOop.Repository
         {
             List<DataForTableResponse> dataForTableResponse = new();
 
-            var persDepartments = await _basePersonActiveData.GetPersDepartments().Where(x => x.DivId == facultyId).ToListAsync();
+            var caseSDepartments = await _dSUActiveData.GetCaseSDepartmentByFacultyId(facultyId).ToListAsync();
 
-            foreach (var persDepartment in persDepartments)
+            foreach (var caseSDepartment in caseSDepartments)
             {
-                foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.Disciplines).Where(x => x.PersDepartmentId == persDepartment.DepId).ToListAsync())
+                foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels).Where(x => x.CaseSDepartmentId == caseSDepartment.DepartmentId).ToListAsync())
                 {
                     FillingData(dataForTableResponse, item);
                 }
@@ -68,7 +66,6 @@ namespace IfrastructureSvedenOop.Repository
                 Profile = item,
                 CaseCEdukind = item.CaseCEdukindId == null ? null : _dSUActiveData.GetCaseCEdukindById((int)item.CaseCEdukindId),
                 CaseSDepartment = item.CaseSDepartmentId == null ? null : _dSUActiveData.GetCaseSDepartmentById((int)item.CaseSDepartmentId),
-                Disciplines = item.Disciplines.Where(x => x.Code?.Contains("Б2") == true).ToList()
             });
         }
 
@@ -85,7 +82,7 @@ namespace IfrastructureSvedenOop.Repository
 
         public Profile GetProfileById(int id)
         {
-            return GetWithIncludeById(x => x.Id == id, x => x.Disciplines, x => x.FileModels, x => x.LevelEdu);
+            return GetWithIncludeById(x => x.Id == id, x => x.LevelEdu, x => x.Disciplines, x => x.FileModels);
         }
 
         public async Task<DataResponseForSvedenOOPDGU> ParsingProfileByFile(string path)

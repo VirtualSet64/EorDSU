@@ -20,7 +20,7 @@ namespace Ifrastructure.Service
             _fileTypeRepository = fileTypeRepository;
         }
 
-        public async Task<short?> SearchEdukind(string text)
+        public async Task<int?> SearchEdukind(string text)
         {
             var item = await _dSUActiveData.GetCaseCEdukinds().FirstOrDefaultAsync(c => c.Edukind.ToLower() == text.ToLower());
             if (item != null)

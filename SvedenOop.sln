@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.3.32922.545
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SvedenOop", "EorDSU\SvedenOop.csproj", "{453681D9-CD86-4FA4-9C69-271723B61243}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BasePersonDBService", "BasePersonDBService\BasePersonDBService.csproj", "{06948BFA-9E2D-40E7-AAF7-81CE03F64C01}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DSUContextDBService", "DSUContextDBService\DSUContextDBService.csproj", "{B3B95B5D-D49D-424F-AAF1-1C1CA3F4C8EF}"
@@ -13,7 +11,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DomainServices", "DomainSer
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{30D27F2A-E423-4C7F-857B-FEA99FC9AD57}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SvedenOop", "SvedenOop\SvedenOop.csproj", "{5B867FBE-7D96-48CD-8BB6-63D2A6CBE61C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SvedenOop", "SvedenOop\SvedenOop.csproj", "{89AB7804-1629-4A10-A442-92D18DFE9FB2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,10 +35,10 @@ Global
 		{30D27F2A-E423-4C7F-857B-FEA99FC9AD57}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{30D27F2A-E423-4C7F-857B-FEA99FC9AD57}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{30D27F2A-E423-4C7F-857B-FEA99FC9AD57}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5B867FBE-7D96-48CD-8BB6-63D2A6CBE61C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5B867FBE-7D96-48CD-8BB6-63D2A6CBE61C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5B867FBE-7D96-48CD-8BB6-63D2A6CBE61C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5B867FBE-7D96-48CD-8BB6-63D2A6CBE61C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89AB7804-1629-4A10-A442-92D18DFE9FB2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89AB7804-1629-4A10-A442-92D18DFE9FB2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89AB7804-1629-4A10-A442-92D18DFE9FB2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89AB7804-1629-4A10-A442-92D18DFE9FB2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
