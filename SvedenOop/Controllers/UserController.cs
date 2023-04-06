@@ -128,17 +128,20 @@ namespace SvedenOop.Controllers
 
                         await _userManager.RemoveFromRolesAsync(user, removedRoles);
                     }
-                    var faculties = new List<UmuAndFaculty>();
-                    foreach (var item in model.Faculties)
+                    if (model.Faculties != null && model.Faculties.Count != 0)
                     {
-                        faculties.Add(new UmuAndFaculty()
+                        var faculties = new List<UmuAndFaculty>();
+                        foreach (var item in model.Faculties)
                         {
-                            FacultyId = item,
-                            UserId = user.Id,
-                        });
+                            faculties.Add(new UmuAndFaculty()
+                            {
+                                FacultyId = item,
+                                UserId = user.Id,
+                            });
+                        }
+                        await _umuAndFacultyRepository.CreateRange(faculties);
                     }
                     var result = await _userManager.UpdateAsync(user);
-                    await _umuAndFacultyRepository.CreateRange(faculties);
                     if (result.Succeeded)
                         return Ok();
                 }

@@ -41,7 +41,7 @@ namespace SvedenOop.Controllers
         /// </summary>
         /// <param name="kafedraId"></param>
         /// <returns></returns>
-        [Route("GetDataById")]
+        [Route("GetDataByKafedraId")]
         [HttpGet]
         public async Task<IActionResult> GetDataByKafedraId(int kafedraId)
         {

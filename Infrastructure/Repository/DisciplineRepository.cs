@@ -32,18 +32,18 @@ namespace Ifrastructure.Repository
             return responseForDiscipline;
         }
 
-        public async Task<List<Discipline>> GetRemovableDiscipline(int facultyId)
-        {
-            var profiles = await _profileRepository.GetProfileByFacultyId(facultyId);
+        //public async Task<List<Discipline>> GetRemovableDiscipline(int facultyId)
+        //{
+        //    var profiles = await _profileRepository.GetProfileByFacultyId(facultyId);
 
-            var disciplines = Get().Where(c => c.IsDeletionRequest).ToList();
-            List<Discipline> removableDisciplines = new();
-            foreach (var item in profiles)
-            {
-                removableDisciplines.AddRange(disciplines.Where(x => item.Id == x.ProfileId));
-            }
-            return removableDisciplines;
-        }
+        //    var disciplines = Get().Where(c => c.IsDeletionRequest).ToList();
+        //    List<Discipline> removableDisciplines = new();
+        //    foreach (var item in profiles)
+        //    {
+        //        removableDisciplines.AddRange(disciplines.Where(x => item.Id == x.ProfileId));
+        //    }
+        //    return removableDisciplines;
+        //}
 
         public Discipline GetDisciplinesById(int id)
         {

@@ -8,6 +8,10 @@ namespace DomainServices.DBService
     {
         public static async Task InitializeAsync(List<LoginViewModel> employees, UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
         {
+            if (await roleManager.FindByNameAsync("methodist") == null)
+            {
+                await roleManager.CreateAsync(new IdentityRole("methodist"));
+            }
             foreach (var employee in employees)
             {
                 if (await roleManager.FindByNameAsync(employee.Login) == null)

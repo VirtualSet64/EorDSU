@@ -27,7 +27,7 @@ namespace IfrastructureSvedenOop.Repository
             List<DataForTableResponse> dataForTableResponse = new();
             foreach (var item in GetWithInclude(x => x.LevelEdu, x => x.FileModels))
             {
-                FillingData(dataForTableResponse, item);
+                FillingData(ref dataForTableResponse, item);
             }
             return dataForTableResponse;
         }
@@ -36,9 +36,9 @@ namespace IfrastructureSvedenOop.Repository
         {
             List<DataForTableResponse> dataForTableResponse = new();
 
-            foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels).Where(x => x.PersDepartmentId == kafedraId).ToListAsync())
+            foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels).Where(x => x.ListPersDepartmentsId.Any(c => c.PersDepartmentId == kafedraId)).ToListAsync())
             {
-                FillingData(dataForTableResponse, item);
+                FillingData(ref dataForTableResponse, item);
             }
             return dataForTableResponse;
         }
@@ -53,13 +53,13 @@ namespace IfrastructureSvedenOop.Repository
             {
                 foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels).Where(x => x.CaseSDepartmentId == caseSDepartment.DepartmentId).ToListAsync())
                 {
-                    FillingData(dataForTableResponse, item);
+                    FillingData(ref dataForTableResponse, item);
                 }
             }
             return dataForTableResponse;
         }
 
-        private void FillingData(List<DataForTableResponse> dataForTableResponse, Profile item)
+        private void FillingData(ref List<DataForTableResponse> dataForTableResponse, Profile item)
         {
             dataForTableResponse.Add(new()
             {

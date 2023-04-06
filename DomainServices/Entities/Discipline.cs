@@ -13,8 +13,8 @@
         public StatusDiscipline? StatusDiscipline { get; set; }
         public string? Code { get; set; }
         public FileRPD? FileRPD { get; set; }
-        public DateTime CreateDate { get; set; } = DateTime.Now;
-        public DateTime UpdateDate { get; set; }
+        public DateTime? CreateDate { get; set; } = DateTime.Now;
+        public DateTime? UpdateDate { get; set; }
         public bool IsDeletionRequest { get; set; }
     }
 }

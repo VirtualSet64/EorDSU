@@ -15,6 +15,7 @@ namespace DomainServices.DBService
         public DbSet<LevelEdu> LevelEdues { get; set; } = null!;
         public DbSet<StatusDiscipline> StatusDisciplines { get; set; } = null!;
         public DbSet<UmuAndFaculty> UmuAndFaculties { get; set; } = null!;
+        public DbSet<ProfileKafedras> ProfileKafedras { get; set; } = null!;
 
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)
@@ -48,6 +49,11 @@ namespace DomainServices.DBService
             modelBuilder.Entity<UmuAndFaculty>()
                 .HasOne(p => p.User)
                 .WithMany(t => t.Faculty)
+                .OnDelete(DeleteBehavior.ClientCascade);
+
+            modelBuilder.Entity<ProfileKafedras>()
+                .HasOne(p => p.Profile)
+                .WithMany(t => t.ListPersDepartmentsId)
                 .OnDelete(DeleteBehavior.ClientCascade);
 
             base.OnModelCreating(modelBuilder);

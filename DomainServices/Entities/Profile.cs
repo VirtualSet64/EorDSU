@@ -66,14 +66,14 @@
         /// <summary>
         /// Id кафедры
         /// </summary>
-        public int? PersDepartmentId { get; set; }
+        public List<ProfileKafedras>? ListPersDepartmentsId { get; set; }
         /// <summary>
         /// Дата создания
         /// </summary>
-        public DateTime CreateDate { get; set; } = DateTime.Now;
+        public DateTime? CreateDate { get; set; } = DateTime.Now;
         /// <summary>
         /// Дата последнего обновления
         /// </summary>
-        public DateTime UpdateDate { get; set; }
+        public DateTime? UpdateDate { get; set; }
     }
 }

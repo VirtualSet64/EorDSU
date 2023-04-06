@@ -13,6 +13,8 @@ using Microsoft.Office.Interop.Excel;
 using Newtonsoft.Json.Linq;
 using Sentry.Protocol;
 using Profile = DomainServices.Entities.Profile;
+using Infrastructure.Repository.InterfaceRepository;
+using Infrastructure.Repository;
 
 namespace SvedenOop.Controllers
 {
@@ -21,17 +23,19 @@ namespace SvedenOop.Controllers
     public class MigrationController : Controller
     {
         private readonly IProfileRepository _profileRepository;
+        private readonly IProfileKafedrasRepository _profileKafedrasRepository;
         private readonly IDisciplineRepository _disciplineRepository;
         private readonly IStatusDisciplineRepository _statusDisciplineRepository;
         private readonly ISearchEntityService _searchEntityService;
         private readonly EORContext _eORContext;
 
         public MigrationController(IProfileRepository profileRepository, IDisciplineRepository disciplineRepository, IStatusDisciplineRepository statusDisciplineRepository,
-                                   ISearchEntityService searchEntityService, EORContext eORContext)
+                                   IProfileKafedrasRepository profileKafedrasRepository, ISearchEntityService searchEntityService, EORContext eORContext)
         {
             _profileRepository = profileRepository;
             _disciplineRepository = disciplineRepository;
             _statusDisciplineRepository = statusDisciplineRepository;
+            _profileKafedrasRepository = profileKafedrasRepository;
             _searchEntityService = searchEntityService;
             _eORContext = eORContext;
         }
@@ -347,49 +351,42 @@ namespace SvedenOop.Controllers
         [HttpGet]
         public async Task<IActionResult> MigrationDisciplines()
         {
-            var profilesFromEor = await _eORContext.Profiles.Include(x => x.Disciplines).ThenInclude(s => s.Educators)
-                                                      .Include(x => x.Disciplines).ThenInclude(c => c.Status).ToListAsync();
-            var profilesFromDb = _profileRepository.Get();
+            var profilesFromEor = await _eORContext.Profiles.Include(x => x.Umks).ToListAsync();
+            //.Include(x => x.Disciplines).ThenInclude(s => s.Educators)
+            //                                      .Include(x => x.Disciplines).ThenInclude(c => c.Status).ToListAsync();
+
+            //var profilesFromDb = _profileRepository.Get();
 
             var disciplinesFromDb = new List<DomainServices.Entities.Discipline>();
-
-            var statusDisciplineFromEor = _eORContext.Statuses.ToList();
-
-            List<StatusDiscipline> statusDisciplines = new();
-
-            foreach (var item in statusDisciplineFromEor)
-            {
-                statusDisciplines.Add(new StatusDiscipline()
-                {
-                    Name = item.Name,
-                });
-            }
-            await _statusDisciplineRepository.CreateRange(statusDisciplines);
-
-            List<Profile> profiles = new();
             int count = 0;
             try
             {
-                foreach (var item in profilesFromEor)
+                foreach (var profiles in profilesFromEor)
                 {
                     count++;
-                    profiles = await profilesFromDb.Where(x => x.EorId == item.Id).ToListAsync();
-                    foreach (var profile in profiles)
+                    if (profiles.Umks.Count > 0)
                     {
-                        foreach (var discipline in item.Disciplines)
+                        var umks = profiles.Umks;
+                        var profilesFromDb = _profileRepository.Get().Where(x => x.EorId == umks.First().ProfileId);
+                        foreach (var item in profilesFromDb)
                         {
-                            disciplinesFromDb.Add(new DomainServices.Entities.Discipline()
+                            var profileKafedras = umks.DistinctBy(c=>c.CathId).Select(x => new ProfileKafedras()
                             {
-                                DisciplineName = discipline.DisciplineName,
-                                Code = discipline.Status.Abr,
-                                ProfileId = profile.Id,
-                                FileRPD = new FileRPD()
-                                {
-                                    Name = discipline.Link,
-                                    PersonId = discipline.Educators.Count == 0 ? null : discipline.Educators.First().PersonId
-                                },
-                                StatusDisciplineId = discipline.StatusId
-                            });
+                                PersDepartmentId = (int)x.CathId,
+                                ProfileId = item.Id
+                            }).ToList();
+                            item.CaseSDepartmentId = umks.First().DeptId;
+                            await _profileKafedrasRepository.CreateRange(profileKafedras);
+                            await _profileRepository.Update(item);
+                        }
+                    }
+                    else
+                    {
+                        var profilesFromDb = _profileRepository.Get().Where(x => x.EorId == profiles.Id);
+                        foreach (var item in profilesFromDb)
+                        {
+                            item.CaseSDepartmentId = profiles.DeptId;
+                            await _profileRepository.Update(item);
                         }
                     }
                 }
@@ -398,7 +395,53 @@ namespace SvedenOop.Controllers
             {
                 throw;
             }
-            await _disciplineRepository.CreateRange(disciplinesFromDb);
+
+            //var statusDisciplineFromEor = _eORContext.Statuses.ToList();
+
+            //List<StatusDiscipline> statusDisciplines = new();
+
+            //foreach (var item in statusDisciplineFromEor)
+            //{
+            //    statusDisciplines.Add(new StatusDiscipline()
+            //    {
+            //        Name = item.Name,
+            //    });
+            //}
+            //await _statusDisciplineRepository.CreateRange(statusDisciplines);
+
+            //List<Profile> profiles = new();
+            //int count = 0;
+            //try
+            //{
+            //    foreach (var item in profilesFromEor)
+            //    {
+            //        count++;
+            //        profiles = await profilesFromDb.Where(x => x.EorId == item.Id).ToListAsync();
+            //        foreach (var profile in profiles)
+            //        {
+            //            foreach (var discipline in item.Disciplines)
+            //            {
+            //                disciplinesFromDb.Add(new DomainServices.Entities.Discipline()
+            //                {
+            //                    DisciplineName = discipline.DisciplineName,
+            //                    Code = discipline.Status.Abr,
+            //                    ProfileId = profile.Id,
+            //                    FileRPD = new FileRPD()
+            //                    {
+            //                        Name = discipline.Link,
+            //                        PersonId = discipline.Educators.Count == 0 ? null : discipline.Educators.First().PersonId
+            //                    },
+            //                    StatusDisciplineId = discipline.StatusId
+            //                });
+            //            }
+            //        }
+            //    }
+            //}
+            //catch (Exception ex)
+            //{
+            //    throw;
+            //}
+            //await _disciplineRepository.CreateRange(disciplinesFromDb);
             return Ok();
         }
     }

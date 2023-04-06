@@ -10,6 +10,8 @@ using Ifrastructure.Services.Interface;
 using IfrastructureSvedenOop.Repository;
 using SvedenOop.Services.Interfaces;
 using SvedenOop.Services;
+using Infrastructure.Repository.InterfaceRepository;
+using Infrastructure.Repository;
 
 namespace SvedenOop.Common
 {
@@ -33,6 +35,7 @@ namespace SvedenOop.Common
             services.AddScoped<IStatusDisciplineRepository, StatusDisciplineRepository>();
             services.AddScoped<ILevelEduRepository, LevelEduRepository>();
             services.AddScoped<IUmuAndFacultyRepository, UmuAndFacultyRepository>();
+            services.AddScoped<IProfileKafedrasRepository, ProfileKafedrasRepository>();
             #endregion
         }
     }

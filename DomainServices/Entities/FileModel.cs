@@ -17,7 +17,7 @@
         public string? CodeECP { get; set; } = Guid.NewGuid().ToString().ToUpper();
         public int? FileTypeId { get; set; }
         public FileType? FileType { get; set; }
-        public DateTime CreateDate { get; set; } = DateTime.Now;
-        public DateTime UpdateDate { get; set; }
+        public DateTime? CreateDate { get; set; } = DateTime.Now;
+        public DateTime? UpdateDate { get; set; }
     }
 }
