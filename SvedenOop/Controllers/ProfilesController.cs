@@ -4,6 +4,7 @@ using DomainServices.DtoModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SvedenOop.Services.Interfaces;
+using Infrastructure.Repository.InterfaceRepository;
 
 namespace SvedenOop.Controllers
 {
@@ -13,13 +14,15 @@ namespace SvedenOop.Controllers
     {
         private readonly IProfileRepository _profileRepository;
         private readonly IDisciplineRepository _disciplineRepository;
+        private readonly IProfileKafedrasRepository _profileKafedrasRepository;
         private readonly IAddFileOnServer _addFileOnServer;
 
-        public ProfilesController(IProfileRepository profileRepository, IAddFileOnServer addFileOnServer, IDisciplineRepository disciplineRepository)
+        public ProfilesController(IProfileRepository profileRepository, IDisciplineRepository disciplineRepository, IProfileKafedrasRepository profileKafedrasRepository, IAddFileOnServer addFileOnServer)
         {
             _profileRepository = profileRepository;
-            _addFileOnServer = addFileOnServer;
             _disciplineRepository = disciplineRepository;
+            _profileKafedrasRepository = profileKafedrasRepository;
+            _addFileOnServer = addFileOnServer;
         }
 
         /// <summary>
@@ -134,6 +137,16 @@ namespace SvedenOop.Controllers
                 return BadRequest("Ошибка передачи профиля");
 
             profile.UpdateDate = DateTime.Now;
+
+            var profileKafedras = _profileKafedrasRepository.Get();
+            if (profile.ListPersDepartmentsId != null)
+            {
+                foreach (var item in profile.ListPersDepartmentsId)
+                {
+                    if (!profileKafedras.Any(x => x.PersDepartmentId == item.PersDepartmentId && x.ProfileId == item.ProfileId))
+                        await _profileKafedrasRepository.Create(item);
+                }
+            }
             await _profileRepository.Update(profile);
             return Ok();
         }

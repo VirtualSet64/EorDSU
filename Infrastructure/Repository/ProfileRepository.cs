@@ -81,7 +81,7 @@ namespace IfrastructureSvedenOop.Repository
 
         public Profile GetProfileById(int id)
         {
-            return GetWithIncludeById(x => x.Id == id, x => x.LevelEdu, x => x.Disciplines, x => x.FileModels);
+            return GetWithIncludeById(x => x.Id == id, x => x.LevelEdu, x => x.Disciplines, x => x.FileModels, x => x.ListPersDepartmentsId);
         }
 
         public async Task<DataResponseForSvedenOOPDGU> ParsingProfileByFile(string path)
