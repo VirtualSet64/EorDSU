@@ -2,7 +2,6 @@
 using DomainServices.Entities;
 using Ifrastructure.Repository.InterfaceRepository;
 using DomainServices.DBService;
-using DomainServices.DtoModels;
 
 namespace Ifrastructure.Repository
 {

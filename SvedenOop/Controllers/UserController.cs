@@ -153,7 +153,7 @@ namespace SvedenOop.Controllers
         [HttpDelete]
         public async Task<ActionResult> DeleteUser(string id)
         {
-            User user = _userManager.Users.Include(x => x.Faculty).FirstOrDefault(c => c.Id == id);
+            var user = _userManager.Users.Include(x => x.Faculty).FirstOrDefault(c => c.Id == id);
             if (user == null)
                 return BadRequest("Пользователь не найден");
 

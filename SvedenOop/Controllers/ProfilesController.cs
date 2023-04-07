@@ -4,7 +4,6 @@ using DomainServices.DtoModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SvedenOop.Services.Interfaces;
-using Ifrastructure.Repository;
 
 namespace SvedenOop.Controllers
 {
@@ -29,9 +28,9 @@ namespace SvedenOop.Controllers
         /// <returns></returns>
         [Route("GetData")]
         [HttpGet]
-        public async Task<IActionResult> GetData()
+        public IActionResult GetData()
         {
-            var profileDto = await _profileRepository.GetData();
+            var profileDto = _profileRepository.GetData();
             profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
             return Ok(profileDto);
         }
@@ -43,9 +42,9 @@ namespace SvedenOop.Controllers
         /// <returns></returns>
         [Route("GetDataByKafedraId")]
         [HttpGet]
-        public async Task<IActionResult> GetDataByKafedraId(int kafedraId)
+        public IActionResult GetDataByKafedraId(int kafedraId)
         {
-            var profileDto = await _profileRepository.GetDataByKafedraId(kafedraId);
+            var profileDto = _profileRepository.GetDataByKafedraId(kafedraId);
             profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
             return Ok(profileDto);
         }
@@ -57,9 +56,9 @@ namespace SvedenOop.Controllers
         /// <returns></returns>
         [Route("GetDataFacultyById")]
         [HttpGet]
-        public async Task<IActionResult> GetDataByFacultyId(int facultyId)
+        public IActionResult GetDataByFacultyId(int facultyId)
         {
-            var profileDto = await _profileRepository.GetDataByFacultyId(facultyId);
+            var profileDto = _profileRepository.GetDataByFacultyId(facultyId);
             profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
             return Ok(profileDto);
         }
@@ -103,7 +102,7 @@ namespace SvedenOop.Controllers
         }
 
         /// <summary>
-        /// Создание профиля
+        /// Парсинг учебного плана для получения данных профиля
         /// </summary>
         /// <param name="uploadedFile"></param>
         /// <returns></returns>

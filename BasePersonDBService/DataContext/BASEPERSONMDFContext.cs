@@ -5,10 +5,6 @@ namespace BasePersonDBService.DataContext
 {
     public partial class BASEPERSONMDFContext : DbContext
     {
-        public BASEPERSONMDFContext()
-        {
-        }
-
         public BASEPERSONMDFContext(DbContextOptions<BASEPERSONMDFContext> options)
             : base(options)
         {

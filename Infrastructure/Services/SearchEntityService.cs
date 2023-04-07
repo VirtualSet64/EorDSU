@@ -1,5 +1,5 @@
 ﻿using DSUContextDBService.Interfaces;
-using Ifrastructure.Interface;
+using Ifrastructure.Services.Interface;
 using DomainServices.Entities;
 using Ifrastructure.Repository.InterfaceRepository;
 using Microsoft.EntityFrameworkCore;

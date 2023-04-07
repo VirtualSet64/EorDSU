@@ -1,5 +1,4 @@
-﻿using BasePersonDBService.Interfaces;
-using DSUContextDBService.Interfaces;
+﻿using DSUContextDBService.Interfaces;
 using Ifrastructure.Common;
 using DomainServices.Entities;
 using Ifrastructure.Repository.InterfaceRepository;
@@ -22,51 +21,51 @@ namespace IfrastructureSvedenOop.Repository
             _excelParsingService = excelParsingService;
         }
 
-        public async Task<List<DataForTableResponse>> GetData()
+        public List<DataForTableResponse> GetData()
         {
             List<DataForTableResponse> dataForTableResponse = new();
-            foreach (var item in GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.ListPersDepartmentsId))
-            {
-                FillingData(ref dataForTableResponse, item);
-            }
+            var profiles = GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.ListPersDepartmentsId);
+
+            FillingData(ref dataForTableResponse, ref profiles);
             return dataForTableResponse;
         }
 
-        public async Task<List<DataForTableResponse>> GetDataByKafedraId(int kafedraId)
+        public List<DataForTableResponse> GetDataByKafedraId(int kafedraId)
         {
             List<DataForTableResponse> dataForTableResponse = new();
+            var profiles = GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.ListPersDepartmentsId).Where(x => x.ListPersDepartmentsId.Any(c => c.PersDepartmentId == kafedraId));
 
-            foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.ListPersDepartmentsId).Where(x => x.ListPersDepartmentsId.Any(c => c.PersDepartmentId == kafedraId)).ToListAsync())
-            {
-                FillingData(ref dataForTableResponse, item);
-            }
+            FillingData(ref dataForTableResponse, ref profiles);
             return dataForTableResponse;
         }
 
-        public async Task<List<DataForTableResponse>> GetDataByFacultyId(int facultyId)
+        public List<DataForTableResponse> GetDataByFacultyId(int facultyId)
         {
             List<DataForTableResponse> dataForTableResponse = new();
-
-            var caseSDepartments = await _dSUActiveData.GetCaseSDepartmentByFacultyId(facultyId).ToListAsync();
+            var caseSDepartments = _dSUActiveData.GetCaseSDepartmentByFacultyId(facultyId);
 
             foreach (var caseSDepartment in caseSDepartments)
             {
-                foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.ListPersDepartmentsId).Where(x => x.CaseSDepartmentId == caseSDepartment.DepartmentId).ToListAsync())
-                {
-                    FillingData(ref dataForTableResponse, item);
-                }
+                var profiles = GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.ListPersDepartmentsId).Where(x => x.CaseSDepartmentId == caseSDepartment.DepartmentId);
+
+                FillingData(ref dataForTableResponse, ref profiles);
             }
             return dataForTableResponse;
         }
 
-        private void FillingData(ref List<DataForTableResponse> dataForTableResponse, Profile item)
+        private void FillingData(ref List<DataForTableResponse> dataForTableResponse, ref IQueryable<Profile> profiles)
         {
-            dataForTableResponse.Add(new()
+            var departments = _dSUActiveData.GetCaseSDepartments();
+            var edukinds = _dSUActiveData.GetCaseCEdukinds();
+            foreach (var item in profiles)
             {
-                Profile = item,
-                CaseCEdukind = item.CaseCEdukindId == null ? null : _dSUActiveData.GetCaseCEdukindById((int)item.CaseCEdukindId),
-                CaseSDepartment = item.CaseSDepartmentId == null ? null : _dSUActiveData.GetCaseSDepartmentById((int)item.CaseSDepartmentId),
-            });
+                dataForTableResponse.Add(new()
+                {
+                    Profile = item,
+                    CaseCEdukind = item.CaseCEdukindId == null ? null : edukinds.FirstOrDefault(x => x.EdukindId == item.CaseCEdukindId),
+                    CaseSDepartment = item.CaseSDepartmentId == null ? null : departments.FirstOrDefault(x => x.DepartmentId == item.CaseSDepartmentId),
+                });
+            }
         }
 
         public async Task<List<Profile>> GetProfileByFacultyId(int facultyId)

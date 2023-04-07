@@ -1,5 +1,4 @@
-﻿using DomainServices.DtoModels;
-using DomainServices.Entities;
+﻿using DomainServices.Entities;
 using SvedenOop.Services.Interfaces;
 using Ifrastructure.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
@@ -25,6 +24,8 @@ namespace SvedenOop.Controllers
         /// Создание РПД
         /// </summary>
         /// <param name="uploadedFile"></param>
+        /// <param name="authorId"></param>
+        /// <param name="disciplineId"></param>
         /// <returns></returns>
         [Route("CreateRPD")]
         [HttpPost]

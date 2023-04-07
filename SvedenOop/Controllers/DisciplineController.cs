@@ -27,7 +27,7 @@ namespace SvedenOop.Controllers
         /// <returns></returns>
         [Route("GetDisciplineByProfileId")]
         [HttpGet]
-        public async Task<IActionResult> GetDisciplineByProfileId(int profileId)
+        public IActionResult GetDisciplineByProfileId(int profileId)
         {
             DataForTableResponse responseForDiscipline = _disciplineRepository.GetDisciplinesByProfileId(profileId);
             if (responseForDiscipline == null || responseForDiscipline.Disciplines == null)
@@ -38,23 +38,24 @@ namespace SvedenOop.Controllers
         /// <summary>
         /// Получение списка дисциплин доступных для удаления
         /// </summary>
+        /// <param name="userId"></param>
         /// <returns></returns>
-        //[Authorize(Roles = "umu, admin")]
-        //[Route("GetRemovableDisciplines")]
-        //[HttpGet]
-        //public async Task<IActionResult> GetRemovableDisciplines(string userId)
-        //{
-        //    List<Discipline> disciplines = new();
-        //    var faculties = await _umuAndFacultyRepository.Get().Where(x => x.UserId == userId).ToListAsync();
-        //    foreach (var item in faculties)
-        //    {
-        //        disciplines.AddRange(await _disciplineRepository.GetRemovableDiscipline(item.FacultyId));
-        //    }
+        [Authorize(Roles = "umu, admin")]
+        [Route("GetRemovableDisciplines")]
+        [HttpGet]
+        public async Task<IActionResult> GetRemovableDisciplines(string userId)
+        {
+            List<Discipline> disciplines = new();
+            var faculties = await _umuAndFacultyRepository.Get().Where(x => x.UserId == userId).ToListAsync();
+            foreach (var item in faculties)
+            {
+                disciplines.AddRange(await _disciplineRepository.GetRemovableDiscipline(item.FacultyId));
+            }
 
-        //    if (disciplines != null && disciplines.Any())
-        //        return Ok(disciplines);
-        //    return BadRequest("Нет дисциплин доступных для удаления");
-        //}
+            if (disciplines != null && disciplines.Any())
+                return Ok(disciplines);
+            return BadRequest("Нет дисциплин доступных для удаления");
+        }
 
         /// <summary>
         /// Создание дисциплины

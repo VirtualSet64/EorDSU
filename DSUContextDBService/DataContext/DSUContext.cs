@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 using DSUContextDBService.Models;
 
 namespace DSUContextDBService.DataContext
 {
     public partial class DSUContext : DbContext
     {
-        public DSUContext()
-        {
-        }
-
         public DSUContext(DbContextOptions<DSUContext> options)
             : base(options)
         {

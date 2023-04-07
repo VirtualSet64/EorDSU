@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Sentry;
 using DomainServices.DBService;
 using SvedenOop.Common;
-using SvedenOop.eor;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,14 +30,12 @@ builder.Services.AddCors(options =>
         });
 });
 
-builder.Services.AddDbContext<EORContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("BaseEor"), providerOptions => providerOptions.EnableRetryOnFailure()));
 builder.Services.AddDbContext<BASEPERSONMDFContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BasePerson"), providerOptions => providerOptions.EnableRetryOnFailure()));
 builder.Services.AddDbContext<DSUContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BaseDekanat"), providerOptions => providerOptions.EnableRetryOnFailure()));
 builder.Services.AddDbContext<ApplicationContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("EOR"), providerOptions => providerOptions.EnableRetryOnFailure()));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SvedenOop"), providerOptions => providerOptions.EnableRetryOnFailure()));
 
 builder.Services.AddIdentity<DomainServices.Entities.User, IdentityRole>(
                opts =>

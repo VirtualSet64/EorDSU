@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace DSUContextDBService.Models
+﻿namespace DSUContextDBService.Models
 {
     public partial class CaseCEdukind
     {

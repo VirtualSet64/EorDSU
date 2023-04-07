@@ -1,5 +1,4 @@
-﻿using DomainServices.DtoModels;
-using DomainServices.Entities;
+﻿using DomainServices.Entities;
 using SvedenOop.Services.Interfaces;
 using Ifrastructure.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
@@ -29,7 +28,6 @@ namespace SvedenOop.Controllers
         /// <param name="fileName"></param>
         /// <param name="fileType"></param>
         /// <param name="profileId"></param>
-        /// <param name="ecp"></param>
         /// <returns></returns>
         [Route("CreateFileModel")]
         [HttpPost]
