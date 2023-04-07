@@ -25,7 +25,7 @@ namespace IfrastructureSvedenOop.Repository
         public async Task<List<DataForTableResponse>> GetData()
         {
             List<DataForTableResponse> dataForTableResponse = new();
-            foreach (var item in GetWithInclude(x => x.LevelEdu, x => x.FileModels))
+            foreach (var item in GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.ListPersDepartmentsId))
             {
                 FillingData(ref dataForTableResponse, item);
             }
@@ -36,7 +36,7 @@ namespace IfrastructureSvedenOop.Repository
         {
             List<DataForTableResponse> dataForTableResponse = new();
 
-            foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels).Where(x => x.ListPersDepartmentsId.Any(c => c.PersDepartmentId == kafedraId)).ToListAsync())
+            foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.ListPersDepartmentsId).Where(x => x.ListPersDepartmentsId.Any(c => c.PersDepartmentId == kafedraId)).ToListAsync())
             {
                 FillingData(ref dataForTableResponse, item);
             }
@@ -51,7 +51,7 @@ namespace IfrastructureSvedenOop.Repository
 
             foreach (var caseSDepartment in caseSDepartments)
             {
-                foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels).Where(x => x.CaseSDepartmentId == caseSDepartment.DepartmentId).ToListAsync())
+                foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.ListPersDepartmentsId).Where(x => x.CaseSDepartmentId == caseSDepartment.DepartmentId).ToListAsync())
                 {
                     FillingData(ref dataForTableResponse, item);
                 }
