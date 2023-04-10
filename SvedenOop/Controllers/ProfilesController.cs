@@ -3,9 +3,9 @@ using Ifrastructure.Repository.InterfaceRepository;
 using DomainServices.DtoModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using EorDSU.Services.Interfaces;
+using SvedenOop.Services.Interfaces;
 
-namespace EorDSU.Controllers
+namespace SvedenOop.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -23,15 +23,27 @@ namespace EorDSU.Controllers
         }
 
         /// <summary>
-        /// Получение всех данных 
+        /// Получение всех данных для таблицы /Sveden/Oop_Dgu
         /// </summary>
         /// <returns></returns>
-        [Route("GetData")]
+        [Route("GetDataForOopDgu")]
         [HttpGet]
-        public async Task<IActionResult> GetData()
+        public IActionResult GetDataForOopDgu()
         {
-            var profileDto = await _profileRepository.GetData();
-            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.GetDisciplinesByProfileId(x.Profile.Id).Disciplines?.Where(x => x.Code?.Contains("Б2") == true).ToList());
+            var profileDto = _profileRepository.GetDataForOopDgu();
+            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
+            return Ok(profileDto);
+        }
+
+        /// <summary>
+        /// Получение всех данных для /Sveden/Opop2
+        /// </summary>
+        /// <returns></returns>
+        [Route("GetDataOpop2")]
+        [HttpGet]
+        public IActionResult GetDataOpop2()
+        {
+            var profileDto = _profileRepository.GetDataOpop2();
             return Ok(profileDto);
         }
 
@@ -40,12 +52,12 @@ namespace EorDSU.Controllers
         /// </summary>
         /// <param name="kafedraId"></param>
         /// <returns></returns>
-        [Route("GetDataById")]
+        [Route("GetDataByKafedraId")]
         [HttpGet]
-        public async Task<IActionResult> GetDataByKafedraId(int kafedraId)
+        public IActionResult GetDataByKafedraId(int kafedraId)
         {
-            var profileDto = await _profileRepository.GetDataByKafedraId(kafedraId);
-            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.GetDisciplinesByProfileId(x.Profile.Id).Disciplines?.Where(x => x.Code?.Contains("Б2") == true).ToList());
+            var profileDto = _profileRepository.GetDataByKafedraId(kafedraId);
+            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
             return Ok(profileDto);
         }
 
@@ -56,10 +68,10 @@ namespace EorDSU.Controllers
         /// <returns></returns>
         [Route("GetDataFacultyById")]
         [HttpGet]
-        public async Task<IActionResult> GetDataByFacultyId(int facultyId)
+        public IActionResult GetDataByFacultyId(int facultyId)
         {
-            var profileDto = await _profileRepository.GetDataByFacultyId(facultyId);
-            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.GetDisciplinesByProfileId(x.Profile.Id).Disciplines?.Where(x => x.Code?.Contains("Б2") == true).ToList());
+            var profileDto = _profileRepository.GetDataByFacultyId(facultyId);
+            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
             return Ok(profileDto);
         }
 
@@ -102,7 +114,7 @@ namespace EorDSU.Controllers
         }
 
         /// <summary>
-        /// Создание профиля
+        /// Парсинг учебного плана для получения данных профиля
         /// </summary>
         /// <param name="uploadedFile"></param>
         /// <returns></returns>
@@ -133,8 +145,7 @@ namespace EorDSU.Controllers
             if (profile == null)
                 return BadRequest("Ошибка передачи профиля");
 
-            profile.UpdateDate = DateTime.Now;
-            await _profileRepository.Update(profile);
+            await _profileRepository.UpdateProfile(profile);
             return Ok();
         }
 
@@ -153,7 +164,7 @@ namespace EorDSU.Controllers
                 await _profileRepository.RemoveProfile(profileId);
                 return Ok();
             }
-            catch
+            catch (Exception ex)
             {
                 return BadRequest("Профиль не найден");
                 throw;

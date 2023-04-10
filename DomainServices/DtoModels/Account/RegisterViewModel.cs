@@ -3,11 +3,7 @@
 namespace DomainServices.DtoModels.Account
 {
     public class RegisterViewModel
-    {
-        [Required]
-        [Display(Name = "Кафедра")]
-        public int PersDepartmentId { get; set; }
-
+    {     
         [Required]
         [Display(Name = "Логин")]
         public string Login { get; set; } = null!;
@@ -19,5 +15,11 @@ namespace DomainServices.DtoModels.Account
 
         [Display(Name = "Роль")]
         public string? Role { get; set; }
+
+        [Display(Name = "Факультеты")]
+        public List<int>? Faculties { get; set; }
+
+        [Display(Name = "Кафедра")]
+        public int? PersDepartmentId { get; set; }
     }
 }

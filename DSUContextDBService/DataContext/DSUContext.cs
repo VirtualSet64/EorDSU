@@ -5,10 +5,6 @@ namespace DSUContextDBService.DataContext
 {
     public partial class DSUContext : DbContext
     {
-        public DSUContext()
-        {
-        }
-
         public DSUContext(DbContextOptions<DSUContext> options)
             : base(options)
         {
@@ -39,7 +35,7 @@ namespace DSUContextDBService.DataContext
 
                 entity.Property(e => e.Yearedu).HasColumnName("YEAREDU");
             });
-                        
+
             modelBuilder.Entity<CaseSDepartment>(entity =>
             {
                 entity.HasNoKey();
@@ -67,16 +63,11 @@ namespace DSUContextDBService.DataContext
 
                 entity.Property(e => e.FacId).HasColumnName("FAC_ID");
 
-                entity.Property(e => e.Godequalif)
-                    .HasMaxLength(2)
-                    .IsUnicode(false)
-                    .HasColumnName("GODEQUALIF");
-
                 entity.Property(e => e.Qualification)
                     .HasMaxLength(250)
                     .IsUnicode(false)
                     .HasColumnName("QUALIFICATION");
-            });                     
+            });
 
             OnModelCreatingPartial(modelBuilder);
         }

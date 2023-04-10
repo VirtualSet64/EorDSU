@@ -6,6 +6,11 @@
         public string? Name { get; set; }
         public bool IsDeleted { get; set; }
 
+        public FileType(string name)
+        {
+            Name = name;
+        }
+
         //FGOS,//ФГОС
         //OPOP,//ОПОП
         //EduPlan,//Учебный план

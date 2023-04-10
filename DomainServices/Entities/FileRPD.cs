@@ -16,8 +16,8 @@
         /// <summary>
         /// Код ЭЦП
         /// </summary>
-        public string? CodeECP { get; set; }
-        public DateTime CreateDate { get; set; } = DateTime.Now;
-        public DateTime UpdateDate { get; set; }
+        public string? CodeECP { get; set; } = Guid.NewGuid().ToString().ToUpper();
+        public DateTime? CreateDate { get; set; } = DateTime.Now;
+        public DateTime? UpdateDate { get; set; }
     }
 }

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace EorDSU.Controllers
+namespace SvedenOop.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -38,6 +38,7 @@ namespace EorDSU.Controllers
         /// <summary>
         /// Получение списка дисциплин доступных для удаления
         /// </summary>
+        /// <param name="userId"></param>
         /// <returns></returns>
         [Authorize(Roles = "umu, admin")]
         [Route("GetRemovableDisciplines")]

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EorDSU.Controllers
+namespace SvedenOop.Controllers
 {
     [Authorize(Roles = "admin")]
     [ApiController]

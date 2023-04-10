@@ -4,14 +4,15 @@ using DSUContextDBService.Interfaces;
 using DSUContextDBService.Services;
 using Ifrastructure.Repository;
 using Ifrastructure.Repository.InterfaceRepository;
-using Ifrastructure.Interface;
 using Ifrastructure.Service;
 using Ifrastructure.Services.Interface;
-using IfrastructureEorDSU.Repository;
-using EorDSU.Services.Interfaces;
-using EorDSU.Services;
+using IfrastructureSvedenOop.Repository;
+using SvedenOop.Services.Interfaces;
+using SvedenOop.Services;
+using Infrastructure.Repository.InterfaceRepository;
+using Infrastructure.Repository;
 
-namespace Ifrastructure.Common
+namespace SvedenOop.Common
 {
     public static class BaseService
     {
@@ -26,13 +27,14 @@ namespace Ifrastructure.Common
 
             #region Repositories
             services.AddScoped<IProfileRepository, ProfileRepository>();
-            services.AddScoped<IDisciplineRepository, DisciplineRepository>();
             services.AddScoped<IFileModelRepository, FileModelRepository>();
-            services.AddScoped<IDisciplineRepository, DisciplineRepository>();
+            services.AddScoped<IFileRPDRepository, FileRPDRepository>();
             services.AddScoped<IFileTypeRepository, FileTypeRepository>();
+            services.AddScoped<IDisciplineRepository, DisciplineRepository>();            
             services.AddScoped<IStatusDisciplineRepository, StatusDisciplineRepository>();
             services.AddScoped<ILevelEduRepository, LevelEduRepository>();
             services.AddScoped<IUmuAndFacultyRepository, UmuAndFacultyRepository>();
+            services.AddScoped<IProfileKafedrasRepository, ProfileKafedrasRepository>();
             #endregion
         }
     }

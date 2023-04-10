@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EorDSU.Controllers
+namespace SvedenOop.Controllers
 {
     [Authorize]
     [ApiController]

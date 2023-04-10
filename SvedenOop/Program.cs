@@ -5,10 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Sentry;
 using DomainServices.DBService;
-using Ifrastructure.Common;
-using EorDSU.Services.Interfaces;
-using EorDSU.Services;
-using EorDSU.Common;
+using SvedenOop.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,7 +35,7 @@ builder.Services.AddDbContext<BASEPERSONMDFContext>(options =>
 builder.Services.AddDbContext<DSUContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BaseDekanat"), providerOptions => providerOptions.EnableRetryOnFailure()));
 builder.Services.AddDbContext<ApplicationContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("EOR"), providerOptions => providerOptions.EnableRetryOnFailure()));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SvedenOop"), providerOptions => providerOptions.EnableRetryOnFailure()));
 
 builder.Services.AddIdentity<DomainServices.Entities.User, IdentityRole>(
                opts =>

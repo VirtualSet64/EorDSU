@@ -1,5 +1,4 @@
-﻿using BasePersonDBService.Interfaces;
-using DSUContextDBService.Interfaces;
+﻿using DSUContextDBService.Interfaces;
 using Ifrastructure.Common;
 using DomainServices.Entities;
 using Ifrastructure.Repository.InterfaceRepository;
@@ -7,69 +6,78 @@ using Ifrastructure.Services.Interface;
 using DomainServices.DtoModels;
 using Microsoft.EntityFrameworkCore;
 using DomainServices.DBService;
+using Infrastructure.Repository.InterfaceRepository;
 
-namespace IfrastructureEorDSU.Repository
+namespace IfrastructureSvedenOop.Repository
 {
     public class ProfileRepository : GenericRepository<Profile>, IProfileRepository
     {
-        private readonly IBasePersonActiveData _basePersonActiveData;
         private readonly IDSUActiveData _dSUActiveData;
         private readonly IExcelParsingService _excelParsingService;
+        private readonly IProfileKafedrasRepository _profileKafedrasRepository;
 
-        public ProfileRepository(ApplicationContext dbContext, IBasePersonActiveData basePersonActiveData, IDSUActiveData dSUActiveData, IExcelParsingService excelParsingService)
+        public ProfileRepository(ApplicationContext dbContext, IDSUActiveData dSUActiveData, IExcelParsingService excelParsingService, IProfileKafedrasRepository profileKafedrasRepository)
             : base(dbContext)
         {
-            _basePersonActiveData = basePersonActiveData;
             _dSUActiveData = dSUActiveData;
             _excelParsingService = excelParsingService;
+            _profileKafedrasRepository = profileKafedrasRepository;
         }
 
-        public async Task<List<DataForTableResponse>> GetData()
+        public List<DataForTableResponse> GetDataForOopDgu()
         {
             List<DataForTableResponse> dataForTableResponse = new();
-            foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.Disciplines).ToListAsync())
+            var profiles = GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.ListPersDepartmentsId);
+
+            FillingData(ref dataForTableResponse, ref profiles);
+            return dataForTableResponse;
+        }
+
+        public List<DataForTableResponse> GetDataOpop2()
+        {
+            List<DataForTableResponse> dataForTableResponse = new();
+            var profiles = GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.ListPersDepartmentsId, x => x.Disciplines);
+
+            FillingData(ref dataForTableResponse, ref profiles);
+            return dataForTableResponse;
+        }
+
+        public List<DataForTableResponse> GetDataByKafedraId(int kafedraId)
+        {
+            List<DataForTableResponse> dataForTableResponse = new();
+            var profiles = GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.ListPersDepartmentsId).Where(x => x.ListPersDepartmentsId.Any(c => c.PersDepartmentId == kafedraId));
+
+            FillingData(ref dataForTableResponse, ref profiles);
+            return dataForTableResponse;
+        }
+
+        public List<DataForTableResponse> GetDataByFacultyId(int facultyId)
+        {
+            List<DataForTableResponse> dataForTableResponse = new();
+            var caseSDepartments = _dSUActiveData.GetCaseSDepartmentByFacultyId(facultyId);
+
+            foreach (var caseSDepartment in caseSDepartments)
             {
-                FillingData(dataForTableResponse, item);
+                var profiles = GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.ListPersDepartmentsId).Where(x => x.CaseSDepartmentId == caseSDepartment.DepartmentId);
+
+                FillingData(ref dataForTableResponse, ref profiles);
             }
             return dataForTableResponse;
         }
 
-        public async Task<List<DataForTableResponse>> GetDataByKafedraId(int kafedraId)
+        private void FillingData(ref List<DataForTableResponse> dataForTableResponse, ref IQueryable<Profile> profiles)
         {
-            List<DataForTableResponse> dataForTableResponse = new();
-
-            foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.Disciplines).Where(x => x.PersDepartmentId == kafedraId).ToListAsync())
+            var departments = _dSUActiveData.GetCaseSDepartments();
+            var edukinds = _dSUActiveData.GetCaseCEdukinds();
+            foreach (var item in profiles)
             {
-                FillingData(dataForTableResponse, item);
-            }
-            return dataForTableResponse;
-        }
-
-        public async Task<List<DataForTableResponse>> GetDataByFacultyId(int facultyId)
-        {
-            List<DataForTableResponse> dataForTableResponse = new();
-
-            var persDepartments = await _basePersonActiveData.GetPersDepartments().Where(x => x.DivId == facultyId).ToListAsync();
-
-            foreach (var persDepartment in persDepartments)
-            {
-                foreach (var item in await GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.Disciplines).Where(x => x.PersDepartmentId == persDepartment.DepId).ToListAsync())
+                dataForTableResponse.Add(new()
                 {
-                    FillingData(dataForTableResponse, item);
-                }
+                    Profile = item,
+                    CaseCEdukind = item.CaseCEdukindId == null ? null : edukinds.FirstOrDefault(x => x.EdukindId == item.CaseCEdukindId),
+                    CaseSDepartment = item.CaseSDepartmentId == null ? null : departments.FirstOrDefault(x => x.DepartmentId == item.CaseSDepartmentId),
+                });
             }
-            return dataForTableResponse;
-        }
-
-        private void FillingData(List<DataForTableResponse> dataForTableResponse, Profile item)
-        {
-            dataForTableResponse.Add(new()
-            {
-                Profile = item,
-                CaseCEdukind = item.CaseCEdukindId == null ? null : _dSUActiveData.GetCaseCEdukindById((int)item.CaseCEdukindId),
-                CaseSDepartment = item.CaseSDepartmentId == null ? null : _dSUActiveData.GetCaseSDepartmentById((int)item.CaseSDepartmentId),
-                Disciplines = item.Disciplines.Where(x => x.Code?.Contains("Б2") == true).ToList()
-            });
         }
 
         public async Task<List<Profile>> GetProfileByFacultyId(int facultyId)
@@ -85,7 +93,7 @@ namespace IfrastructureEorDSU.Repository
 
         public Profile GetProfileById(int id)
         {
-            return GetWithIncludeById(x => x.Id == id, x => x.Disciplines, x => x.FileModels, x => x.LevelEdu);
+            return GetWithIncludeById(x => x.Id == id, x => x.LevelEdu, x => x.Disciplines, x => x.FileModels, x => x.ListPersDepartmentsId);
         }
 
         public async Task<DataResponseForSvedenOOPDGU> ParsingProfileByFile(string path)
@@ -99,10 +107,28 @@ namespace IfrastructureEorDSU.Repository
             return profile;
         }
 
+        public async Task<Profile> UpdateProfile(Profile profile)
+        {
+            profile.UpdateDate = DateTime.Now;
+
+            var profileKafedras = _profileKafedrasRepository.Get();
+            if (profile.ListPersDepartmentsId != null)
+            {
+                foreach (var item in profile.ListPersDepartmentsId)
+                {
+                    await _profileKafedrasRepository.RemoveRange(profileKafedras.Where(x => x.ProfileId == profile.Id));
+                    if (!profileKafedras.Any(x => x.PersDepartmentId == item.PersDepartmentId && x.ProfileId == item.ProfileId))
+                        await _profileKafedrasRepository.Create(item);
+                }
+            }
+            await Update(profile);
+            return profile;
+        }
+
         public async Task<Profile> RemoveProfile(int id)
         {
-            var profile = GetWithIncludeById(x => x.Id == id, x => x.Disciplines, x => x.FileModels, x => x.LevelEdu);
-            profile.Disciplines?.ForEach(x => x.StatusDiscipline = null);
+            var profiles = GetWithInclude(x => x.FileModels, x => x.LevelEdu, x => x.ListPersDepartmentsId).Include(x => x.Disciplines).ThenInclude(c => c.FileRPD);
+            var profile = profiles.FirstOrDefault(x => x.Id == id);
             await Remove(profile);
             return profile;
         }

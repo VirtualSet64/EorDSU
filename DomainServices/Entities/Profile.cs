@@ -6,6 +6,7 @@
     public class Profile
     {
         public int Id { get; set; } 
+        public int? EorId { get; set; } 
         /// <summary>
         /// Название профиля
         /// </summary>
@@ -15,7 +16,7 @@
         /// </summary>
         public string? TermEdu { get; set; }
         /// <summary>
-        /// 
+        /// Год обучения
         /// </summary>
         public int? Year { get; set; }
         /// <summary>
@@ -27,13 +28,25 @@
         /// </summary>
         public string? LinkToRPD { get; set; }
         /// <summary>
+        /// Срок действия государственной аккредитации
+        /// </summary>
+        public string? ValidityPeriodOfStateAccreditasion { get; set; }
+        /// <summary>
+        /// Язык обучения
+        /// </summary>
+        public string? EducationLanguage { get; set; }
+        /// <summary>
+        /// Ссылка на дистанционное обучения
+        /// </summary>
+        public string? LinkToDistanceEducation { get; set; }
+        /// <summary>
         /// Список дисциплин
         /// </summary>
-        public List<Discipline> Disciplines { get; set; } = new List<Discipline>();
+        public List<Discipline>? Disciplines { get; set; }
         /// <summary>
         /// Список файлов
         /// </summary>
-        public List<FileModel> FileModels { get; set; } = new List<FileModel>();
+        public List<FileModel>? FileModels { get; set; } = new List<FileModel>();
         /// <summary>
         /// Id уровня образования
         /// </summary>
@@ -53,14 +66,14 @@
         /// <summary>
         /// Id кафедры
         /// </summary>
-        public int? PersDepartmentId { get; set; }
+        public List<ProfileKafedras>? ListPersDepartmentsId { get; set; }
         /// <summary>
         /// Дата создания
         /// </summary>
-        public DateTime CreateDate { get; set; } = DateTime.Now;
+        public DateTime? CreateDate { get; set; } = DateTime.Now;
         /// <summary>
         /// Дата последнего обновления
         /// </summary>
-        public DateTime UpdateDate { get; set; }
+        public DateTime? UpdateDate { get; set; }
     }
 }

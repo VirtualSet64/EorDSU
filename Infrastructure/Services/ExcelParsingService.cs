@@ -1,5 +1,4 @@
-﻿using Ifrastructure.Interface;
-using DomainServices.Entities;
+﻿using DomainServices.Entities;
 using Ifrastructure.Services.Interface;
 using Excel = Microsoft.Office.Interop.Excel;
 
@@ -107,7 +106,7 @@ namespace Ifrastructure.Service
             var code = list[3, 26];
 
             profile.ProfileName = list[3, 29];
-            profile.TermEdu = list[2, 42].Split(" ")[^1][0].ToString();
+            profile.TermEdu = list[2, 42].Split(": ")[^1].ToString();
             profile.CaseSDepartmentId = await _searchEntity.SearchCaseSDepartment(list[3, 28].Split(" ")[^1])
                 ?? await _searchEntity.SearchCaseSDepartment(list[3, 28].Split(code)[^1].Trim()); ;
 
@@ -144,6 +143,8 @@ namespace Ifrastructure.Service
         /// </summary>
         /// <param name="ObjWorkBook"></param>
         /// <param name="profile"></param>
+        /// <param name="isPostGraduate"></param>
+        /// <returns></returns>
         private async Task PlanSvodPage(Excel.Workbook ObjWorkBook, Profile profile, bool isPostGraduate)
         {
             var ObjWorkSheet = (Excel.Worksheet)ObjWorkBook.Sheets[3]; //получить 3 лист
@@ -166,6 +167,7 @@ namespace Ifrastructure.Service
 
         private async Task DisciplinesForVuz(string[,] list, Profile profile)
         {
+            #region Индексы статусов
             int mandatoryDisciplinesCount = 0;
             int unmandatoryDisciplinesCount = 0;
             int complexModulesCount = 0;
@@ -200,51 +202,36 @@ namespace Ifrastructure.Service
                     break;
                 }
             }
+            #endregion
 
             for (int i = 5; i < mandatoryDisciplinesCount; i++)
             {
                 bool isModule = false;
-                for (int j = 0; j < list[2, i].Split(" ").Length; j++)
+                for (int j = 0; j < list[1, i].Split(" ").Length; j++)
                 {
-                    if (list[2, i].Split(" ")[j] == "модуль" || list[2, i].Split(" ")[j] == "Модуль")
+                    if (list[1, i].Split(" ")[j] == "модуль" || list[1, i].Split(" ")[j] == "Модуль")
                     {
                         isModule = true;
                     }
                 }
                 if (isModule == false)
                 {
-                    Discipline discipline = new()
-                    {
-                        DisciplineName = list[2, i],
-                        Code = list[1, i],
-                        StatusDiscipline = await _searchEntity.SearchStatusDiscipline("Обязательная часть"),
-                        Profile = profile,
-                        ProfileId = profile.Id
-                    };
-                    discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
-                    profile.Disciplines?.Add(discipline);
+                    StatusDiscipline statusDiscipline = await _searchEntity.SearchStatusDiscipline("Обязательная часть");
+                    FillingData(ref list, ref profile, i, ref statusDiscipline);
                 }
             }
             for (int i = mandatoryDisciplinesCount + 1; i < unmandatoryDisciplinesCount || (unmandatoryDisciplinesCount == 0 && i < complexModulesCount); i++)
             {
                 bool isDisciplinesPoViboru = false;
-                var sd = list[2, i].Split(" ")[0];
-                if (sd == "Дисциплины" || list[2, i].Split(" ")[0] == "модуль" || list[2, i].Split(" ")[0] == "Модуль")
+                var sd = list[1, i].Split(" ")[0];
+                if (sd == "Дисциплины" || list[1, i].Split(" ")[0] == "модуль" || list[1, i].Split(" ")[0] == "Модуль")
                 {
                     isDisciplinesPoViboru = true;
                 }
                 if (isDisciplinesPoViboru == false)
                 {
-                    Discipline discipline = new()
-                    {
-                        DisciplineName = list[2, i],
-                        Code = list[1, i],
-                        StatusDiscipline = await _searchEntity.SearchStatusDiscipline("Часть, формируемая участниками образовательных отношений"),
-                        Profile = profile,
-                        ProfileId = profile.Id
-                    };
-                    discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
-                    profile.Disciplines?.Add(discipline);
+                    StatusDiscipline statusDiscipline = await _searchEntity.SearchStatusDiscipline("Часть, формируемая участниками образовательных отношений");
+                    FillingData(ref list, ref profile, i, ref statusDiscipline);
                 }
             }
 
@@ -252,66 +239,34 @@ namespace Ifrastructure.Service
             {
                 for (int i = unmandatoryDisciplinesCount + 2; i < complexModulesCount; i++)
                 {
-                    Discipline discipline = new()
-                    {
-                        DisciplineName = list[2, i],
-                        Code = list[1, i],
-                        StatusDiscipline = await _searchEntity.SearchStatusDiscipline("К.М.Комплексные модули"),
-                        Profile = profile,
-                        ProfileId = profile.Id
-                    };
-                    discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
-                    profile.Disciplines?.Add(discipline);
+                    StatusDiscipline statusDiscipline = await _searchEntity.SearchStatusDiscipline("К.М.Комплексные модули");
+                    FillingData(ref list, ref profile, i, ref statusDiscipline);
                 }
             }
             for (int i = complexModulesCount + 2; i < pacticMandatoryCount; i++)
             {
-                Discipline discipline = new()
-                {
-                    DisciplineName = list[2, i],
-                    Code = list[1, i],
-                    StatusDiscipline = await _searchEntity.SearchStatusDiscipline("Блок 2.Практика. Обязательная часть"),
-                    Profile = profile,
-                    ProfileId = profile.Id
-                };
-                discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
-                profile.Disciplines?.Add(discipline);
+                StatusDiscipline statusDiscipline = await _searchEntity.SearchStatusDiscipline("Блок 2.Практика. Обязательная часть");
+                FillingData(ref list, ref profile, i, ref statusDiscipline);
             }
 
             for (int i = pacticMandatoryCount + 1; i < pacticUnmandatoryCount; i++)
             {
-                Discipline discipline = new()
-                {
-                    DisciplineName = list[2, i],
-                    Code = list[1, i],
-                    StatusDiscipline = await _searchEntity.SearchStatusDiscipline("Блок 2.Практика. Часть, формируемая участниками образовательных отношений"),
-                    Profile = profile,
-                    ProfileId = profile.Id
-                };
-                discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
-                profile.Disciplines?.Add(discipline);
+                StatusDiscipline statusDiscipline = await _searchEntity.SearchStatusDiscipline("Блок 2.Практика. Часть, формируемая участниками образовательных отношений");
+                FillingData(ref list, ref profile, i, ref statusDiscipline);
             }
 
             for (int i = pacticUnmandatoryCount + 2; i < giaCount; i++)
             {
-                Discipline discipline = new()
-                {
-                    DisciplineName = list[2, i],
-                    Code = list[1, i],
-                    StatusDiscipline = await _searchEntity.SearchStatusDiscipline("Блок 3.Государственная итоговая аттестация."),
-                    Profile = profile,
-                    ProfileId = profile.Id
-                };
-                discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
-                profile.Disciplines?.Add(discipline);
+                StatusDiscipline statusDiscipline = await _searchEntity.SearchStatusDiscipline("Блок 3.Государственная итоговая аттестация.");
+                FillingData(ref list, ref profile, i, ref statusDiscipline);
             }
 
-            for (int i = giaCount + 2; i < list.GetLength(1); i++)
+            for (int i = giaCount + 2; list[0, i].Contains("ФТД.В"); i++)
             {
                 Discipline discipline = new()
                 {
-                    DisciplineName = list[2, i],
-                    Code = list[1, i],
+                    DisciplineName = list[1, i],
+                    Code = list[0, i],
                     Profile = profile,
                     ProfileId = profile.Id
                 };
@@ -330,6 +285,7 @@ namespace Ifrastructure.Service
 
         private async Task DisciplinesForPostGraduate(string[,] list, Profile profile)
         {
+            #region Индексы статусов
             int preparetionPublications = 0;
             int interimCertification = 0;
             int educationComponent = 0;
@@ -364,75 +320,52 @@ namespace Ifrastructure.Service
                     break;
                 }
             }
+            #endregion
 
             for (int i = 5; i < preparetionPublications; i++)
             {
                 bool isModule = false;
                 for (int j = 0; j < list[2, i].Split(" ").Length; j++)
                 {
-                    if (list[2, i].Split(" ")[j] == "дисциплины" || list[2, i].Split(" ")[j] == "Дисциплины")
+                    if (list[1, i].Split(" ")[j] == "дисциплины" || list[1, i].Split(" ")[j] == "Дисциплины")
                     {
                         isModule = true;
                     }
                 }
                 if (isModule == false)
                 {
-                    Discipline discipline = new()
-                    {
-                        DisciplineName = list[2, i],
-                        Code = list[1, i],
-                        StatusDiscipline = await _searchEntity.SearchStatusDiscipline("1.1.Научная деятельность, направленная на подготовку диссертации к защите"),
-                        Profile = profile,
-                        ProfileId = profile.Id
-                    };
-                    discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
-                    profile.Disciplines?.Add(discipline);
+                    StatusDiscipline statusDiscipline = await _searchEntity.SearchStatusDiscipline("1.1.Научная деятельность, направленная на подготовку диссертации к защите");
+                    FillingData(ref list, ref profile, i, ref statusDiscipline);
                 }
             }
 
             for (int i = preparetionPublications + 1; i < interimCertification; i++)
             {
                 bool isDisciplinesPoViboru = false;
-                var sd = list[2, i].Split(" ")[0];
-                if (sd == "Дисциплины" || list[2, i].Split(" ")[0] == "дисциплины" || list[2, i].Split(" ")[0] == "Дисциплины")
+                var sd = list[1, i].Split(" ")[0];
+                if (sd == "Дисциплины" || list[1, i].Split(" ")[0] == "дисциплины" || list[1, i].Split(" ")[0] == "Дисциплины")
                 {
                     isDisciplinesPoViboru = true;
                 }
                 if (isDisciplinesPoViboru == false)
                 {
-                    Discipline discipline = new()
-                    {
-                        DisciplineName = list[2, i],
-                        Code = list[1, i],
-                        StatusDiscipline = await _searchEntity.SearchStatusDiscipline("1.2.Подготовка публикаций и(или) заявок на патенты"),
-                        Profile = profile,
-                        ProfileId = profile.Id
-                    };
-                    discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
-                    profile.Disciplines?.Add(discipline);
+                    StatusDiscipline statusDiscipline = await _searchEntity.SearchStatusDiscipline("1.2.Подготовка публикаций и(или) заявок на патенты");
+                    FillingData(ref list, ref profile, i, ref statusDiscipline);
                 }
             }
 
             for (int i = interimCertification + 1; i < educationComponent; i++)
             {
                 bool isDisciplinesPoViboru = false;
-                var sd = list[2, i].Split(" ")[0];
-                if (sd == "Дисциплины" || list[2, i].Split(" ")[0] == "дисциплины" || list[2, i].Split(" ")[0] == "Дисциплины")
+                var sd = list[1, i].Split(" ")[0];
+                if (sd == "Дисциплины" || list[1, i].Split(" ")[0] == "дисциплины" || list[1, i].Split(" ")[0] == "Дисциплины")
                 {
                     isDisciplinesPoViboru = true;
                 }
                 if (isDisciplinesPoViboru == false)
                 {
-                    Discipline discipline = new()
-                    {
-                        DisciplineName = list[2, i],
-                        Code = list[1, i],
-                        StatusDiscipline = await _searchEntity.SearchStatusDiscipline("1.3.Промежуточная аттестация по этапам выполнения научного исследования"),
-                        Profile = profile,
-                        ProfileId = profile.Id
-                    };
-                    discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
-                    profile.Disciplines?.Add(discipline);
+                    StatusDiscipline statusDiscipline = await _searchEntity.SearchStatusDiscipline("1.3.Промежуточная аттестация по этапам выполнения научного исследования");
+                    FillingData(ref list, ref profile, i, ref statusDiscipline);
                 }
             }
 
@@ -440,78 +373,56 @@ namespace Ifrastructure.Service
             {
                 bool isDisciplinesPoViboru = false;
                 var sd = list[2, i].Split(" ")[0];
-                if (sd == "Дисциплины" || list[2, i].Split(" ")[0] == "дисциплины" || list[2, i].Split(" ")[0] == "Дисциплины" 
-                                       || list[2, i].Split(" ")[1] == "дисциплины" || list[2, i].Split(" ")[1] == "Дисциплины")
+                if (sd == "Дисциплины" || list[1, i].Split(" ")[0] == "дисциплины" || list[1, i].Split(" ")[0] == "Дисциплины"
+                                       || list[1, i].Split(" ")[1] == "дисциплины" || list[1, i].Split(" ")[1] == "Дисциплины")
                 {
                     isDisciplinesPoViboru = true;
                 }
                 if (isDisciplinesPoViboru == false)
                 {
-                    Discipline discipline = new()
-                    {
-                        DisciplineName = list[2, i],
-                        Code = list[1, i],
-                        StatusDiscipline = await _searchEntity.SearchStatusDiscipline("2.Образовательный компонент"),
-                        Profile = profile,
-                        ProfileId = profile.Id
-                    };
-                    discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
-                    profile.Disciplines?.Add(discipline);
+                    StatusDiscipline statusDiscipline = await _searchEntity.SearchStatusDiscipline("2.Образовательный компонент");
+                    FillingData(ref list, ref profile, i, ref statusDiscipline);
                 }
             }
 
             for (int i = pactic + 1; i < interimCertificationForDiscipline; i++)
             {
                 bool isDisciplinesPoViboru = false;
-                var sd = list[2, i].Split(" ")[0];
-                if (sd == "Дисциплины" || list[2, i].Split(" ")[0] == "дисциплины" || list[2, i].Split(" ")[0] == "Дисциплины")
+                var sd = list[1, i].Split(" ")[0];
+                if (sd == "Дисциплины" || list[1, i].Split(" ")[0] == "дисциплины" || list[1, i].Split(" ")[0] == "Дисциплины")
                 {
                     isDisciplinesPoViboru = true;
                 }
                 if (isDisciplinesPoViboru == false)
                 {
-                    Discipline discipline = new()
-                    {
-                        DisciplineName = list[2, i],
-                        Code = list[1, i],
-                        StatusDiscipline = await _searchEntity.SearchStatusDiscipline("2.2.Практика"),
-                        Profile = profile,
-                        ProfileId = profile.Id
-                    };
-                    discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
-                    profile.Disciplines?.Add(discipline);
+                    StatusDiscipline statusDiscipline = await _searchEntity.SearchStatusDiscipline("2.2.Практика");
+                    FillingData(ref list, ref profile, i, ref statusDiscipline);
                 }
             }
 
             for (int i = interimCertificationForDiscipline + 1; i < finalCertification; i++)
             {
-                Discipline discipline = new()
-                {
-                    DisciplineName = list[2, i],
-                    Code = list[1, i],
-                    Profile = profile,
-                    ProfileId = profile.Id,
-                    StatusDiscipline = await _searchEntity.SearchStatusDiscipline("2.3.Промежуточная аттестация по дисциплинам (модулям) и практике")
-                };
-
-                discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
-                profile.Disciplines?.Add(discipline);
+                StatusDiscipline statusDiscipline = await _searchEntity.SearchStatusDiscipline("2.3.Промежуточная аттестация по дисциплинам (модулям) и практике");
+                FillingData(ref list, ref profile, i, ref statusDiscipline);
             }
 
             for (int i = finalCertification + 1; i < list.GetLength(1); i++)
             {
-                Discipline discipline = new()
-                {
-                    DisciplineName = list[2, i],
-                    Code = list[1, i],
-                    Profile = profile,
-                    ProfileId = profile.Id,
-                    StatusDiscipline = await _searchEntity.SearchStatusDiscipline("3.Итоговая аттестация")
-                };
-
-                discipline.StatusDisciplineId = discipline.StatusDiscipline.Id;
-                profile.Disciplines?.Add(discipline);
+                StatusDiscipline statusDiscipline = await _searchEntity.SearchStatusDiscipline("3.Итоговая аттестация");
+                FillingData(ref list, ref profile, i, ref statusDiscipline);
             }
+        }
+
+        private static void FillingData(ref string[,] list, ref Profile profile, int i, ref StatusDiscipline statusDiscipline)
+        {
+            profile.Disciplines?.Add(new()
+            {
+                DisciplineName = list[1, i],
+                Code = list[0, i],
+                Profile = profile,
+                ProfileId = profile.Id,
+                StatusDisciplineId = statusDiscipline.Id
+            });
         }
 
         private static void ClearAndExitExcel(Excel.Workbook ObjWorkBook, Excel.Application ObjWorkExcel)
