@@ -6,7 +6,8 @@ namespace Ifrastructure.Repository.InterfaceRepository
 {
     public interface IProfileRepository : IGenericRepository<Profile>
     {
-        public List<DataForTableResponse> GetData();
+        public List<DataForTableResponse> GetDataForOopDgu();
+        public List<DataForTableResponse> GetDataOpop2();
         public List<DataForTableResponse> GetDataByKafedraId(int cafedraId);
         public List<DataForTableResponse> GetDataByFacultyId(int facultyId);
         public Task<List<Profile>> GetProfileByFacultyId(int facultyId);

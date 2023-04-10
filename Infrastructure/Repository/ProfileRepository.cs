@@ -24,10 +24,19 @@ namespace IfrastructureSvedenOop.Repository
             _profileKafedrasRepository = profileKafedrasRepository;
         }
 
-        public List<DataForTableResponse> GetData()
+        public List<DataForTableResponse> GetDataForOopDgu()
         {
             List<DataForTableResponse> dataForTableResponse = new();
             var profiles = GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.ListPersDepartmentsId);
+
+            FillingData(ref dataForTableResponse, ref profiles);
+            return dataForTableResponse;
+        }
+
+        public List<DataForTableResponse> GetDataOpop2()
+        {
+            List<DataForTableResponse> dataForTableResponse = new();
+            var profiles = GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.ListPersDepartmentsId, x => x.Disciplines);
 
             FillingData(ref dataForTableResponse, ref profiles);
             return dataForTableResponse;

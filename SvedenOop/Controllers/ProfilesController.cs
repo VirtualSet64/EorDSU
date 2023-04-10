@@ -23,15 +23,27 @@ namespace SvedenOop.Controllers
         }
 
         /// <summary>
-        /// Получение всех данных 
+        /// Получение всех данных для таблицы /Sveden/Oop_Dgu
         /// </summary>
         /// <returns></returns>
-        [Route("GetData")]
+        [Route("GetDataForOopDgu")]
         [HttpGet]
-        public IActionResult GetData()
+        public IActionResult GetDataForOopDgu()
         {
-            var profileDto = _profileRepository.GetData();
+            var profileDto = _profileRepository.GetDataForOopDgu();
             profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
+            return Ok(profileDto);
+        }
+
+        /// <summary>
+        /// Получение всех данных для /Sveden/Opop2
+        /// </summary>
+        /// <returns></returns>
+        [Route("GetDataOpop2")]
+        [HttpGet]
+        public IActionResult GetDataOpop2()
+        {
+            var profileDto = _profileRepository.GetDataOpop2();
             return Ok(profileDto);
         }
 
