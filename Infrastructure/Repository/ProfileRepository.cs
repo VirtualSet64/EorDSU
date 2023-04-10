@@ -33,23 +33,13 @@ namespace IfrastructureSvedenOop.Repository
             return dataForTableResponse;
         }
 
-        public List<DataForOpopTable> GetDataOpop2()
+        public List<DataForTableResponse> GetDataOpop2()
         {
-            List<DataForOpopTable> dataForOpopTable = new();
+            List<DataForTableResponse> dataForTableResponse = new();
             var profiles = GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.ListPersDepartmentsId, x => x.Disciplines);
 
-            var departments = _dSUActiveData.GetCaseSDepartments();
-            var edukinds = _dSUActiveData.GetCaseCEdukinds();
-            foreach (var item in profiles)
-            {
-                dataForOpopTable.Add(new()
-                {
-                    Profile = item,
-                    CaseCEdukind = item.CaseCEdukindId == null ? null : edukinds.FirstOrDefault(x => x.EdukindId == item.CaseCEdukindId),
-                    CaseSDepartment = item.CaseSDepartmentId == null ? null : departments.FirstOrDefault(x => x.DepartmentId == item.CaseSDepartmentId),
-                });
-            }
-            return dataForOpopTable;
+            FillingData(ref dataForTableResponse, ref profiles);
+            return dataForTableResponse;
         }
 
         public List<DataForTableResponse> GetDataByKafedraId(int kafedraId)
@@ -127,6 +117,7 @@ namespace IfrastructureSvedenOop.Repository
                 await _profileKafedrasRepository.RemoveRange(profileKafedras.Where(x => x.ProfileId == profile.Id));
                 foreach (var item in profile.ListPersDepartmentsId)
                 {
+                    
                     if (!profileKafedras.Any(x => x.PersDepartmentId == item.PersDepartmentId && x.ProfileId == item.ProfileId))
                         await _profileKafedrasRepository.Create(item);
                 }
