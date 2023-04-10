@@ -6,6 +6,7 @@ using Ifrastructure.Services.Interface;
 using DomainServices.DtoModels;
 using Microsoft.EntityFrameworkCore;
 using DomainServices.DBService;
+using Infrastructure.Repository.InterfaceRepository;
 
 namespace IfrastructureSvedenOop.Repository
 {
@@ -13,12 +14,14 @@ namespace IfrastructureSvedenOop.Repository
     {
         private readonly IDSUActiveData _dSUActiveData;
         private readonly IExcelParsingService _excelParsingService;
+        private readonly IProfileKafedrasRepository _profileKafedrasRepository;
 
-        public ProfileRepository(ApplicationContext dbContext, IDSUActiveData dSUActiveData, IExcelParsingService excelParsingService)
+        public ProfileRepository(ApplicationContext dbContext, IDSUActiveData dSUActiveData, IExcelParsingService excelParsingService, IProfileKafedrasRepository profileKafedrasRepository)
             : base(dbContext)
         {
             _dSUActiveData = dSUActiveData;
             _excelParsingService = excelParsingService;
+            _profileKafedrasRepository = profileKafedrasRepository;
         }
 
         public List<DataForTableResponse> GetData()
@@ -95,10 +98,28 @@ namespace IfrastructureSvedenOop.Repository
             return profile;
         }
 
+        public async Task<Profile> UpdateProfile(Profile profile)
+        {
+            profile.UpdateDate = DateTime.Now;
+
+            var profileKafedras = _profileKafedrasRepository.Get();
+            if (profile.ListPersDepartmentsId != null)
+            {
+                foreach (var item in profile.ListPersDepartmentsId)
+                {
+                    await _profileKafedrasRepository.RemoveRange(profileKafedras.Where(x => x.ProfileId == profile.Id));
+                    if (!profileKafedras.Any(x => x.PersDepartmentId == item.PersDepartmentId && x.ProfileId == item.ProfileId))
+                        await _profileKafedrasRepository.Create(item);
+                }
+            }
+            await Update(profile);
+            return profile;
+        }
+
         public async Task<Profile> RemoveProfile(int id)
         {
-            var profile = GetWithIncludeById(x => x.Id == id, x => x.Disciplines, x => x.FileModels, x => x.LevelEdu);
-            profile.Disciplines?.ForEach(x => x.StatusDiscipline = null);
+            var profiles = GetWithInclude(x => x.FileModels, x => x.LevelEdu, x => x.ListPersDepartmentsId).Include(x => x.Disciplines).ThenInclude(c => c.FileRPD);
+            var profile = profiles.FirstOrDefault(x => x.Id == id);
             await Remove(profile);
             return profile;
         }

@@ -4,7 +4,6 @@ using DomainServices.DtoModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SvedenOop.Services.Interfaces;
-using Infrastructure.Repository.InterfaceRepository;
 
 namespace SvedenOop.Controllers
 {
@@ -14,14 +13,12 @@ namespace SvedenOop.Controllers
     {
         private readonly IProfileRepository _profileRepository;
         private readonly IDisciplineRepository _disciplineRepository;
-        private readonly IProfileKafedrasRepository _profileKafedrasRepository;
         private readonly IAddFileOnServer _addFileOnServer;
 
-        public ProfilesController(IProfileRepository profileRepository, IDisciplineRepository disciplineRepository, IProfileKafedrasRepository profileKafedrasRepository, IAddFileOnServer addFileOnServer)
+        public ProfilesController(IProfileRepository profileRepository, IDisciplineRepository disciplineRepository, IAddFileOnServer addFileOnServer)
         {
             _profileRepository = profileRepository;
             _disciplineRepository = disciplineRepository;
-            _profileKafedrasRepository = profileKafedrasRepository;
             _addFileOnServer = addFileOnServer;
         }
 
@@ -136,18 +133,7 @@ namespace SvedenOop.Controllers
             if (profile == null)
                 return BadRequest("Ошибка передачи профиля");
 
-            profile.UpdateDate = DateTime.Now;
-
-            var profileKafedras = _profileKafedrasRepository.Get();
-            if (profile.ListPersDepartmentsId != null)
-            {
-                foreach (var item in profile.ListPersDepartmentsId)
-                {
-                    if (!profileKafedras.Any(x => x.PersDepartmentId == item.PersDepartmentId && x.ProfileId == item.ProfileId))
-                        await _profileKafedrasRepository.Create(item);
-                }
-            }
-            await _profileRepository.Update(profile);
+            await _profileRepository.UpdateProfile(profile);
             return Ok();
         }
 
@@ -166,7 +152,7 @@ namespace SvedenOop.Controllers
                 await _profileRepository.RemoveProfile(profileId);
                 return Ok();
             }
-            catch
+            catch (Exception ex)
             {
                 return BadRequest("Профиль не найден");
                 throw;
