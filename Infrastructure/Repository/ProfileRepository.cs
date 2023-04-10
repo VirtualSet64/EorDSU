@@ -33,13 +33,23 @@ namespace IfrastructureSvedenOop.Repository
             return dataForTableResponse;
         }
 
-        public List<DataForTableResponse> GetDataOpop2()
+        public List<DataForOpopTable> GetDataOpop2()
         {
-            List<DataForTableResponse> dataForTableResponse = new();
+            List<DataForOpopTable> dataForOpopTable = new();
             var profiles = GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.ListPersDepartmentsId, x => x.Disciplines);
 
-            FillingData(ref dataForTableResponse, ref profiles);
-            return dataForTableResponse;
+            var departments = _dSUActiveData.GetCaseSDepartments();
+            var edukinds = _dSUActiveData.GetCaseCEdukinds();
+            foreach (var item in profiles)
+            {
+                dataForOpopTable.Add(new()
+                {
+                    Profile = item,
+                    CaseCEdukind = item.CaseCEdukindId == null ? null : edukinds.FirstOrDefault(x => x.EdukindId == item.CaseCEdukindId),
+                    CaseSDepartment = item.CaseSDepartmentId == null ? null : departments.FirstOrDefault(x => x.DepartmentId == item.CaseSDepartmentId),
+                });
+            }
+            return dataForOpopTable;
         }
 
         public List<DataForTableResponse> GetDataByKafedraId(int kafedraId)
@@ -114,9 +124,9 @@ namespace IfrastructureSvedenOop.Repository
             var profileKafedras = _profileKafedrasRepository.Get();
             if (profile.ListPersDepartmentsId != null)
             {
+                await _profileKafedrasRepository.RemoveRange(profileKafedras.Where(x => x.ProfileId == profile.Id));
                 foreach (var item in profile.ListPersDepartmentsId)
                 {
-                    await _profileKafedrasRepository.RemoveRange(profileKafedras.Where(x => x.ProfileId == profile.Id));
                     if (!profileKafedras.Any(x => x.PersDepartmentId == item.PersDepartmentId && x.ProfileId == item.ProfileId))
                         await _profileKafedrasRepository.Create(item);
                 }
