@@ -4,6 +4,7 @@ using DomainServices.DtoModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SvedenOop.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace SvedenOop.Controllers
 {
@@ -31,7 +32,7 @@ namespace SvedenOop.Controllers
         public IActionResult GetDataForOopDgu()
         {
             var profileDto = _profileRepository.GetDataForOopDgu();
-            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
+            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Include(d => d.FileRPD).Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
             return Ok(profileDto);
         }
 
@@ -44,7 +45,7 @@ namespace SvedenOop.Controllers
         public IActionResult GetDataOpop2()
         {
             var profileDto = _profileRepository.GetDataOpop2();
-            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
+            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Include(d => d.FileRPD).Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
             return Ok(profileDto);
         }
 
@@ -58,7 +59,7 @@ namespace SvedenOop.Controllers
         public IActionResult GetDataByKafedraId(int kafedraId)
         {
             var profileDto = _profileRepository.GetDataByKafedraId(kafedraId);
-            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
+            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Include(d => d.FileRPD).Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
             return Ok(profileDto);
         }
 
@@ -72,7 +73,7 @@ namespace SvedenOop.Controllers
         public IActionResult GetDataByFacultyId(int facultyId)
         {
             var profileDto = _profileRepository.GetDataByFacultyId(facultyId);
-            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
+            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Include(d => d.FileRPD).Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
             return Ok(profileDto);
         }
 
