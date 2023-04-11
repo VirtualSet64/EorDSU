@@ -34,7 +34,7 @@ namespace SvedenOop.Controllers
             FileRPD fileRPD = new()
             {
                 DisciplineId = disciplineId,
-                Name = uploadedFile.Name,
+                Name = uploadedFile.FileName,
                 PersonId = authorId
             };
             if (_fileRPDRepository.Get().Any(x => x.Name == uploadedFile.FileName))

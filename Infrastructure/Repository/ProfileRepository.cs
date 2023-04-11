@@ -114,9 +114,10 @@ namespace IfrastructureSvedenOop.Repository
             var profileKafedras = _profileKafedrasRepository.Get();
             if (profile.ListPersDepartmentsId != null)
             {
+                await _profileKafedrasRepository.RemoveRange(profileKafedras.Where(x => x.ProfileId == profile.Id));
                 foreach (var item in profile.ListPersDepartmentsId)
                 {
-                    await _profileKafedrasRepository.RemoveRange(profileKafedras.Where(x => x.ProfileId == profile.Id));
+                    
                     if (!profileKafedras.Any(x => x.PersDepartmentId == item.PersDepartmentId && x.ProfileId == item.ProfileId))
                         await _profileKafedrasRepository.Create(item);
                 }

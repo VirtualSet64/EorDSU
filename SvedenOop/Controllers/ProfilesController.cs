@@ -44,6 +44,7 @@ namespace SvedenOop.Controllers
         public IActionResult GetDataOpop2()
         {
             var profileDto = _profileRepository.GetDataOpop2();
+            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
             return Ok(profileDto);
         }
 
