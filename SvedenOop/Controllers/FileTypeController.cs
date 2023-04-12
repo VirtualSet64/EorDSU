@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace SvedenOop.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class FileTypeController : Controller
