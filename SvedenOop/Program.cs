@@ -77,29 +77,6 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-using (var scope = app.Services.CreateScope())
-{
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<DomainServices.Entities.User>>();
-    var rolesManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    if (userManager.Users.ToList().Count == 0)
-    {
-        List<LoginViewModel> employees = new()
-        {
-            new LoginViewModel
-            {
-                Login = builder.Configuration["AdminLogin"],
-                Password = builder.Configuration["AdminPassword"]
-            },
-            new LoginViewModel
-            {
-                Login = builder.Configuration["UMULogin"],
-                Password = builder.Configuration["UMUPassword"],
-            }
-        };
-        await RoleInitializer.InitializeAsync(employees, userManager, rolesManager);
-    }
-}
-
 app.ConfigureExceptionHandler();
 
 // Configure the HTTP request pipeline.
@@ -111,10 +88,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors("MyAllowCredentialsPolicy");
 
+app.UseHttpsRedirection();
+
 app.UseDefaultFiles();
 app.UseStaticFiles();
-
-app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
