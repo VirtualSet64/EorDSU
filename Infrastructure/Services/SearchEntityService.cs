@@ -30,7 +30,7 @@ namespace Ifrastructure.Service
 
         public async Task<int?> SearchCaseSDepartment(string text)
         {
-            var item = await _dSUActiveData.GetCaseSDepartments().FirstOrDefaultAsync(c => c.DeptName.ToLower() == text.ToLower());
+            var item = await _dSUActiveData.GetCaseSDepartments().Result.FirstOrDefaultAsync(c => c.DeptName.ToLower() == text.ToLower());
             if (item != null)
                 return item.DepartmentId;
             return null;

@@ -1,6 +1,7 @@
 ﻿using BasePersonDBService.DataContext;
 using BasePersonDBService.Interfaces;
 using BasePersonDBService.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BasePersonDBService.Services
 {
@@ -29,7 +30,9 @@ namespace BasePersonDBService.Services
 
         public IQueryable<PersDepartment> GetPersDepartments()
         {
-            return _bASEPERSONMDFContext.PersDepartments.Where(x => x.IsActive == 1 && x.IsKaf == 1);
+            return _bASEPERSONMDFContext.PersDepartments.FromSqlRaw("SELECT *\r\n  " +
+                "FROM [BASEPERSON.MDF].[dbo].[pers_departments]\r\n  " +
+                "where is_active = 1 and (dep_name like 'Кафедра%' or dep_name like 'Kафедра%')");
         }
 
         public PersDivision GetPersDivisionById(int id)

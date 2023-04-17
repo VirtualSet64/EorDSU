@@ -1,6 +1,7 @@
 ﻿using DSUContextDBService.DataContext;
 using DSUContextDBService.Interfaces;
 using DSUContextDBService.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace DSUContextDBService.Services
 {
@@ -25,7 +26,8 @@ namespace DSUContextDBService.Services
 
         public CaseSDepartment GetCaseSDepartmentById(int? id)
         {
-            return _dSUContext.CaseSDepartments.FirstOrDefault(x => x.DepartmentId == id);
+            var departments = _dSUContext.CaseSDepartments.Where(x => x.DepartmentId == id);
+            return departments.Count() > 1 ? departments.FirstOrDefault(x => x.Deleted) : departments.FirstOrDefault(x => x.Deleted == false);
         }
 
         public IQueryable<CaseSDepartment> GetCaseSDepartmentByFacultyId(int? id)
@@ -33,9 +35,16 @@ namespace DSUContextDBService.Services
             return _dSUContext.CaseSDepartments.Where(x => x.Deleted == false && x.FacId == id);
         }
 
-        public IQueryable<CaseSDepartment> GetCaseSDepartments()
+        public async Task<IQueryable<CaseSDepartment>> GetCaseSDepartments()
         {
-            return _dSUContext.CaseSDepartments.Where(x => x.Deleted == false);
+            var departments = _dSUContext.CaseSDepartments.Where(x => x.Deleted == false);
+            await departments.ForEachAsync(c => c.DeptName = c.DeptName.Split("(")[0]);
+            return departments;
+        }
+
+        public IQueryable<CaseCFaculty> GetFaculties()
+        {
+            return _dSUContext.CaseCFaculties.Where(x => x.Deleted == false && x.FacId > 0);
         }
     }
 }

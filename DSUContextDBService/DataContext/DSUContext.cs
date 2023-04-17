@@ -10,11 +10,35 @@ namespace DSUContextDBService.DataContext
         {
         }
 
+        public virtual DbSet<CaseCFaculty> CaseCFaculties { get; set; } = null!;
         public virtual DbSet<CaseCEdukind> CaseCEdukinds { get; set; } = null!;
         public virtual DbSet<CaseSDepartment> CaseSDepartments { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<CaseCFaculty>(entity =>
+            {
+                entity.HasNoKey();
+
+                entity.ToView("CASE_C_FACULTY");
+
+                entity.Property(e => e.Abr)
+                    .HasMaxLength(10)
+                    .IsUnicode(false)
+                    .HasColumnName("ABR");
+
+                entity.Property(e => e.College).HasColumnName("COLLEGE");
+
+                entity.Property(e => e.Deleted).HasColumnName("DELETED");
+
+                entity.Property(e => e.FacId).HasColumnName("FAC_ID");
+
+                entity.Property(e => e.FacName)
+                    .HasMaxLength(50)
+                    .IsUnicode(false)
+                    .HasColumnName("FAC_NAME");
+            });
+
             modelBuilder.Entity<CaseCEdukind>(entity =>
             {
                 entity.HasNoKey();

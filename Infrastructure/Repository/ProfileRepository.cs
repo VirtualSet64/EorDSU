@@ -69,14 +69,24 @@ namespace IfrastructureSvedenOop.Repository
         {
             var departments = _dSUActiveData.GetCaseSDepartments();
             var edukinds = _dSUActiveData.GetCaseCEdukinds();
-            foreach (var item in profiles)
+
+            var profilesGrouped = profiles.OrderByDescending(x => x.Year).ThenBy(x => x.CaseCEdukindId).ToList()
+                .GroupBy(x => _dSUActiveData.GetCaseSDepartmentById(x.CaseSDepartmentId).FacId).ToList();
+
+            foreach (var item in profilesGrouped)
             {
-                dataForTableResponse.Add(new()
+                foreach (var groupByDepartment in item.GroupBy(c=>c.CaseSDepartmentId))
                 {
-                    Profile = item,
-                    CaseCEdukind = item.CaseCEdukindId == null ? null : edukinds.FirstOrDefault(x => x.EdukindId == item.CaseCEdukindId),
-                    CaseSDepartment = item.CaseSDepartmentId == null ? null : departments.FirstOrDefault(x => x.DepartmentId == item.CaseSDepartmentId),
-                });
+                    foreach (var profile in groupByDepartment)
+                    {
+                        dataForTableResponse.Add(new()
+                        {
+                            Profile = profile,
+                            CaseCEdukind = profile.CaseCEdukindId == null ? null : edukinds.FirstOrDefault(x => x.EdukindId == profile.CaseCEdukindId),
+                            CaseSDepartment = profile.CaseSDepartmentId == null ? null : departments.Result.FirstOrDefault(x => x.DepartmentId == profile.CaseSDepartmentId),
+                        });
+                    }
+                }
             }
         }
 
@@ -117,7 +127,7 @@ namespace IfrastructureSvedenOop.Repository
                 await _profileKafedrasRepository.RemoveRange(profileKafedras.Where(x => x.ProfileId == profile.Id));
                 foreach (var item in profile.ListPersDepartmentsId)
                 {
-                    
+
                     if (!profileKafedras.Any(x => x.PersDepartmentId == item.PersDepartmentId && x.ProfileId == item.ProfileId))
                         await _profileKafedrasRepository.Create(item);
                 }
