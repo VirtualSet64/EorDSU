@@ -83,7 +83,7 @@ namespace IfrastructureSvedenOop.Repository
                         {
                             Profile = profile,
                             CaseCEdukind = profile.CaseCEdukindId == null ? null : edukinds.FirstOrDefault(x => x.EdukindId == profile.CaseCEdukindId),
-                            CaseSDepartment = profile.CaseSDepartmentId == null ? null : departments.Result.FirstOrDefault(x => x.DepartmentId == profile.CaseSDepartmentId),
+                            CaseSDepartment = profile.CaseSDepartmentId == null ? null : departments.FirstOrDefault(x => x.DepartmentId == profile.CaseSDepartmentId),
                         });
                     }
                 }

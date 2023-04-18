@@ -1,6 +1,5 @@
 using BasePersonDBService.DataContext;
 using DSUContextDBService.DataContext;
-using DomainServices.DtoModels.Account;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Sentry;

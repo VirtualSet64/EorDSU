@@ -4,7 +4,7 @@ namespace DSUContextDBService.Interfaces
 {
     public interface IDSUActiveData
     {
-        public Task<IQueryable<CaseSDepartment>> GetCaseSDepartments();
+        public IQueryable<CaseSDepartment> GetCaseSDepartments();
         public CaseSDepartment GetCaseSDepartmentById(int? id);
         public IQueryable<CaseSDepartment> GetCaseSDepartmentByFacultyId(int? id);
         public IQueryable<CaseCEdukind> GetCaseCEdukinds();

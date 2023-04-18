@@ -2,12 +2,21 @@
 using DSUContextDBService.Interfaces;
 using DSUContextDBService.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace DSUContextDBService.Services
 {
     public class DSUActiveData : IDSUActiveData
     {
         private readonly DSUContext _dSUContext;
+        /// <summary>
+        /// 24 - Экономический колледж, 
+        /// 25 - Аспирантура, 
+        /// 97 - Факультет советской торговли, 
+        /// 98 - Международного образования,
+        /// 99 - Межфакультет
+        /// </summary>
+        private readonly int[] idBanFaculties = { 24, 25, 97, 98, 99 };
 
         public DSUActiveData(DSUContext dSUContext)
         {
@@ -35,16 +44,26 @@ namespace DSUContextDBService.Services
             return _dSUContext.CaseSDepartments.Where(x => x.Deleted == false && x.FacId == id);
         }
 
-        public async Task<IQueryable<CaseSDepartment>> GetCaseSDepartments()
+        public IQueryable<CaseSDepartment> GetCaseSDepartments()
         {
             var departments = _dSUContext.CaseSDepartments.Where(x => x.Deleted == false);
-            await departments.ForEachAsync(c => c.DeptName = c.DeptName.Split("(")[0]);
+
+            departments = departments.Select(c => new CaseSDepartment()
+            {
+                DepartmentId = c.DepartmentId,
+                DeptName = c.DeptName.Split('(', StringSplitOptions.None)[0],
+                Abr = c.Abr,
+                Code = c.Code,
+                FacId = c.FacId,
+                Qualification = c.Qualification,
+                Deleted = c.Deleted
+            });
             return departments;
         }
 
         public IQueryable<CaseCFaculty> GetFaculties()
         {
-            return _dSUContext.CaseCFaculties.Where(x => x.Deleted == false && x.FacId > 0);
+            return _dSUContext.CaseCFaculties.Where(x => x.Deleted == false && x.FacId > 0 && !idBanFaculties.Any(c => c == x.FacId));
         }
     }
 }
