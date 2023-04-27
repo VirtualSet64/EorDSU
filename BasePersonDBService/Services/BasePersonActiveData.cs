@@ -28,11 +28,15 @@ namespace BasePersonDBService.Services
             return _bASEPERSONMDFContext.PersDepartments.FirstOrDefault(x => x.DepName == name);
         }
 
+        /// <summary>
+        /// Получить все кафедры и Лицей ДГУ
+        /// </summary>
+        /// <returns></returns>
         public IQueryable<PersDepartment> GetPersDepartments()
         {
             return _bASEPERSONMDFContext.PersDepartments.FromSqlRaw("SELECT *\r\n  " +
                 "FROM [BASEPERSON.MDF].[dbo].[pers_departments]\r\n  " +
-                "where is_active = 1 and (dep_name like 'Кафедра%' or dep_name like 'Kафедра%')");
+                "where is_active = 1 and (dep_name like 'Кафедра%' or dep_name like 'Kафедра%') or dep_id=1436");
         }
 
         public PersDivision GetPersDivisionById(int id)

@@ -21,7 +21,7 @@ namespace DomainServices.DBService
             : base(options)
         {
             //Database.EnsureDeleted();   // удаляем базу данных при первом обращении
-            Database.EnsureCreated();   // создаем базу данных при первом обращении
+            //Database.EnsureCreated();   // создаем базу данных при первом обращении
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

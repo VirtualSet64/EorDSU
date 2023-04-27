@@ -35,23 +35,24 @@ namespace DSUContextDBService.Services
 
         public CaseSDepartment GetCaseSDepartmentById(int? id)
         {
-            var departments = _dSUContext.CaseSDepartments.Where(x => x.DepartmentId == id);
+            var departments = GetCaseSDepartments().Where(x => x.DepartmentId == id && _dSUContext.CaseCFaculties.FirstOrDefault(c=>c.FacId == x.FacId).Deleted == false);
+            
             return departments.Count() > 1 ? departments.FirstOrDefault(x => x.Deleted) : departments.FirstOrDefault(x => x.Deleted == false);
         }
 
         public IQueryable<CaseSDepartment> GetCaseSDepartmentByFacultyId(int? id)
         {
-            return _dSUContext.CaseSDepartments.Where(x => x.Deleted == false && x.FacId == id);
+            return GetCaseSDepartments().Where(x => x.Deleted == false && x.FacId == id);
         }
 
         public IQueryable<CaseSDepartment> GetCaseSDepartments()
         {
-            var departments = _dSUContext.CaseSDepartments.Where(x => x.Deleted == false);
+            var departments = _dSUContext.CaseSDepartments.Where(x=>x.DepartmentId > 0);
 
             departments = departments.Select(c => new CaseSDepartment()
             {
                 DepartmentId = c.DepartmentId,
-                DeptName = c.DeptName.Split('(', StringSplitOptions.None)[0],
+                DeptName = c.DeptName.Split('(', StringSplitOptions.None)[0].Trim(),
                 Abr = c.Abr,
                 Code = c.Code,
                 FacId = c.FacId,
@@ -64,6 +65,11 @@ namespace DSUContextDBService.Services
         public IQueryable<CaseCFaculty> GetFaculties()
         {
             return _dSUContext.CaseCFaculties.Where(x => x.Deleted == false && x.FacId > 0 && !idBanFaculties.Any(c => c == x.FacId));
+        }
+
+        public CaseCFaculty GetFacultyById(int id)
+        {
+            return _dSUContext.CaseCFaculties.FirstOrDefault(x => x.FacId == id && x.Deleted == false && x.FacId > 0 && !idBanFaculties.Any(c => c == x.FacId));
         }
     }
 }

@@ -7,6 +7,8 @@ using DomainServices.DtoModels;
 using Microsoft.EntityFrameworkCore;
 using DomainServices.DBService;
 using Infrastructure.Repository.InterfaceRepository;
+using DSUContextDBService.Models;
+using System.Data;
 
 namespace IfrastructureSvedenOop.Repository
 {
@@ -67,26 +69,24 @@ namespace IfrastructureSvedenOop.Repository
 
         private void FillingData(ref List<DataForTableResponse> dataForTableResponse, ref IQueryable<Profile> profiles)
         {
-            var departments = _dSUActiveData.GetCaseSDepartments();
             var edukinds = _dSUActiveData.GetCaseCEdukinds();
 
-            var profilesGrouped = profiles.OrderByDescending(x => x.Year).ThenBy(x => x.CaseCEdukindId).ToList()
-                .GroupBy(x => _dSUActiveData.GetCaseSDepartmentById(x.CaseSDepartmentId).FacId).ToList();
+            var sortedProfiles = profiles.ToList().OrderBy(x => _dSUActiveData.GetCaseSDepartmentById(x.CaseSDepartmentId).FacId)
+                              .ThenBy(x => x.LevelEduId)
+                              .ThenBy(x => x.CaseCEdukindId)
+                              .ThenBy(x => x.ProfileName)
+                              .ThenByDescending(x => x.Year).ToList();
 
-            foreach (var item in profilesGrouped)
+            foreach (var profile in sortedProfiles)
             {
-                foreach (var groupByDepartment in item.GroupBy(c=>c.CaseSDepartmentId))
+                dataForTableResponse.Add(new()
                 {
-                    foreach (var profile in groupByDepartment)
-                    {
-                        dataForTableResponse.Add(new()
-                        {
-                            Profile = profile,
-                            CaseCEdukind = profile.CaseCEdukindId == null ? null : edukinds.FirstOrDefault(x => x.EdukindId == profile.CaseCEdukindId),
-                            CaseSDepartment = profile.CaseSDepartmentId == null ? null : departments.FirstOrDefault(x => x.DepartmentId == profile.CaseSDepartmentId),
-                        });
-                    }
-                }
+                    Profile = profile,
+                    CaseCEdukind = profile.CaseCEdukindId == null ? null : edukinds.FirstOrDefault(x => x.EdukindId == profile.CaseCEdukindId),
+                    CaseSDepartment = profile.CaseSDepartmentId == null
+                        ? null
+                        : _dSUActiveData.GetCaseSDepartmentById(profile.CaseSDepartmentId)
+                });
             }
         }
 
