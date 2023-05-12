@@ -15,12 +15,16 @@ namespace SvedenOop.Controllers
         private readonly IProfileRepository _profileRepository;
         private readonly IDisciplineRepository _disciplineRepository;
         private readonly IAddFileOnServer _addFileOnServer;
-
-        public ProfilesController(IProfileRepository profileRepository, IDisciplineRepository disciplineRepository, IAddFileOnServer addFileOnServer)
+        private readonly IHostEnvironment _hostEnvironment;
+        private string FilePath { get; set; }
+        public ProfilesController(IProfileRepository profileRepository, IDisciplineRepository disciplineRepository, IAddFileOnServer addFileOnServer, 
+                                  IHostEnvironment hostEnvironment, IConfiguration configuration)
         {
             _profileRepository = profileRepository;
             _disciplineRepository = disciplineRepository;
             _addFileOnServer = addFileOnServer;
+            _hostEnvironment = hostEnvironment;
+            FilePath = _hostEnvironment.ContentRootPath + configuration["FileJson"];
         }
 
         /// <summary>
@@ -31,9 +35,17 @@ namespace SvedenOop.Controllers
         [HttpGet]
         public IActionResult GetDataForOopDgu()
         {
-            var profileDto = _profileRepository.GetDataForOopDgu();
-            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Include(d => d.FileRPD).Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
-            return Ok(profileDto);
+            //var profileDto = _profileRepository.GetDataForOopDgu();
+            //profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Include(d => d.FileRPD).Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
+
+            //string json = Newtonsoft.Json.JsonConvert.SerializeObject(profileDto, Newtonsoft.Json.Formatting.Indented,
+            //    new JsonSerializerSettings
+            //    {
+            //        PreserveReferencesHandling = PreserveReferencesHandling.Objects
+            //    });
+            string text = System.IO.File.ReadAllText(FilePath);
+            //System.IO.File.WriteAllText(FilePath, json);
+            return Ok(text);
         }
 
         /// <summary>
@@ -46,6 +58,7 @@ namespace SvedenOop.Controllers
         {
             var profileDto = _profileRepository.GetDataOpop2();
             profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Include(d => d.FileRPD).Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
+
             return Ok(profileDto);
         }
 

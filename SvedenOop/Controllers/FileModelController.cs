@@ -46,13 +46,12 @@ namespace SvedenOop.Controllers
             }
             else
                 file.Name = formFile?.FileName;
-            
+
             if (!_fileModelRepository.Get().Any(x => x.Name == file.Name))
             {
                 if (formFile != null)
                     await _addFilesOnServer.CreateFile(formFile);
-                else
-                    await _fileModelRepository.Create(file);
+                await _fileModelRepository.Create(file);
                 return Ok();
             }
             return BadRequest("Файл с таким названием уже существует");
@@ -63,15 +62,19 @@ namespace SvedenOop.Controllers
         /// </summary>
         /// <param name="fileId"></param>
         /// <param name="fileName"></param>
+        /// <param name="linkToFile"></param>
         /// <param name="formFile"></param>
         /// <returns></returns>
         [Route("EditFileModel")]
         [HttpPut]
-        public async Task<IActionResult> EditFile(int fileId, string fileName, IFormFile? formFile)
+        public async Task<IActionResult> EditFile(int fileId, string fileName, string? linkToFile, IFormFile? formFile)
         {
             FileModel file = _fileModelRepository.FindById(fileId);
             if (file == null)
                 return BadRequest("Файл не найден");
+
+            if (linkToFile != null)
+                file.LinkToFile = linkToFile;
 
             file.OutputFileName = fileName;
             file.UpdateDate = DateTime.Now;

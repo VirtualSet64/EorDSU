@@ -9,6 +9,11 @@ using DomainServices.DBService;
 using Infrastructure.Repository.InterfaceRepository;
 using DSUContextDBService.Models;
 using System.Data;
+using Newtonsoft.Json;
+using Microsoft.AspNetCore.Hosting.Internal;
+using Grpc.Core;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
 
 namespace IfrastructureSvedenOop.Repository
 {
@@ -18,16 +23,23 @@ namespace IfrastructureSvedenOop.Repository
         private readonly IExcelParsingService _excelParsingService;
         private readonly IProfileKafedrasRepository _profileKafedrasRepository;
 
-        public ProfileRepository(ApplicationContext dbContext, IDSUActiveData dSUActiveData, IExcelParsingService excelParsingService, IProfileKafedrasRepository profileKafedrasRepository)
+
+
+
+        public ProfileRepository(ApplicationContext dbContext, IDSUActiveData dSUActiveData, IExcelParsingService excelParsingService, IProfileKafedrasRepository profileKafedrasRepository, IHostingEnvironment HostEnvironment)
             : base(dbContext)
         {
             _dSUActiveData = dSUActiveData;
             _excelParsingService = excelParsingService;
             _profileKafedrasRepository = profileKafedrasRepository;
+            
         }
 
         public List<DataForTableResponse> GetDataForOopDgu()
         {
+            
+            
+
             List<DataForTableResponse> dataForTableResponse = new();
             var profiles = GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.ListPersDepartmentsId);
 
