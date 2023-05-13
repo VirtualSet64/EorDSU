@@ -1,10 +1,10 @@
 ﻿using DSUContextDBService.Interfaces;
-using Ifrastructure.Services.Interface;
+using Infrastructure.Services.Interface;
 using DomainServices.Entities;
-using Ifrastructure.Repository.InterfaceRepository;
+using Infrastructure.Repository.InterfaceRepository;
 using Microsoft.EntityFrameworkCore;
 
-namespace Ifrastructure.Service
+namespace Infrastructure.Service
 {
     public class SearchEntityService : ISearchEntityService
     {
@@ -30,9 +30,11 @@ namespace Ifrastructure.Service
 
         public async Task<int?> SearchCaseSDepartment(string text)
         {
-            var item = await _dSUActiveData.GetCaseSDepartments().FirstOrDefaultAsync(c => c.DeptName.ToLower() == text.ToLower());
+            var item = _dSUActiveData.GetCaseSDepartments().ToList();
+
+            var dsd = item.FirstOrDefault(c => c.DeptName == text);
             if (item != null)
-                return item.DepartmentId;
+                return dsd.DepartmentId;
             return null;
         }
 

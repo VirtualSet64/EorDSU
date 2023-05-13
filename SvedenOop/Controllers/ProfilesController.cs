@@ -1,5 +1,5 @@
 ﻿using DomainServices.Entities;
-using Ifrastructure.Repository.InterfaceRepository;
+using Infrastructure.Repository.InterfaceRepository;
 using DomainServices.DtoModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,16 +15,13 @@ namespace SvedenOop.Controllers
         private readonly IProfileRepository _profileRepository;
         private readonly IDisciplineRepository _disciplineRepository;
         private readonly IAddFileOnServer _addFileOnServer;
-        private readonly IHostEnvironment _hostEnvironment;
-        private string FilePath { get; set; }
-        public ProfilesController(IProfileRepository profileRepository, IDisciplineRepository disciplineRepository, IAddFileOnServer addFileOnServer, 
-                                  IHostEnvironment hostEnvironment, IConfiguration configuration)
+        private readonly IGenerateJsonService _generateJsonService;
+        public ProfilesController(IProfileRepository profileRepository, IDisciplineRepository disciplineRepository, IAddFileOnServer addFileOnServer, IGenerateJsonService generateJsonService)
         {
             _profileRepository = profileRepository;
             _disciplineRepository = disciplineRepository;
             _addFileOnServer = addFileOnServer;
-            _hostEnvironment = hostEnvironment;
-            FilePath = _hostEnvironment.ContentRootPath + configuration["FileJson"];
+            _generateJsonService = generateJsonService;
         }
 
         /// <summary>
@@ -35,21 +32,12 @@ namespace SvedenOop.Controllers
         [HttpGet]
         public IActionResult GetDataForOopDgu()
         {
-            //var profileDto = _profileRepository.GetDataForOopDgu();
-            //profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Include(d => d.FileRPD).Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
-
-            //string json = Newtonsoft.Json.JsonConvert.SerializeObject(profileDto, Newtonsoft.Json.Formatting.Indented,
-            //    new JsonSerializerSettings
-            //    {
-            //        PreserveReferencesHandling = PreserveReferencesHandling.Objects
-            //    });
-            string text = System.IO.File.ReadAllText(FilePath);
-            //System.IO.File.WriteAllText(FilePath, json);
+            string text = _generateJsonService.GetGeneratedJsonFile();
             return Ok(text);
         }
 
         /// <summary>
-        /// Получение всех данных для /Sveden/Opop2
+        /// Получение всех данных для таблицы /Sveden/Opop2
         /// </summary>
         /// <returns></returns>
         [Route("GetDataOpop2")]
@@ -125,6 +113,8 @@ namespace SvedenOop.Controllers
 
             profile.Disciplines?.ForEach(x => x.StatusDiscipline = null);
             await _profileRepository.Create(profile);
+
+            new Task(() => _generateJsonService.GenerateJsonFile());
             return Ok();
         }
 
@@ -161,6 +151,7 @@ namespace SvedenOop.Controllers
                 return BadRequest("Ошибка передачи профиля");
 
             await _profileRepository.UpdateProfile(profile);
+            new Task(() => _generateJsonService.GenerateJsonFile());
             return Ok();
         }
 
@@ -177,9 +168,10 @@ namespace SvedenOop.Controllers
             try
             {
                 await _profileRepository.RemoveProfile(profileId);
+                new Task(() => _generateJsonService.GenerateJsonFile());
                 return Ok();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return BadRequest("Профиль не найден");
                 throw;

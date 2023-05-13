@@ -3,7 +3,7 @@ using DomainServices.DtoModels.Account;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Ifrastructure.Repository.InterfaceRepository;
+using Infrastructure.Repository.InterfaceRepository;
 using DomainServices.DtoModels;
 using BasePersonDBService.Interfaces;
 using Microsoft.EntityFrameworkCore;

@@ -1,45 +1,30 @@
 ﻿using DSUContextDBService.Interfaces;
-using Ifrastructure.Common;
+using Infrastructure.Common;
 using DomainServices.Entities;
-using Ifrastructure.Repository.InterfaceRepository;
-using Ifrastructure.Services.Interface;
+using Infrastructure.Repository.InterfaceRepository;
+using Infrastructure.Services.Interface;
 using DomainServices.DtoModels;
 using Microsoft.EntityFrameworkCore;
 using DomainServices.DBService;
-using Infrastructure.Repository.InterfaceRepository;
-using DSUContextDBService.Models;
 using System.Data;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.Hosting.Internal;
-using Grpc.Core;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Hosting;
 
-namespace IfrastructureSvedenOop.Repository
+namespace InfrastructureSvedenOop.Repository
 {
     public class ProfileRepository : GenericRepository<Profile>, IProfileRepository
     {
         private readonly IDSUActiveData _dSUActiveData;
         private readonly IExcelParsingService _excelParsingService;
         private readonly IProfileKafedrasRepository _profileKafedrasRepository;
-
-
-
-
-        public ProfileRepository(ApplicationContext dbContext, IDSUActiveData dSUActiveData, IExcelParsingService excelParsingService, IProfileKafedrasRepository profileKafedrasRepository, IHostingEnvironment HostEnvironment)
+        public ProfileRepository(ApplicationContext dbContext, IDSUActiveData dSUActiveData, IExcelParsingService excelParsingService, IProfileKafedrasRepository profileKafedrasRepository)
             : base(dbContext)
         {
             _dSUActiveData = dSUActiveData;
             _excelParsingService = excelParsingService;
-            _profileKafedrasRepository = profileKafedrasRepository;
-            
+            _profileKafedrasRepository = profileKafedrasRepository;            
         }
 
         public List<DataForTableResponse> GetDataForOopDgu()
         {
-            
-            
-
             List<DataForTableResponse> dataForTableResponse = new();
             var profiles = GetWithInclude(x => x.LevelEdu, x => x.FileModels, x => x.ListPersDepartmentsId);
 

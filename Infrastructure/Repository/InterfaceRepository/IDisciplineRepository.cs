@@ -1,8 +1,8 @@
-﻿using Ifrastructure.Common.Interfaces;
+﻿using Infrastructure.Common.Interfaces;
 using DomainServices.Entities;
 using DomainServices.DtoModels;
 
-namespace Ifrastructure.Repository.InterfaceRepository
+namespace Infrastructure.Repository.InterfaceRepository
 {
     public interface IDisciplineRepository : IGenericRepository<Discipline>
     {

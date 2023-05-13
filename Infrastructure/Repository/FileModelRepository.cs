@@ -1,9 +1,9 @@
-﻿using Ifrastructure.Common;
+﻿using Infrastructure.Common;
 using DomainServices.Entities;
-using Ifrastructure.Repository.InterfaceRepository;
+using Infrastructure.Repository.InterfaceRepository;
 using DomainServices.DBService;
 
-namespace Ifrastructure.Repository
+namespace Infrastructure.Repository
 {
     public class FileModelRepository : GenericRepository<FileModel>, IFileModelRepository
     {

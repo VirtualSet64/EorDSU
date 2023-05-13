@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using DomainServices.DtoModels;
 using BasePersonDBService.Interfaces;
-using Ifrastructure.Repository.InterfaceRepository;
+using Infrastructure.Repository.InterfaceRepository;
 
 namespace SvedenOop.Controllers
 {

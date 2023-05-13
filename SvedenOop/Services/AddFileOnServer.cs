@@ -7,16 +7,18 @@ namespace SvedenOop.Services
         private readonly IWebHostEnvironment _appEnvironment;
         private readonly IConfiguration Configuration;
         private readonly IHostEnvironment _hostEnvironment;
-        public AddFileOnServer(IWebHostEnvironment appEnvironment, IConfiguration configuration, IHostEnvironment hostEnvironment)
+        private string FileFolderPath { get; set; }
+        public AddFileOnServer(IWebHostEnvironment appEnvironment, IHostEnvironment hostEnvironment, IConfiguration configuration)
         {
             _appEnvironment = appEnvironment;
             Configuration = configuration;
             _hostEnvironment = hostEnvironment;
+            FileFolderPath = _hostEnvironment.ContentRootPath + Configuration["FileFolderFullPath"];
         }
 
         public async Task<string> CreateFile(IFormFile uploadedFile)
         {
-            string path = _hostEnvironment.ContentRootPath + Configuration["FileFolder"] + uploadedFile.FileName;
+            string path = FileFolderPath + uploadedFile.FileName;
             using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
                 await uploadedFile.CopyToAsync(fileStream);
             return path;

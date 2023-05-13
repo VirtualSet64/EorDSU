@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 
-namespace Ifrastructure.Logger
+namespace Infrastructure.Logger
 {
     public class FileLoggerProvider : ILoggerProvider
     {

@@ -1,7 +1,8 @@
 ﻿using DomainServices.Entities;
-using Ifrastructure.Repository.InterfaceRepository;
+using Infrastructure.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SvedenOop.Services.Interfaces;
 
 namespace SvedenOop.Controllers
 {
@@ -10,10 +11,12 @@ namespace SvedenOop.Controllers
     public class FileTypeController : Controller
     {
         private readonly IFileTypeRepository _fileTypeRepository;
+        private readonly IGenerateJsonService _generateJsonService;
 
-        public FileTypeController(IFileTypeRepository fileTypeRepository)
+        public FileTypeController(IFileTypeRepository fileTypeRepository, IGenerateJsonService generateJsonService)
         {
             _fileTypeRepository = fileTypeRepository;
+            _generateJsonService = generateJsonService;
         }
 
         [Route("GetFileTypes")]
@@ -38,6 +41,7 @@ namespace SvedenOop.Controllers
         public async Task<IActionResult> EditFileType(FileType fileType)
         {
             await _fileTypeRepository.Update(fileType);
+            new Task(() => _generateJsonService.GenerateJsonFile());
             return Ok();
         }
 
@@ -46,7 +50,16 @@ namespace SvedenOop.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteFileType(int fileTypeId)
         {
-            await _fileTypeRepository.Remove(fileTypeId);
+            try
+            {
+                await _fileTypeRepository.Remove(fileTypeId);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Невозможно удалить данный тип файла из-за дочерних объектов");
+                throw;
+            }
+
             return Ok();
         }
     }

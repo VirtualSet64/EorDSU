@@ -1,6 +1,6 @@
 ﻿using DomainServices.Entities;
 using SvedenOop.Services.Interfaces;
-using Ifrastructure.Repository.InterfaceRepository;
+using Infrastructure.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,11 +13,13 @@ namespace SvedenOop.Controllers
     {
         private readonly IFileRPDRepository _fileRPDRepository;
         private readonly IAddFileOnServer _addFileOnServer;
+        private readonly IGenerateJsonService _generateJsonService;
 
-        public FileRPDController(IFileRPDRepository fileRPDRepository, IAddFileOnServer addFileOnServer)
+        public FileRPDController(IFileRPDRepository fileRPDRepository, IAddFileOnServer addFileOnServer, IGenerateJsonService generateJsonService)
         {
             _fileRPDRepository = fileRPDRepository;
             _addFileOnServer = addFileOnServer;
+            _generateJsonService = generateJsonService;
         }
 
         /// <summary>
@@ -44,6 +46,7 @@ namespace SvedenOop.Controllers
 
             await _fileRPDRepository.Create(fileRPD);
 
+            new Task(() => _generateJsonService.GenerateJsonFile());
             return Ok();
         }
 
@@ -57,6 +60,7 @@ namespace SvedenOop.Controllers
         public async Task<IActionResult> DeleteRPD(int fileRPDId)
         {
             await _fileRPDRepository.Remove(fileRPDId);
+            new Task(() => _generateJsonService.GenerateJsonFile());
             return Ok();
         }
     }

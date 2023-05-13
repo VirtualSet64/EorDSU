@@ -1,9 +1,10 @@
 ﻿using DomainServices.Entities;
-using Ifrastructure.Repository.InterfaceRepository;
+using Infrastructure.Repository.InterfaceRepository;
 using DomainServices.DtoModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SvedenOop.Services.Interfaces;
 
 namespace SvedenOop.Controllers
 {
@@ -13,11 +14,13 @@ namespace SvedenOop.Controllers
     {
         private readonly IDisciplineRepository _disciplineRepository;
         private readonly IUmuAndFacultyRepository _umuAndFacultyRepository;
+        private readonly IGenerateJsonService _generateJsonService;
 
-        public DisciplineController(IDisciplineRepository disciplineRepository, IUmuAndFacultyRepository umuAndFacultyRepository)
+        public DisciplineController(IDisciplineRepository disciplineRepository, IUmuAndFacultyRepository umuAndFacultyRepository, IGenerateJsonService generateJsonService)
         {
             _disciplineRepository = disciplineRepository;
             _umuAndFacultyRepository = umuAndFacultyRepository;
+            _generateJsonService = generateJsonService;
         }
 
         /// <summary>
@@ -76,6 +79,7 @@ namespace SvedenOop.Controllers
                 return BadRequest("Такая дисциплина существует");
 
             await _disciplineRepository.Create(discipline);
+            new Task(() => _generateJsonService.GenerateJsonFile());
             return Ok();
         }
 
@@ -94,6 +98,7 @@ namespace SvedenOop.Controllers
 
             discipline.UpdateDate = DateTime.Now;
             await _disciplineRepository.Update(discipline);
+            new Task(() => _generateJsonService.GenerateJsonFile());
             return Ok();
         }
 
@@ -109,6 +114,7 @@ namespace SvedenOop.Controllers
         {
             if (await _disciplineRepository.RemoveDiscipline(disciplineId) == null)
                 return BadRequest("Такой дисциплины не существует");
+            new Task(() => _generateJsonService.GenerateJsonFile());
             return Ok();
         }
 

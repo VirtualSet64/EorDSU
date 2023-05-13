@@ -1,12 +1,12 @@
 ﻿using DSUContextDBService.Interfaces;
-using Ifrastructure.Common;
+using Infrastructure.Common;
 using DomainServices.Entities;
-using Ifrastructure.Repository.InterfaceRepository;
+using Infrastructure.Repository.InterfaceRepository;
 using DomainServices.DtoModels;
 using Microsoft.EntityFrameworkCore;
 using DomainServices.DBService;
 
-namespace Ifrastructure.Repository
+namespace Infrastructure.Repository
 {
     public class DisciplineRepository : GenericRepository<Discipline>, IDisciplineRepository
     {
