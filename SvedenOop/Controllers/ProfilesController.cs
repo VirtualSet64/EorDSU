@@ -32,7 +32,7 @@ namespace SvedenOop.Controllers
         [HttpGet]
         public IActionResult GetDataForOopDgu()
         {
-            string text = _generateJsonService.GetGeneratedJsonFile();
+            string text = _generateJsonService.GetGeneratedJsonFileForOopDgu();
             return Ok(text);
         }
 
@@ -44,10 +44,8 @@ namespace SvedenOop.Controllers
         [HttpGet]
         public IActionResult GetDataOpop2()
         {
-            var profileDto = _profileRepository.GetDataOpop2();
-            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Include(d => d.FileRPD).Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
-
-            return Ok(profileDto);
+            string text = _generateJsonService.GetGeneratedJsonFileForOpop2();
+            return Ok(text);
         }
 
         /// <summary>
@@ -113,8 +111,6 @@ namespace SvedenOop.Controllers
 
             profile.Disciplines?.ForEach(x => x.StatusDiscipline = null);
             await _profileRepository.Create(profile);
-
-            new Task(() => _generateJsonService.GenerateJsonFile());
             return Ok();
         }
 
@@ -151,7 +147,6 @@ namespace SvedenOop.Controllers
                 return BadRequest("Ошибка передачи профиля");
 
             await _profileRepository.UpdateProfile(profile);
-            new Task(() => _generateJsonService.GenerateJsonFile());
             return Ok();
         }
 
@@ -168,7 +163,6 @@ namespace SvedenOop.Controllers
             try
             {
                 await _profileRepository.RemoveProfile(profileId);
-                new Task(() => _generateJsonService.GenerateJsonFile());
                 return Ok();
             }
             catch (Exception)

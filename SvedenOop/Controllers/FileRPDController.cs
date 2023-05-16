@@ -13,13 +13,11 @@ namespace SvedenOop.Controllers
     {
         private readonly IFileRPDRepository _fileRPDRepository;
         private readonly IAddFileOnServer _addFileOnServer;
-        private readonly IGenerateJsonService _generateJsonService;
 
-        public FileRPDController(IFileRPDRepository fileRPDRepository, IAddFileOnServer addFileOnServer, IGenerateJsonService generateJsonService)
+        public FileRPDController(IFileRPDRepository fileRPDRepository, IAddFileOnServer addFileOnServer)
         {
             _fileRPDRepository = fileRPDRepository;
             _addFileOnServer = addFileOnServer;
-            _generateJsonService = generateJsonService;
         }
 
         /// <summary>
@@ -45,8 +43,6 @@ namespace SvedenOop.Controllers
             await _addFileOnServer.CreateFile(uploadedFile);
 
             await _fileRPDRepository.Create(fileRPD);
-
-            new Task(() => _generateJsonService.GenerateJsonFile());
             return Ok();
         }
 
@@ -60,7 +56,6 @@ namespace SvedenOop.Controllers
         public async Task<IActionResult> DeleteRPD(int fileRPDId)
         {
             await _fileRPDRepository.Remove(fileRPDId);
-            new Task(() => _generateJsonService.GenerateJsonFile());
             return Ok();
         }
     }

@@ -73,7 +73,6 @@ namespace InfrastructureSvedenOop.Repository
                               .ThenBy(x => x.CaseCEdukindId)
                               .ThenBy(x => x.ProfileName)
                               .ThenByDescending(x => x.Year).ToList();
-
             foreach (var profile in sortedProfiles)
             {
                 dataForTableResponse.Add(new()

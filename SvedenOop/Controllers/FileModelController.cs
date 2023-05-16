@@ -13,13 +13,11 @@ namespace SvedenOop.Controllers
     {
         private readonly IFileModelRepository _fileModelRepository;
         private readonly IAddFileOnServer _addFilesOnServer;
-        private readonly IGenerateJsonService _generateJsonService;
 
-        public FileModelController(IFileModelRepository fileModelRepository, IAddFileOnServer addFilesOnServer, IGenerateJsonService generateJsonService)
+        public FileModelController(IFileModelRepository fileModelRepository, IAddFileOnServer addFilesOnServer)
         {
             _fileModelRepository = fileModelRepository;
             _addFilesOnServer = addFilesOnServer;
-            _generateJsonService = generateJsonService;
         }
 
         /// <summary>
@@ -54,7 +52,6 @@ namespace SvedenOop.Controllers
                 if (formFile != null)
                     await _addFilesOnServer.CreateFile(formFile);
                 await _fileModelRepository.Create(file);
-                new Task(() => _generateJsonService.GenerateJsonFile());
                 return Ok();
             }
             return BadRequest("Файл с таким названием уже существует");
@@ -88,6 +85,7 @@ namespace SvedenOop.Controllers
                 {
                     file.Name = formFile.FileName;
                     file.CodeECP = Guid.NewGuid().ToString().ToUpper();
+                    file.LinkToFile = null;
                     await _addFilesOnServer.CreateFile(formFile);
                 }
                 else
@@ -95,7 +93,6 @@ namespace SvedenOop.Controllers
             }
 
             await _fileModelRepository.Update(file);
-            new Task(() => _generateJsonService.GenerateJsonFile());
             return Ok();
         }
 
@@ -109,7 +106,6 @@ namespace SvedenOop.Controllers
         public async Task<IActionResult> DeleteFile(int fileId)
         {
             await _fileModelRepository.Remove(fileId);
-            new Task(() => _generateJsonService.GenerateJsonFile());
             return Ok();
         }
     }

@@ -30,11 +30,11 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddDbContext<BASEPERSONMDFContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("BasePerson"), providerOptions => providerOptions.EnableRetryOnFailure()));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("BasePerson"), providerOptions => providerOptions.EnableRetryOnFailure()), ServiceLifetime.Scoped);
 builder.Services.AddDbContext<DSUContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("BaseDekanat"), providerOptions => providerOptions.EnableRetryOnFailure()));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("BaseDekanat"), providerOptions => providerOptions.EnableRetryOnFailure()), ServiceLifetime.Scoped);
 builder.Services.AddDbContext<ApplicationContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("SvedenOop"), providerOptions => providerOptions.EnableRetryOnFailure()));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("SvedenOop"), providerOptions => providerOptions.EnableRetryOnFailure()), ServiceLifetime.Scoped);
 
 builder.Services.AddIdentity<DomainServices.Entities.User, IdentityRole>(
                opts =>

@@ -11,12 +11,10 @@ namespace SvedenOop.Controllers
     public class FileTypeController : Controller
     {
         private readonly IFileTypeRepository _fileTypeRepository;
-        private readonly IGenerateJsonService _generateJsonService;
 
-        public FileTypeController(IFileTypeRepository fileTypeRepository, IGenerateJsonService generateJsonService)
+        public FileTypeController(IFileTypeRepository fileTypeRepository)
         {
             _fileTypeRepository = fileTypeRepository;
-            _generateJsonService = generateJsonService;
         }
 
         [Route("GetFileTypes")]
@@ -41,7 +39,6 @@ namespace SvedenOop.Controllers
         public async Task<IActionResult> EditFileType(FileType fileType)
         {
             await _fileTypeRepository.Update(fileType);
-            new Task(() => _generateJsonService.GenerateJsonFile());
             return Ok();
         }
 

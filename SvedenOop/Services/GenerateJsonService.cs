@@ -1,5 +1,7 @@
 ﻿using Infrastructure.Repository.InterfaceRepository;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using SvedenOop.Services.Interfaces;
 
@@ -9,26 +11,89 @@ namespace SvedenOop.Services
     {
         private readonly IProfileRepository _profileRepository;
         private readonly IDisciplineRepository _disciplineRepository;
-        private readonly IHostEnvironment _hostEnvironment;
-        private string FileJsonPath { get; set; }
-        private string FileJson2Path { get; set; }
+        private string FileJsonPathForOopDgu { get; set; }
+        private string FileJson2PathForOopDgu { get; set; }
+        private string FileJsonPathForOpop2 { get; set; }
+        private string FileJson2PathForOpop2 { get; set; }
 
-        public GenerateJsonService(IProfileRepository profileRepository, IDisciplineRepository disciplineRepository, IHostEnvironment hostEnvironment, IConfiguration configuration)
+        public GenerateJsonService(IProfileRepository profileRepository, IDisciplineRepository disciplineRepository, IConfiguration configuration)
         {
             _profileRepository = profileRepository;
             _disciplineRepository = disciplineRepository;
-            _hostEnvironment = hostEnvironment;
-            FileJsonPath = configuration["FileJson"];
-            FileJson2Path = configuration["FileJson2"];
+            FileJsonPathForOopDgu = configuration["FileJsonForOopDgu"];
+            FileJson2PathForOopDgu = configuration["FileJson2ForOopDgu"];
+            FileJsonPathForOpop2 = configuration["FileJsonForOpop2"];
+            FileJson2PathForOpop2 = configuration["FileJson2ForOpop2"];
         }
 
-        public void GenerateJsonFile()
+        public async Task GenerateJsonFileForOopDgu()
         {
-            var profileDto = _profileRepository.GetDataForOopDgu();
-            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get()
-                                                                         .Include(d => d.FileRPD)
-                                                                         .Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true)
-                                                                         .ToList());
+            try
+            {
+                var profileDto = _profileRepository.GetDataForOopDgu();
+                profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get()
+                                                                             .Include(d => d.FileRPD)
+                                                                             .Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true)
+                                                                             .ToList());
+
+                string json = JsonConvert.SerializeObject(profileDto, Formatting.Indented,
+                    new JsonSerializerSettings
+                    {
+                        PreserveReferencesHandling = PreserveReferencesHandling.Objects
+                    });
+
+                try
+                {
+                    string text = File.ReadAllText(FileJson2PathForOopDgu);
+                    File.WriteAllText(FileJsonPathForOopDgu, json);
+                    File.Delete(FileJson2PathForOopDgu);
+                }
+                catch (Exception)
+                {
+                    try
+                    {
+                        File.WriteAllText(FileJson2PathForOopDgu, json);
+                        File.Delete(FileJsonPathForOopDgu);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
+        public string GetGeneratedJsonFileForOopDgu()
+        {
+            try
+            {
+                return File.ReadAllText(FileJson2PathForOopDgu);
+            }
+            catch (Exception)
+            {
+                try
+                {
+                    return File.ReadAllText(FileJsonPathForOopDgu);
+                }
+                catch (Exception)
+                {
+                    GenerateJsonFileForOopDgu();
+                    return File.ReadAllText(FileJson2PathForOopDgu);
+                    throw;
+                }
+            }
+        }
+
+        public void GenerateJsonFileForOpop2()
+        {
+            var profileDto = _profileRepository.GetDataOpop2();
+            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Include(d => d.FileRPD)
+                                                                               .Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
+
 
             string json = JsonConvert.SerializeObject(profileDto, Formatting.Indented,
                 new JsonSerializerSettings
@@ -38,26 +103,43 @@ namespace SvedenOop.Services
 
             try
             {
-                string text = File.ReadAllText(FileJson2Path);
-                File.WriteAllText(FileJsonPath, json);
-                File.Delete(FileJson2Path);
+                string text = File.ReadAllText(FileJson2PathForOpop2);
+                File.WriteAllText(FileJsonPathForOpop2, json);
+                File.Delete(FileJson2PathForOpop2);
             }
             catch (Exception)
             {
-                File.WriteAllText(FileJson2Path, json);
-                File.Delete(FileJsonPath);
+                try
+                {
+                    File.WriteAllText(FileJson2PathForOpop2, json);
+                    File.Delete(FileJsonPathForOpop2);
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+
             }
         }
 
-        public string GetGeneratedJsonFile()
+        public string GetGeneratedJsonFileForOpop2()
         {
             try
             {
-                return File.ReadAllText(FileJson2Path);
+                return File.ReadAllText(FileJson2PathForOpop2);
             }
             catch (Exception)
             {
-                return File.ReadAllText(FileJsonPath);
+                try
+                {
+                    return File.ReadAllText(FileJsonPathForOpop2);
+                }
+                catch (Exception)
+                {
+                    GenerateJsonFileForOpop2();
+                    return File.ReadAllText(FileJson2PathForOpop2);
+                    throw;
+                }
             }
         }
     }

@@ -2,7 +2,9 @@
 {
     public interface IGenerateJsonService
     {
-        public void GenerateJsonFile();
-        public string GetGeneratedJsonFile();
+        public Task GenerateJsonFileForOopDgu();
+        public string GetGeneratedJsonFileForOopDgu();
+        public void GenerateJsonFileForOpop2();
+        public string GetGeneratedJsonFileForOpop2();
     }
 }
