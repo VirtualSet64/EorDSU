@@ -1,7 +1,5 @@
 ﻿using Infrastructure.Repository.InterfaceRepository;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using SvedenOop.Services.Interfaces;
 
@@ -26,7 +24,7 @@ namespace SvedenOop.Services
             FileJson2PathForOpop2 = configuration["FileJson2ForOpop2"];
         }
 
-        public async Task GenerateJsonFileForOopDgu()
+        public void GenerateJsonFileForOopDgu()
         {
             try
             {
