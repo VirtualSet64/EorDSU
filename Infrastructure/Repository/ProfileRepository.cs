@@ -1,27 +1,26 @@
 ﻿using DSUContextDBService.Interfaces;
-using Ifrastructure.Common;
+using Infrastructure.Common;
 using DomainServices.Entities;
-using Ifrastructure.Repository.InterfaceRepository;
-using Ifrastructure.Services.Interface;
+using Infrastructure.Repository.InterfaceRepository;
+using Infrastructure.Services.Interface;
 using DomainServices.DtoModels;
 using Microsoft.EntityFrameworkCore;
 using DomainServices.DBService;
-using Infrastructure.Repository.InterfaceRepository;
+using System.Data;
 
-namespace IfrastructureSvedenOop.Repository
+namespace InfrastructureSvedenOop.Repository
 {
     public class ProfileRepository : GenericRepository<Profile>, IProfileRepository
     {
         private readonly IDSUActiveData _dSUActiveData;
         private readonly IExcelParsingService _excelParsingService;
         private readonly IProfileKafedrasRepository _profileKafedrasRepository;
-
         public ProfileRepository(ApplicationContext dbContext, IDSUActiveData dSUActiveData, IExcelParsingService excelParsingService, IProfileKafedrasRepository profileKafedrasRepository)
             : base(dbContext)
         {
             _dSUActiveData = dSUActiveData;
             _excelParsingService = excelParsingService;
-            _profileKafedrasRepository = profileKafedrasRepository;
+            _profileKafedrasRepository = profileKafedrasRepository;            
         }
 
         public List<DataForTableResponse> GetDataForOopDgu()
@@ -67,15 +66,22 @@ namespace IfrastructureSvedenOop.Repository
 
         private void FillingData(ref List<DataForTableResponse> dataForTableResponse, ref IQueryable<Profile> profiles)
         {
-            var departments = _dSUActiveData.GetCaseSDepartments();
             var edukinds = _dSUActiveData.GetCaseCEdukinds();
-            foreach (var item in profiles)
+
+            var sortedProfiles = profiles.ToList().OrderBy(x => _dSUActiveData.GetCaseSDepartmentById(x.CaseSDepartmentId).FacId)
+                              .ThenBy(x => x.LevelEduId)
+                              .ThenBy(x => x.CaseCEdukindId)
+                              .ThenBy(x => x.ProfileName)
+                              .ThenByDescending(x => x.Year).ToList();
+            foreach (var profile in sortedProfiles)
             {
                 dataForTableResponse.Add(new()
                 {
-                    Profile = item,
-                    CaseCEdukind = item.CaseCEdukindId == null ? null : edukinds.FirstOrDefault(x => x.EdukindId == item.CaseCEdukindId),
-                    CaseSDepartment = item.CaseSDepartmentId == null ? null : departments.FirstOrDefault(x => x.DepartmentId == item.CaseSDepartmentId),
+                    Profile = profile,
+                    CaseCEdukind = profile.CaseCEdukindId == null ? null : edukinds.FirstOrDefault(x => x.EdukindId == profile.CaseCEdukindId),
+                    CaseSDepartment = profile.CaseSDepartmentId == null
+                        ? null
+                        : _dSUActiveData.GetCaseSDepartmentById(profile.CaseSDepartmentId)
                 });
             }
         }
@@ -117,7 +123,7 @@ namespace IfrastructureSvedenOop.Repository
                 await _profileKafedrasRepository.RemoveRange(profileKafedras.Where(x => x.ProfileId == profile.Id));
                 foreach (var item in profile.ListPersDepartmentsId)
                 {
-                    
+
                     if (!profileKafedras.Any(x => x.PersDepartmentId == item.PersDepartmentId && x.ProfileId == item.ProfileId))
                         await _profileKafedrasRepository.Create(item);
                 }

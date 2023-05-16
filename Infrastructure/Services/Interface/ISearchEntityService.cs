@@ -1,6 +1,6 @@
 ﻿using DomainServices.Entities;
 
-namespace Ifrastructure.Services.Interface
+namespace Infrastructure.Services.Interface
 {
     public interface ISearchEntityService
     {

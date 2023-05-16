@@ -1,5 +1,5 @@
 ﻿using DomainServices.Entities;
-using Ifrastructure.Repository.InterfaceRepository;
+using Infrastructure.Repository.InterfaceRepository;
 using DomainServices.DtoModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,12 +15,13 @@ namespace SvedenOop.Controllers
         private readonly IProfileRepository _profileRepository;
         private readonly IDisciplineRepository _disciplineRepository;
         private readonly IAddFileOnServer _addFileOnServer;
-
-        public ProfilesController(IProfileRepository profileRepository, IDisciplineRepository disciplineRepository, IAddFileOnServer addFileOnServer)
+        private readonly IGenerateJsonService _generateJsonService;
+        public ProfilesController(IProfileRepository profileRepository, IDisciplineRepository disciplineRepository, IAddFileOnServer addFileOnServer, IGenerateJsonService generateJsonService)
         {
             _profileRepository = profileRepository;
             _disciplineRepository = disciplineRepository;
             _addFileOnServer = addFileOnServer;
+            _generateJsonService = generateJsonService;
         }
 
         /// <summary>
@@ -31,22 +32,20 @@ namespace SvedenOop.Controllers
         [HttpGet]
         public IActionResult GetDataForOopDgu()
         {
-            var profileDto = _profileRepository.GetDataForOopDgu();
-            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Include(d => d.FileRPD).Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
-            return Ok(profileDto);
+            string text = _generateJsonService.GetGeneratedJsonFileForOopDgu();
+            return Ok(text);
         }
 
         /// <summary>
-        /// Получение всех данных для /Sveden/Opop2
+        /// Получение всех данных для таблицы /Sveden/Opop2
         /// </summary>
         /// <returns></returns>
         [Route("GetDataOpop2")]
         [HttpGet]
         public IActionResult GetDataOpop2()
         {
-            var profileDto = _profileRepository.GetDataOpop2();
-            profileDto.ForEach(x => x.Disciplines = _disciplineRepository.Get().Include(d => d.FileRPD).Where(c => c.ProfileId == x.Profile.Id && c.Code.Contains("Б2") == true).ToList());
-            return Ok(profileDto);
+            string text = _generateJsonService.GetGeneratedJsonFileForOpop2();
+            return Ok(text);
         }
 
         /// <summary>
@@ -166,7 +165,7 @@ namespace SvedenOop.Controllers
                 await _profileRepository.RemoveProfile(profileId);
                 return Ok();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return BadRequest("Профиль не найден");
                 throw;

@@ -1,6 +1,6 @@
 ﻿using DomainServices.Entities;
 using SvedenOop.Services.Interfaces;
-using Ifrastructure.Repository.InterfaceRepository;
+using Infrastructure.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,28 +23,35 @@ namespace SvedenOop.Controllers
         /// <summary>
         /// Добавление файлов
         /// </summary>
-        /// <param name="formFile"></param>
-        /// <param name="fileId"></param>
         /// <param name="fileName"></param>
         /// <param name="fileType"></param>
         /// <param name="profileId"></param>
+        /// <param name="linkToFile"></param>
+        /// <param name="formFile"></param>
         /// <returns></returns>
         [Route("CreateFileModel")]
         [HttpPost]
-        public async Task<IActionResult> CreateFileModel(IFormFile formFile, int fileId, string fileName, int fileType, int profileId)
+        public async Task<IActionResult> CreateFileModel(string fileName, int fileType, int profileId, string? linkToFile, IFormFile? formFile)
         {
-            FileModel uploadFile = new()
+            FileModel file = new()
             {
-                Id = fileId,
-                Name = formFile.FileName,
                 OutputFileName = fileName,
                 FileTypeId = fileType,
                 ProfileId = profileId,
             };
-            if (!_fileModelRepository.Get().Any(x => x.Name == formFile.Name))
+            if (linkToFile != null)
             {
-                await _addFilesOnServer.CreateFile(formFile);
-                await _fileModelRepository.Create(uploadFile);
+                file.Name = linkToFile.Split("/")[^1];
+                file.LinkToFile = linkToFile;
+            }
+            else
+                file.Name = formFile?.FileName;
+
+            if (!_fileModelRepository.Get().Any(x => x.Name == file.Name))
+            {
+                if (formFile != null)
+                    await _addFilesOnServer.CreateFile(formFile);
+                await _fileModelRepository.Create(file);
                 return Ok();
             }
             return BadRequest("Файл с таким названием уже существует");
@@ -55,18 +62,22 @@ namespace SvedenOop.Controllers
         /// </summary>
         /// <param name="fileId"></param>
         /// <param name="fileName"></param>
+        /// <param name="linkToFile"></param>
         /// <param name="formFile"></param>
         /// <returns></returns>
         [Route("EditFileModel")]
         [HttpPut]
-        public async Task<IActionResult> EditFile(int fileId, string fileName, IFormFile? formFile)
+        public async Task<IActionResult> EditFile(int fileId, string fileName, string? linkToFile, IFormFile? formFile)
         {
             FileModel file = _fileModelRepository.FindById(fileId);
             if (file == null)
                 return BadRequest("Файл не найден");
 
+            if (linkToFile != null)
+                file.LinkToFile = linkToFile;
+
             file.OutputFileName = fileName;
-            file.UpdateDate = DateTime.Now;           
+            file.UpdateDate = DateTime.Now;
 
             if (formFile != null)
             {
@@ -74,6 +85,7 @@ namespace SvedenOop.Controllers
                 {
                     file.Name = formFile.FileName;
                     file.CodeECP = Guid.NewGuid().ToString().ToUpper();
+                    file.LinkToFile = null;
                     await _addFilesOnServer.CreateFile(formFile);
                 }
                 else

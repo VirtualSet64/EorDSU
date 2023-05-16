@@ -1,7 +1,7 @@
-﻿using Ifrastructure.Common.Interfaces;
+﻿using Infrastructure.Common.Interfaces;
 using DomainServices.Entities;
 
-namespace Ifrastructure.Repository.InterfaceRepository
+namespace Infrastructure.Repository.InterfaceRepository
 {
     public interface IStatusDisciplineRepository : IGenericRepository<StatusDiscipline>
     {

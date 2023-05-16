@@ -20,9 +20,16 @@ namespace SvedenOop.Controllers
 
         [Route("GetCaseSDepartments")]
         [HttpGet]
-        public async Task<IActionResult> GetCaseSDepartments()
+        public IActionResult GetCaseSDepartments()
         {
-            return Ok(await _dSUActiveData.GetCaseSDepartments().ToListAsync());
+            return Ok(_dSUActiveData.GetCaseSDepartments());
+        }
+
+        [Route("GetFaculties")]
+        [HttpGet]
+        public IActionResult GetFaculties()
+        {
+            return Ok(_dSUActiveData.GetFaculties());
         }
 
         /// <summary>

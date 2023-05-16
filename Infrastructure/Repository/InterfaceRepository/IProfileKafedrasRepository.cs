@@ -1,5 +1,5 @@
 ﻿using DomainServices.Entities;
-using Ifrastructure.Common.Interfaces;
+using Infrastructure.Common.Interfaces;
 
 namespace Infrastructure.Repository.InterfaceRepository
 {

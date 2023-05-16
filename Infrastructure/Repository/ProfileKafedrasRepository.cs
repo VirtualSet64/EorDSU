@@ -1,6 +1,6 @@
 ﻿using DomainServices.DBService;
 using DomainServices.Entities;
-using Ifrastructure.Common;
+using Infrastructure.Common;
 using Infrastructure.Repository.InterfaceRepository;
 
 namespace Infrastructure.Repository

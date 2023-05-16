@@ -9,5 +9,6 @@ namespace DSUContextDBService.Interfaces
         public IQueryable<CaseSDepartment> GetCaseSDepartmentByFacultyId(int? id);
         public IQueryable<CaseCEdukind> GetCaseCEdukinds();
         public CaseCEdukind GetCaseCEdukindById(int? id);
+        public IQueryable<CaseCFaculty> GetFaculties();
     }
 }

@@ -1,7 +1,8 @@
 ﻿using DomainServices.Entities;
-using Ifrastructure.Repository.InterfaceRepository;
+using Infrastructure.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SvedenOop.Services.Interfaces;
 
 namespace SvedenOop.Controllers
 {
@@ -46,7 +47,16 @@ namespace SvedenOop.Controllers
         [HttpDelete]
         public async Task<IActionResult> DeleteFileType(int fileTypeId)
         {
-            await _fileTypeRepository.Remove(fileTypeId);
+            try
+            {
+                await _fileTypeRepository.Remove(fileTypeId);
+            }
+            catch (Exception)
+            {
+                return BadRequest("Невозможно удалить данный тип файла из-за дочерних объектов");
+                throw;
+            }
+
             return Ok();
         }
     }

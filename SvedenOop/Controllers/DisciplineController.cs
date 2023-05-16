@@ -1,9 +1,11 @@
 ﻿using DomainServices.Entities;
-using Ifrastructure.Repository.InterfaceRepository;
+using Infrastructure.Repository.InterfaceRepository;
 using DomainServices.DtoModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SvedenOop.Services.Interfaces;
+using System.Threading;
 
 namespace SvedenOop.Controllers
 {
@@ -75,6 +77,7 @@ namespace SvedenOop.Controllers
                                                            x.ProfileId == discipline.ProfileId))
                 return BadRequest("Такая дисциплина существует");
 
+            discipline.CreateDate = DateTime.Now;
             await _disciplineRepository.Create(discipline);
             return Ok();
         }

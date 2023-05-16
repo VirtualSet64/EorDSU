@@ -1,8 +1,11 @@
-﻿using Ifrastructure.Common.Interfaces;
+﻿using Infrastructure.Common.Interfaces;
+using Infrastructure.Repository;
+using InfrastructureSvedenOop.Repository;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System.Linq.Expressions;
 
-namespace Ifrastructure.Common
+namespace Infrastructure.Common
 {
     public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : class
     {
@@ -95,5 +98,7 @@ namespace Ifrastructure.Common
             return includeProperties
                 .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
         }
+
+        
     }
 }

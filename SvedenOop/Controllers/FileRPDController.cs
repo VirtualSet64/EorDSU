@@ -1,6 +1,6 @@
 ﻿using DomainServices.Entities;
 using SvedenOop.Services.Interfaces;
-using Ifrastructure.Repository.InterfaceRepository;
+using Infrastructure.Repository.InterfaceRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -43,7 +43,6 @@ namespace SvedenOop.Controllers
             await _addFileOnServer.CreateFile(uploadedFile);
 
             await _fileRPDRepository.Create(fileRPD);
-
             return Ok();
         }
 

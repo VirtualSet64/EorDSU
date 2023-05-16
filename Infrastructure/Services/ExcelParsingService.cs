@@ -1,8 +1,8 @@
 ﻿using DomainServices.Entities;
-using Ifrastructure.Services.Interface;
+using Infrastructure.Services.Interface;
 using Excel = Microsoft.Office.Interop.Excel;
 
-namespace Ifrastructure.Service
+namespace Infrastructure.Service
 {
     public class ExcelParsingService : IExcelParsingService
     {
@@ -107,8 +107,8 @@ namespace Ifrastructure.Service
 
             profile.ProfileName = list[3, 29];
             profile.TermEdu = list[2, 42].Split(": ")[^1].ToString();
-            profile.CaseSDepartmentId = await _searchEntity.SearchCaseSDepartment(list[3, 28].Split(" ")[^1])
-                ?? await _searchEntity.SearchCaseSDepartment(list[3, 28].Split(code)[^1].Trim()); ;
+            profile.CaseSDepartmentId = await _searchEntity.SearchCaseSDepartment(list[3, 28].Split(code)[^1].Trim())
+                ?? await _searchEntity.SearchCaseSDepartment(list[3, 28].Split(" ")[^1]);
 
             if (profile.CaseSDepartmentId == null)
             {
