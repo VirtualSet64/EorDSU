@@ -4,7 +4,6 @@ using SvedenOop.Services.Interfaces;
 
 namespace SvedenOop.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class JsonFileGenerationController : Controller
