@@ -13,7 +13,7 @@ namespace SvedenOop.Services
             _appEnvironment = appEnvironment;
             Configuration = configuration;
             _hostEnvironment = hostEnvironment;
-            FileFolderPath = _hostEnvironment.ContentRootPath + Configuration["FileFolderFullPath"];
+            FileFolderPath = _hostEnvironment.ContentRootPath + Configuration["FileFolder"];
         }
 
         public async Task<string> CreateFile(IFormFile uploadedFile)

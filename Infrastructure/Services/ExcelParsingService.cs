@@ -7,7 +7,6 @@ namespace Infrastructure.Service
     public class ExcelParsingService : IExcelParsingService
     {
         private readonly ISearchEntityService _searchEntity;
-
         public ExcelParsingService(ISearchEntityService searchEntity)
         {
             _searchEntity = searchEntity;
@@ -16,13 +15,13 @@ namespace Infrastructure.Service
         public async Task<Profile> ParsingService(string path)
         {
             Excel.Application ObjWorkExcel = new(); //открыть эксель
-            Excel.Workbook ObjWorkBook = ObjWorkExcel.Workbooks.Open(@path, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing); //открыть файл
+            var fullPath = Path.GetFullPath(path);
+            Excel.Workbook ObjWorkBook = ObjWorkExcel.Workbooks.Open(fullPath, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing, Type.Missing); //открыть файл
 
             Profile profile = new();
             await TitulPage(ObjWorkBook, profile);
 
             ClearAndExitExcel(ObjWorkBook, ObjWorkExcel);
-
             return profile;
         }
 
